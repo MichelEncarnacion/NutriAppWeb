@@ -65,11 +65,11 @@ CREATE POLICY "usuarios eliminan sus registros"
 
 1. Verificar JWT — extraer `perfil_id`
 2. Leer diagnóstico completo de `diagnosticos WHERE perfil_id = $1`
-3. Verificar límite freemium con `check_planes_freemium_limit`
+3. Verificar límite freemium llamando `check_planes_freemium_limit` explícitamente antes de insertar. Si retorna `false` → responder HTTP 409 con `{ error: 'plan_limit_reached' }`. El frontend en GenerandoPlan.jsx muestra mensaje específico de límite alcanzado (no error genérico).
 4. Crear registro en `planes` con `estado='generando'`, `perfil_id`, `fecha_inicio=hoy`, `fecha_fin=hoy+14`
 5. Construir prompt para Gemini con datos del diagnóstico
-6. Llamar a `gemini-2.0-flash` con `GEMINI_API_KEY` (secret de Supabase)
-7. Parsear respuesta JSON — validar presencia de `meta_diaria` y `dias` (array de 15)
+6. Llamar a `gemini-2.0-flash` con `GEMINI_API_KEY` (secret de Supabase). Usar `response_mime_type: "application/json"` para forzar JSON nativo. Timeout de 25 s con `AbortController`; si expira → UPDATE `planes` con `estado='error'` y retornar HTTP 504.
+7. Parsear respuesta JSON — validar: (a) `meta_diaria` presente con campos numéricos, (b) `dias` es array de exactamente 15 elementos, (c) cada elemento tiene `dia` (número 1-15) y `comidas` (array no vacío). Si alguna validación falla → `estado='error'`
 8. Si válido: UPDATE `planes` con `contenido_json`, `estado='listo'`, `prompt_enviado`, `respuesta_ia`
 9. Si error: UPDATE `planes` con `estado='error'` → responder HTTP 500
 
@@ -118,9 +118,9 @@ Datos del usuario:
 |-----|--------|-------|
 | Calorías objetivo | `planes.contenido_json.meta_diaria.kcal` | Plan activo |
 | Calorías consumidas | `metricas` de hoy (`calorias_consumidas`) | Puede ser null |
-| Comidas completadas | COUNT de `registro_comidas` WHERE fecha=hoy | |
+| Comidas completadas | COUNT de `registro_comidas` WHERE fecha=hoy | Fuente de verdad para el KPI en vivo |
 | Comidas totales | `contenido_json.dias[diaActual].comidas.length` | |
-| Agua | `metricas` de hoy (`agua_ml / 1000`) | |
+| Agua | `metricas` de hoy (`agua_ml / 1000`) | Null si no hay registro del día |
 | Racha | Calculada contando días consecutivos en `metricas` | |
 
 ### Macronutrientes
@@ -150,9 +150,9 @@ supabase.from('planes')
   .limit(1)
   .single()
 
-// Métricas de hoy
+// Métricas de hoy (agua y calorías consumidas; comidas_completadas NO se usa aquí)
 supabase.from('metricas')
-  .select('calorias_consumidas, agua_ml, comidas_completadas')
+  .select('calorias_consumidas, agua_ml')
   .eq('perfil_id', uid)
   .eq('fecha', hoy)
   .maybeSingle()
@@ -192,7 +192,13 @@ const diaActual = Math.min(
 
 ### Bloqueo Freemium
 
-- Si `tipo_usuario === 'freemium'` y ya existe un plan activo este mes: mostrar card con CTA Premium en lugar del plan
+- El límite de 1 plan por mes se enforza en la **Edge Function** (paso 3) con `check_planes_freemium_limit`. MiPlan.jsx **siempre muestra el plan activo** del freemium si existe — nunca bloquea la visualización.
+- Si el usuario freemium no tiene ningún plan activo (`es_activo=true AND estado='listo'`), MiPlan muestra el estado vacío normal ("No tienes un plan activo"). El CTA a Premium aplica solo en el flujo de regeneración (Fase 4, Seguimiento), no en MiPlan.
+
+### Checkboxes — query explícita
+
+- Al cargar: `registro_comidas` WHERE `plan_id = plan.id` AND `dia_numero = diaActivo` AND `fecha = hoy`
+- El `plan.id` viene de la query del plan activo previa
 
 ---
 
@@ -208,17 +214,29 @@ const diaActual = Math.min(
 | `numero` | `orden` |
 | `completada: boolean` | `estado: 'bloqueada'/'disponible'/'en_progreso'/'completada'` |
 
+### Estado inicial (primer acceso)
+
+Al cargar Lecciones.jsx, si el usuario no tiene ninguna fila en `lecciones_usuario`:
+- **Premium**: INSERT todas las lecciones con `estado='disponible'`, `fecha_disponible=now()`
+- **Demo/Freemium**: INSERT solo la lección 1 con `estado='disponible'`, `fecha_disponible=now()`; las demás quedan sin fila (se tratan como bloqueadas en el UI)
+
+Este seed se hace en el frontend al detectar que el array de progreso está vacío y existen lecciones activas.
+
 ### Lógica de desbloqueo
 
-- **Premium**: todas las lecciones en estado `disponible` desde el inicio
-- **Demo y Freemium**:
+- **Premium** (`tipo_usuario === 'premium'`): todas las lecciones en estado `disponible` desde el inicio
+- **Demo y Freemium** (`tipo_usuario === 'demo'` o `'freemium'`):
   - Lección 1: siempre `disponible`
   - Lección N+1: `disponible` solo si `lecciones_usuario.fecha_disponible <= now()`
-  - Al completar lección N: UPDATE `lecciones_usuario` → `estado='completada'`, `fecha_completada=now()`, INSERT lección N+1 con `fecha_disponible = now() + INTERVAL '7 days'`
+  - Al completar lección N: UPDATE `lecciones_usuario` → `estado='completada'`, `fecha_completada=now()`, INSERT lección N+1 con `fecha_disponible = now() + 7 días`
+
+> **Nota:** `esPremium` en AuthContext es `true` para Demo Y Premium. Para la lógica de lecciones se debe verificar `perfil.tipo_usuario === 'premium'` directamente (no `esPremium`), ya que Demo sí tiene la espera de 7 días.
 
 ### Al marcar completada
 
 ```js
+const esSoloPremium = perfil.tipo_usuario === 'premium';
+
 // Marcar actual como completada
 await supabase.from('lecciones_usuario').upsert({
   perfil_id: uid,
@@ -227,9 +245,11 @@ await supabase.from('lecciones_usuario').upsert({
   fecha_completada: new Date().toISOString()
 }, { onConflict: 'perfil_id,leccion_id' });
 
-// Desbloquear siguiente (solo si Demo/Freemium)
-if (!esPremium && siguiente) {
-  const disponibleEn = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+// Desbloquear siguiente con o sin espera
+if (siguiente) {
+  const disponibleEn = esSoloPremium
+    ? new Date().toISOString()                                          // Premium: inmediato
+    : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();   // Demo/Freemium: 7 días
   await supabase.from('lecciones_usuario').upsert({
     perfil_id: uid,
     leccion_id: siguiente.id,
@@ -237,7 +257,6 @@ if (!esPremium && siguiente) {
     fecha_disponible: disponibleEn
   }, { onConflict: 'perfil_id,leccion_id' });
 }
-// Premium: la siguiente ya estaba disponible desde el inicio
 ```
 
 ---
