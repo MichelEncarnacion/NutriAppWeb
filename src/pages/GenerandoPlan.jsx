@@ -61,6 +61,10 @@ export default function GenerandoPlan() {
                 );
                 clearTimeout(timeoutId);
 
+                if (res.status === 409) {
+                    setError("Ya tienes un plan activo este mes. Los usuarios Freemium pueden generar 1 plan por mes.");
+                    return;
+                }
                 if (!res.ok) throw new Error("Error al generar el plan");
 
                 // Si el usuario tiene condición médica, mostrar aviso antes de redirigir
