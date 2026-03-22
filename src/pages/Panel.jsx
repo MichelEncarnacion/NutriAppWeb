@@ -60,11 +60,14 @@ export default function Panel() {
             setComidasCompletadas(completadas ?? 0);
 
             // Calcular adherencia semanal (últimos 7 días)
+            const LABEL_MAP = ["D","L","M","X","J","V","S"]; // Sunday=0 like getDay()
             const diasSemana = [];
             for (let i = 6; i >= 0; i--) {
-                const d = new Date(Date.now() - i * 86400000).toISOString().split("T")[0];
+                const dateObj = new Date(Date.now() - i * 86400000);
+                const d = dateObj.toISOString().split("T")[0];
+                const label = LABEL_MAP[dateObj.getDay()];
                 const registros = semanaData?.filter((r) => r.fecha === d) ?? [];
-                diasSemana.push({ fecha: d, count: registros.length });
+                diasSemana.push({ fecha: d, count: registros.length, label });
             }
             setAdherencia(diasSemana);
             setLoading(false);
@@ -89,7 +92,7 @@ export default function Panel() {
     const KPIS = [
         {
             label: "Calorías", icon: "🔥", color: "#3DDC84",
-            value: kcalObj > 0 ? `${kcalConsumidas}` : "—",
+            value: `${kcalConsumidas}`,
             sub: kcalObj > 0 ? `/ ${kcalObj} kcal` : "sin plan activo",
         },
         {
@@ -114,9 +117,6 @@ export default function Panel() {
         { label: "Carbohidratos", g: 0, max: meta.carbos_g, color: "#58A6FF" },
         { label: "Grasas", g: 0, max: meta.grasas_g, color: "#F0A500" },
     ] : [];
-
-    const DIAS_LABEL = ["L", "M", "X", "J", "V", "S", "D"];
-    const HOY_IDX = new Date().getDay() === 0 ? 6 : new Date().getDay() - 1;
 
     return (
         <Layout>
@@ -193,12 +193,11 @@ export default function Panel() {
                             <span className="text-[10px] bg-[rgba(88,166,255,.12)] text-[#58A6FF] font-bold px-2 py-1 rounded-full">7 DÍAS</span>
                         </div>
                         <div className="flex gap-2 justify-between">
-                            {DIAS_LABEL.map((d, i) => {
-                                const info = adherencia[i];
+                            {adherencia.map((info, i) => {
                                 const tiene = (info?.count ?? 0) > 0;
-                                const isHoy = i === HOY_IDX;
+                                const isHoy = i === adherencia.length - 1; // last item = today
                                 return (
-                                    <div key={d} className="flex flex-col items-center gap-1.5 flex-1">
+                                    <div key={info.fecha} className="flex flex-col items-center gap-1.5 flex-1">
                                         <div
                                             className="h-20 w-full bg-[#1C2330] rounded-lg relative overflow-hidden"
                                             style={{ border: isHoy ? "1px solid #3DDC84" : "1px solid transparent" }}
@@ -207,7 +206,7 @@ export default function Panel() {
                                                 <div className="absolute bottom-0 w-full h-full rounded-t-md bg-[rgba(61,220,132,.45)]" />
                                             )}
                                         </div>
-                                        <span className="text-[10px] font-bold font-display" style={{ color: isHoy ? "#3DDC84" : "#7D8590" }}>{d}</span>
+                                        <span className="text-[10px] font-bold font-display" style={{ color: isHoy ? "#3DDC84" : "#7D8590" }}>{info.label}</span>
                                     </div>
                                 );
                             })}
