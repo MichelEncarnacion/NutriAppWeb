@@ -1,48 +1,77 @@
 // src/pages/Progreso.jsx
-// ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 
 export default function Progreso() {
-    const { session } = useAuth();
+    const { session, perfil } = useAuth();
+    const uid = session?.user?.id;
+    const esFreemium = perfil?.tipo_usuario === "freemium";
+
     const [metricas, setMetricas] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        if (!uid) return;
+        if (esFreemium) { setLoading(false); return; }
+
         const cargar = async () => {
-            const { data } = await supabase
-                .rpc("get_metricas_usuario", { p_usuario_id: session.user.id, p_limite: 10 });
-            setMetricas(data ?? []);
-            setLoading(false);
+            try {
+                const { data, error } = await supabase
+                    .from("metricas")
+                    .select("fecha, peso, porcentaje_grasa, porcentaje_musculo, calorias_consumidas, agua_ml")
+                    .eq("perfil_id", uid)
+                    .order("fecha", { ascending: false })
+                    .limit(10);
+                if (error) console.error("Progreso fetch error:", error);
+                setMetricas(data ?? []);
+            } catch (err) {
+                console.error("Progreso load error:", err);
+            } finally {
+                setLoading(false);
+            }
         };
         cargar();
-    }, []);
+    }, [uid, esFreemium]);
 
     const ultima = metricas[0] ?? null;
     const segunda = metricas[1] ?? null;
 
     const delta = (campo) => {
-        if (!ultima || !segunda || !ultima[campo] || !segunda[campo]) return null;
+        if (!ultima || !segunda || ultima[campo] == null || segunda[campo] == null) return null;
         const d = (ultima[campo] - segunda[campo]).toFixed(1);
         return { valor: d, positivo: Number(d) > 0 };
     };
 
     const CAMPOS = [
-        { key: "peso_kg", label: "Peso", unit: "kg", bueno: false },
-        { key: "pct_grasa", label: "% Grasa", unit: "%", bueno: false },
-        { key: "pct_musculo", label: "% Músculo", unit: "%", bueno: true },
-        { key: "pct_agua", label: "Agua corporal", unit: "%", bueno: true },
+        { key: "peso", label: "Peso", unit: "kg", bueno: false },
+        { key: "porcentaje_grasa", label: "% Grasa", unit: "%", bueno: false },
+        { key: "porcentaje_musculo", label: "% Músculo", unit: "%", bueno: true },
+        { key: "calorias_consumidas", label: "Calorías", unit: "kcal", bueno: true },
     ];
 
     return (
         <Layout>
-            <div className="flex flex-col gap-5 max-w-3xl">
+            <div className="flex flex-col gap-5 max-w-3xl relative">
                 <div>
                     <h1 className="text-white text-2xl font-black font-display mb-1">Progreso</h1>
                     <p className="text-[#7D8590] text-xs">Seguimiento de tus métricas corporales a lo largo del tiempo</p>
                 </div>
+
+                {/* Overlay bloqueante para Freemium */}
+                {esFreemium && (
+                    <div className="absolute inset-0 z-10 bg-[#0D1117]/90 rounded-xl flex flex-col items-center justify-center gap-5 p-8 text-center min-h-[400px]">
+                        <span className="text-5xl">📊</span>
+                        <h2 className="text-white text-xl font-bold font-display">Tu progreso, protegido</h2>
+                        <p className="text-[#7D8590] text-sm leading-relaxed max-w-xs">
+                            Con Premium puedes ver tus métricas históricas, gráficas de peso, % grasa y músculo a lo largo del tiempo.
+                        </p>
+                        <button className="px-6 py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm">
+                            Hazte Premium ✨
+                        </button>
+                    </div>
+                )}
 
                 {/* Tarjetas de métricas */}
                 {loading ? (
@@ -58,9 +87,10 @@ export default function Progreso() {
                 ) : (
                     <div className="grid grid-cols-2 gap-3">
                         {CAMPOS.map((c) => {
+                            if (ultima[c.key] == null) return null;
                             const d = delta(c.key);
                             const mejora = d ? (c.bueno ? d.positivo : !d.positivo) : null;
-                            return ultima[c.key] ? (
+                            return (
                                 <div key={c.key} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-4 hover:-translate-y-0.5 transition-transform">
                                     <div className="flex justify-between items-start mb-2">
                                         <p className="text-[9px] text-[#7D8590] font-bold tracking-widest">{c.label.toUpperCase()}</p>
@@ -76,19 +106,19 @@ export default function Progreso() {
                                     </div>
                                     {/* Mini sparkline */}
                                     <div className="flex gap-0.5 items-end h-8">
-                                        {metricas.slice().reverse().map((m, i) => m[c.key] && (
+                                        {metricas.slice().reverse().map((m, i) => m[c.key] != null && (
                                             <div
                                                 key={i}
                                                 className="flex-1 rounded-sm"
                                                 style={{
-                                                    height: `${Math.max(10, (m[c.key] / (Math.max(...metricas.map(x => x[c.key] ?? 0)))) * 100)}%`,
+                                                    height: `${Math.max(10, (m[c.key] / Math.max(...metricas.map((x) => x[c.key] ?? 0))) * 100)}%`,
                                                     background: i === metricas.length - 1 ? "#3DDC84" : "rgba(61,220,132,.3)",
                                                 }}
                                             />
                                         ))}
                                     </div>
                                 </div>
-                            ) : null;
+                            );
                         })}
                     </div>
                 )}
@@ -103,9 +133,9 @@ export default function Progreso() {
                                     <span className="text-[#7D8590] text-xs w-20 flex-shrink-0">
                                         {new Date(m.fecha).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}
                                     </span>
-                                    {m.peso_kg && <span className="text-white font-semibold">{m.peso_kg} kg</span>}
-                                    {m.pct_grasa && <span className="text-[#7D8590]">Grasa: {m.pct_grasa}%</span>}
-                                    {m.pct_musculo && <span className="text-[#7D8590]">Músculo: {m.pct_musculo}%</span>}
+                                    {m.peso != null && <span className="text-white font-semibold">{m.peso} kg</span>}
+                                    {m.porcentaje_grasa != null && <span className="text-[#7D8590]">Grasa: {m.porcentaje_grasa}%</span>}
+                                    {m.porcentaje_musculo != null && <span className="text-[#7D8590]">Músculo: {m.porcentaje_musculo}%</span>}
                                     {i === 0 && <span className="ml-auto text-[10px] bg-[rgba(61,220,132,.12)] text-[#3DDC84] font-bold px-2 py-0.5 rounded-full">ACTUAL</span>}
                                 </div>
                             ))}
