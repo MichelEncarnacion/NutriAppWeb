@@ -1,72 +1,108 @@
 // src/pages/MiPlan.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 
 const TIPO_COLOR = {
-    desayuno: { bg: "rgba(240,165,0,.12)", color: "#F0A500", label: "Desayuno" },
-    colacion_am: { bg: "rgba(88,166,255,.12)", color: "#58A6FF", label: "Colación" },
-    comida: { bg: "rgba(61,220,132,.12)", color: "#3DDC84", label: "Comida" },
-    colacion_pm: { bg: "rgba(88,166,255,.12)", color: "#58A6FF", label: "Colación" },
-    cena: { bg: "rgba(147,51,234,.12)", color: "#A855F7", label: "Cena" },
+    desayuno:    { bg: "rgba(240,165,0,.12)",   color: "#F0A500", label: "Desayuno" },
+    colacion_am: { bg: "rgba(88,166,255,.12)",  color: "#58A6FF", label: "Colación AM" },
+    comida:      { bg: "rgba(61,220,132,.12)",  color: "#3DDC84", label: "Comida" },
+    colacion_pm: { bg: "rgba(88,166,255,.12)",  color: "#58A6FF", label: "Colación PM" },
+    cena:        { bg: "rgba(147,51,234,.12)",  color: "#A855F7", label: "Cena" },
 };
 
 export default function MiPlan() {
     const { session } = useAuth();
+    const uid = session.user.id;
+
     const [plan, setPlan] = useState(null);
-    const [comidas, setComidas] = useState([]);
     const [diaActivo, setDia] = useState(1);
-    const [registro, setRegistro] = useState({});
+    const [registro, setRegistro] = useState({}); // { "diaNum-comidaIdx": true }
     const [loading, setLoading] = useState(true);
+    const [toggling, setToggling] = useState(null);
+
+    const hoy = new Date().toISOString().split("T")[0];
+
+    const cargarRegistro = useCallback(async (planId, dia) => {
+        const { data } = await supabase
+            .from("registro_comidas")
+            .select("comida_index, id")
+            .eq("perfil_id", uid)
+            .eq("plan_id", planId)
+            .eq("dia_numero", dia)
+            .eq("fecha", hoy);
+
+        const map = {};
+        (data ?? []).forEach((r) => { map[`${dia}-${r.comida_index}`] = r.id; });
+        setRegistro(map);
+    }, [uid, hoy]);
 
     useEffect(() => {
         const cargar = async () => {
-            const uid = session.user.id;
+            const { data: planData } = await supabase
+                .from("planes")
+                .select("id, contenido_json, fecha_inicio, fecha_fin, estado")
+                .eq("perfil_id", uid)
+                .eq("es_activo", true)
+                .eq("estado", "listo")
+                .order("created_at", { ascending: false })
+                .limit(1)
+                .maybeSingle();
 
-            // Plan activo
-            const { data: planes } = await supabase
-                .rpc("get_plan_activo", { p_usuario_id: uid });
-            const planActivo = planes?.[0];
-            if (!planActivo) { setLoading(false); return; }
-            setPlan(planActivo);
-
-            // Comidas del plan
-            const { data: com } = await supabase
-                .from("comidas")
-                .select("*")
-                .eq("plan_id", planActivo.id)
-                .order("dia_numero")
-                .order("hora_sugerida");
-            setComidas(com ?? []);
-
-            // Registros de hoy
-            const hoy = new Date().toISOString().split("T")[0];
-            const { data: reg } = await supabase
-                .from("registro_comidas")
-                .select("comida_id, completada")
-                .eq("usuario_id", uid)
-                .eq("fecha", hoy);
-            const map = {};
-            (reg ?? []).forEach((r) => { map[r.comida_id] = r.completada; });
-            setRegistro(map);
+            if (planData) {
+                setPlan(planData);
+                // Calcular día actual del plan
+                const diaCalculado = Math.min(
+                    Math.floor((new Date(hoy) - new Date(planData.fecha_inicio)) / 86400000) + 1,
+                    15
+                );
+                setDia(diaCalculado);
+                await cargarRegistro(planData.id, diaCalculado);
+            }
             setLoading(false);
         };
         cargar();
-    }, []);
+    }, [uid, cargarRegistro, hoy]);
 
-    const toggleComida = async (comidaId) => {
-        const nueva = !registro[comidaId];
-        setRegistro((r) => ({ ...r, [comidaId]: nueva }));
-        await supabase.rpc("toggle_comida", {
-            p_usuario_id: session.user.id,
-            p_comida_id: comidaId,
-            p_fecha: new Date().toISOString().split("T")[0],
-        });
+    // Al cambiar de día, recargar registro
+    const cambiarDia = async (dia) => {
+        setDia(dia);
+        if (plan) await cargarRegistro(plan.id, dia);
     };
 
-    const comidasDelDia = comidas.filter((c) => c.dia_numero === diaActivo);
-    const diasDisponibles = [...new Set(comidas.map((c) => c.dia_numero))];
+    const toggleComida = async (comidaIndex) => {
+        if (!plan || toggling !== null) return;
+        const key = `${diaActivo}-${comidaIndex}`;
+        const registroId = registro[key];
+        setToggling(comidaIndex);
+
+        if (registroId) {
+            // Des-marcar: eliminar registro
+            const nuevo = { ...registro };
+            delete nuevo[key];
+            setRegistro(nuevo);
+            await supabase.from("registro_comidas").delete().eq("id", registroId);
+        } else {
+            // Marcar: insertar registro
+            const { data } = await supabase
+                .from("registro_comidas")
+                .insert({
+                    perfil_id: uid,
+                    plan_id: plan.id,
+                    dia_numero: diaActivo,
+                    comida_index: comidaIndex,
+                    fecha: hoy,
+                })
+                .select("id")
+                .single();
+            if (data) setRegistro((r) => ({ ...r, [key]: data.id }));
+        }
+        setToggling(null);
+    };
+
+    const comidasDelDia = plan?.contenido_json?.dias?.[diaActivo - 1]?.comidas ?? [];
+    const kcalTotal = plan?.contenido_json?.dias?.[diaActivo - 1]?.kcal_total ?? 0;
 
     return (
         <Layout>
@@ -75,29 +111,31 @@ export default function MiPlan() {
                     <h1 className="text-white text-2xl font-black font-display mb-1">Mi Plan Nutricional</h1>
                     <p className="text-[#7D8590] text-xs">
                         {plan
-                            ? `Semana ${plan.semana_actual ?? 1} · Vigente hasta ${new Date(plan.vigente_hasta).toLocaleDateString("es-MX")}`
+                            ? `Vigente hasta ${new Date(plan.fecha_fin).toLocaleDateString("es-MX")} · Día ${diaActivo} de 15`
                             : "Cargando plan..."}
                     </p>
                 </div>
 
                 {/* Selector de día */}
-                <div className="flex gap-2 flex-wrap">
-                    {["Lunes", "Martes", "Miércoles", "Jueves"].map((d, i) => (
-                        <button
-                            key={i}
-                            onClick={() => setDia(i + 1)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold font-display border transition-all
-                ${diaActivo === i + 1
-                                    ? "border-[#3DDC84] bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
-                                    : "border-[#2D3748] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
-                                }`}
-                        >
-                            {d}
-                        </button>
-                    ))}
-                </div>
+                {plan && (
+                    <div className="flex gap-2 overflow-x-auto pb-1">
+                        {Array.from({ length: 15 }, (_, i) => i + 1).map((d) => (
+                            <button
+                                key={d}
+                                onClick={() => cambiarDia(d)}
+                                className={`px-3 py-2 rounded-xl text-xs font-bold font-display border transition-all flex-shrink-0
+                                    ${diaActivo === d
+                                        ? "border-[#3DDC84] bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
+                                        : "border-[#2D3748] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
+                                    }`}
+                            >
+                                Día {d}
+                            </button>
+                        ))}
+                    </div>
+                )}
 
-                {/* Comidas */}
+                {/* Lista de comidas */}
                 {loading ? (
                     <div className="flex flex-col gap-3">
                         {[...Array(5)].map((_, i) => (
@@ -112,21 +150,21 @@ export default function MiPlan() {
                     </div>
                 ) : (
                     <div className="flex flex-col gap-3">
-                        {comidasDelDia.map((c) => {
-                            const completada = registro[c.id] ?? false;
+                        {comidasDelDia.map((c, idx) => {
+                            const key = `${diaActivo}-${idx}`;
+                            const completada = Boolean(registro[key]);
                             const tc = TIPO_COLOR[c.tipo] ?? TIPO_COLOR.comida;
                             return (
                                 <div
-                                    key={c.id}
-                                    className={`bg-[#161B22] border rounded-xl p-4 flex items-center gap-4 transition-all hover:-translate-y-0.5 cursor-pointer
-                    ${completada ? "border-[rgba(61,220,132,.3)] opacity-70" : "border-[#2D3748]"}`}
-                                    onClick={() => toggleComida(c.id)}
+                                    key={idx}
+                                    onClick={() => toggleComida(idx)}
+                                    className={`bg-[#161B22] border rounded-xl p-4 flex items-center gap-4 transition-all cursor-pointer
+                                        ${toggling === idx ? "opacity-60" : "hover:-translate-y-0.5"}
+                                        ${completada ? "border-[rgba(61,220,132,.3)] opacity-75" : "border-[#2D3748]"}`}
                                 >
                                     {/* Check */}
-                                    <div
-                                        className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-all
-                      ${completada ? "bg-[#3DDC84] text-black" : "border-2 border-[#2D3748] text-transparent"}`}
-                                    >
+                                    <div className={`w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 transition-all
+                                        ${completada ? "bg-[#3DDC84] text-black" : "border-2 border-[#2D3748] text-transparent"}`}>
                                         ✓
                                     </div>
 
@@ -137,7 +175,7 @@ export default function MiPlan() {
                                                 {tc.label.toUpperCase()}
                                             </span>
                                             {c.hora_sugerida && (
-                                                <span className="text-[10px] text-[#7D8590]">{c.hora_sugerida.slice(0, 5)} hrs</span>
+                                                <span className="text-[10px] text-[#7D8590]">{c.hora_sugerida} hrs</span>
                                             )}
                                         </div>
                                         <p className={`text-sm font-semibold truncate ${completada ? "line-through text-[#7D8590]" : "text-white"}`}>
@@ -162,14 +200,11 @@ export default function MiPlan() {
                 {/* Total del día */}
                 {comidasDelDia.length > 0 && (
                     <div className="bg-[rgba(61,220,132,.06)] border border-[rgba(61,220,132,.18)] rounded-xl p-4 flex justify-between items-center">
-                        <span className="text-sm text-[#7D8590]">Total del día</span>
-                        <span className="font-display font-black text-[#3DDC84] text-lg">
-                            {comidasDelDia.reduce((a, c) => a + (c.kcal ?? 0), 0)} kcal
-                        </span>
+                        <span className="text-sm text-[#7D8590]">Total del día {diaActivo}</span>
+                        <span className="font-display font-black text-[#3DDC84] text-lg">{kcalTotal} kcal</span>
                     </div>
                 )}
             </div>
         </Layout>
     );
 }
-
