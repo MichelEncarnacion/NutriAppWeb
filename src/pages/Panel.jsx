@@ -13,71 +13,81 @@ export default function Panel() {
     const [loading, setLoading] = useState(true);
 
     const nombre = perfil?.nombre?.split(" ")[0] ?? "Usuario";
-    const uid = session.user.id;
+    const uid = session?.user?.id;
     const hoy = new Date().toISOString().split("T")[0];
 
     useEffect(() => {
+        if (!uid) return;
         const cargar = async () => {
-            const [
-                { data: planData },
-                { data: metricasData },
-                { count: completadas },
-                { data: semanaData },
-            ] = await Promise.all([
-                supabase
-                    .from("planes")
-                    .select("id, contenido_json, fecha_inicio, fecha_fin")
-                    .eq("perfil_id", uid)
-                    .eq("es_activo", true)
-                    .eq("estado", "listo")
-                    .order("created_at", { ascending: false })
-                    .limit(1)
-                    .maybeSingle(),
+            try {
+                const [
+                    { data: planData, error: e1 },
+                    { data: metricasData, error: e2 },
+                    { count: completadas, error: e3 },
+                    { data: semanaData, error: e4 },
+                ] = await Promise.all([
+                    supabase
+                        .from("planes")
+                        .select("id, contenido_json, fecha_inicio, fecha_fin")
+                        .eq("perfil_id", uid)
+                        .eq("es_activo", true)
+                        .eq("estado", "listo")
+                        .order("created_at", { ascending: false })
+                        .limit(1)
+                        .maybeSingle(),
 
-                supabase
-                    .from("metricas")
-                    .select("calorias_consumidas, agua_ml")
-                    .eq("perfil_id", uid)
-                    .eq("fecha", hoy)
-                    .maybeSingle(),
+                    supabase
+                        .from("metricas")
+                        .select("calorias_consumidas, agua_ml")
+                        .eq("perfil_id", uid)
+                        .eq("fecha", hoy)
+                        .maybeSingle(),
 
-                supabase
-                    .from("registro_comidas")
-                    .select("id", { count: "exact", head: true })
-                    .eq("perfil_id", uid)
-                    .eq("fecha", hoy),
+                    supabase
+                        .from("registro_comidas")
+                        .select("id", { count: "exact", head: true })
+                        .eq("perfil_id", uid)
+                        .eq("fecha", hoy),
 
-                supabase
-                    .from("registro_comidas")
-                    .select("fecha, plan_id")
-                    .eq("perfil_id", uid)
-                    .gte("fecha", new Date(Date.now() - 6 * 86400000).toISOString().split("T")[0])
-                    .order("fecha"),
-            ]);
+                    supabase
+                        .from("registro_comidas")
+                        .select("fecha, plan_id")
+                        .eq("perfil_id", uid)
+                        .gte("fecha", new Date(Date.now() - 6 * 86400000).toISOString().split("T")[0])
+                        .order("fecha"),
+                ]);
 
-            setPlan(planData);
-            setMetricasHoy(metricasData);
-            setComidasCompletadas(completadas ?? 0);
+                if (e1 || e2 || e3 || e4) {
+                    console.error("Panel fetch errors:", { e1, e2, e3, e4 });
+                }
 
-            // Calcular adherencia semanal (últimos 7 días)
-            const LABEL_MAP = ["D","L","M","X","J","V","S"]; // Sunday=0 like getDay()
-            const diasSemana = [];
-            for (let i = 6; i >= 0; i--) {
-                const dateObj = new Date(Date.now() - i * 86400000);
-                const d = dateObj.toISOString().split("T")[0];
-                const label = LABEL_MAP[dateObj.getDay()];
-                const registros = semanaData?.filter((r) => r.fecha === d) ?? [];
-                diasSemana.push({ fecha: d, count: registros.length, label });
+                setPlan(planData);
+                setMetricasHoy(metricasData);
+                setComidasCompletadas(completadas ?? 0);
+
+                // Calcular adherencia semanal (últimos 7 días)
+                const LABEL_MAP = ["D","L","M","X","J","V","S"]; // Sunday=0 like getDay()
+                const diasSemana = [];
+                for (let i = 6; i >= 0; i--) {
+                    const dateObj = new Date(Date.now() - i * 86400000);
+                    const d = dateObj.toISOString().split("T")[0];
+                    const label = LABEL_MAP[dateObj.getDay()];
+                    const registros = semanaData?.filter((r) => r.fecha === d) ?? [];
+                    diasSemana.push({ fecha: d, count: registros.length, label });
+                }
+                setAdherencia(diasSemana);
+            } catch (err) {
+                console.error("Panel load error:", err);
+            } finally {
+                setLoading(false);
             }
-            setAdherencia(diasSemana);
-            setLoading(false);
         };
         cargar();
-    }, []);
+    }, [uid]);
 
     // Calcular día actual del plan
     const diaActual = plan?.fecha_inicio
-        ? Math.min(Math.floor((Date.now() - new Date(plan.fecha_inicio)) / 86400000) + 1, 15)
+        ? Math.min(Math.floor((new Date(hoy) - new Date(plan.fecha_inicio)) / 86400000) + 1, 15)
         : 1;
 
     const meta = plan?.contenido_json?.meta_diaria ?? null;
