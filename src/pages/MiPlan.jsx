@@ -4,6 +4,8 @@ import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 
+const TODAY = new Date().toISOString().split("T")[0];
+
 const TIPO_COLOR = {
     desayuno:    { bg: "rgba(240,165,0,.12)",   color: "#F0A500", label: "Desayuno" },
     colacion_am: { bg: "rgba(88,166,255,.12)",  color: "#58A6FF", label: "Colación AM" },
@@ -22,8 +24,6 @@ export default function MiPlan() {
     const [loading, setLoading] = useState(true);
     const [toggling, setToggling] = useState(null);
 
-    const hoy = new Date().toISOString().split("T")[0];
-
     const cargarRegistro = useCallback(async (planId, dia) => {
         const { data } = await supabase
             .from("registro_comidas")
@@ -31,12 +31,12 @@ export default function MiPlan() {
             .eq("perfil_id", uid)
             .eq("plan_id", planId)
             .eq("dia_numero", dia)
-            .eq("fecha", hoy);
+            .eq("fecha", TODAY);
 
         const map = {};
         (data ?? []).forEach((r) => { map[`${dia}-${r.comida_index}`] = r.id; });
         setRegistro(map);
-    }, [uid, hoy]);
+    }, [uid]);
 
     useEffect(() => {
         const cargar = async () => {
@@ -53,17 +53,17 @@ export default function MiPlan() {
             if (planData) {
                 setPlan(planData);
                 // Calcular día actual del plan
-                const diaCalculado = Math.min(
-                    Math.floor((new Date(hoy) - new Date(planData.fecha_inicio)) / 86400000) + 1,
+                const diaCalculado = Math.max(1, Math.min(
+                    Math.floor((new Date(TODAY) - new Date(planData.fecha_inicio)) / 86400000) + 1,
                     15
-                );
+                ));
                 setDia(diaCalculado);
                 await cargarRegistro(planData.id, diaCalculado);
             }
             setLoading(false);
         };
         cargar();
-    }, [uid, cargarRegistro, hoy]);
+    }, [uid, cargarRegistro]);
 
     // Al cambiar de día, recargar registro
     const cambiarDia = async (dia) => {
@@ -78,25 +78,33 @@ export default function MiPlan() {
         setToggling(comidaIndex);
 
         if (registroId) {
-            // Des-marcar: eliminar registro
+            // Des-marcar: eliminar registro (optimistic)
             const nuevo = { ...registro };
             delete nuevo[key];
             setRegistro(nuevo);
-            await supabase.from("registro_comidas").delete().eq("id", registroId);
+            const { error } = await supabase.from("registro_comidas").delete().eq("id", registroId);
+            if (error) {
+                console.error("Error al desmarcar comida:", error);
+                setRegistro((r) => ({ ...r, [key]: registroId })); // rollback
+            }
         } else {
             // Marcar: insertar registro
-            const { data } = await supabase
+            const { data, error } = await supabase
                 .from("registro_comidas")
                 .insert({
                     perfil_id: uid,
                     plan_id: plan.id,
                     dia_numero: diaActivo,
                     comida_index: comidaIndex,
-                    fecha: hoy,
+                    fecha: TODAY,
                 })
                 .select("id")
                 .single();
-            if (data) setRegistro((r) => ({ ...r, [key]: data.id }));
+            if (error) {
+                console.error("Error al marcar comida:", error);
+            } else if (data) {
+                setRegistro((r) => ({ ...r, [key]: data.id }));
+            }
         }
         setToggling(null);
     };
@@ -112,7 +120,7 @@ export default function MiPlan() {
                     <p className="text-[#7D8590] text-xs">
                         {plan
                             ? `Vigente hasta ${new Date(plan.fecha_fin).toLocaleDateString("es-MX")} · Día ${diaActivo} de 15`
-                            : "Cargando plan..."}
+                            : loading ? "Cargando plan..." : "Sin plan activo"}
                     </p>
                 </div>
 
@@ -156,7 +164,7 @@ export default function MiPlan() {
                             const tc = TIPO_COLOR[c.tipo] ?? TIPO_COLOR.comida;
                             return (
                                 <div
-                                    key={idx}
+                                    key={`${diaActivo}-${idx}`}
                                     onClick={() => toggleComida(idx)}
                                     className={`bg-[#161B22] border rounded-xl p-4 flex items-center gap-4 transition-all cursor-pointer
                                         ${toggling === idx ? "opacity-60" : "hover:-translate-y-0.5"}
