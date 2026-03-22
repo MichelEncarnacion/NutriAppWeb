@@ -13,6 +13,13 @@ Deno.serve(async (req) => {
     return new Response("ok", { headers: corsHeaders });
   }
 
+  const GEMINI_API_KEY = Deno.env.get("GEMINI_API_KEY");
+  if (!GEMINI_API_KEY) {
+    return new Response(JSON.stringify({ error: "Configuración incompleta" }), {
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+  }
+
   try {
     // 1. Verificar JWT
     const authHeader = req.headers.get("Authorization");
@@ -40,7 +47,7 @@ Deno.serve(async (req) => {
     // 2. Leer diagnóstico
     const { data: diag, error: diagError } = await supabase
       .from("diagnosticos")
-      .select("*")
+      .select("peso, estatura, edad, sexo, objetivo, nivel_actividad, habitos_alimenticios, restricciones_medicas, alergias, enfermedades, presupuesto_quincenal")
       .eq("perfil_id", perfilId)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -108,7 +115,7 @@ Deno.serve(async (req) => {
     let geminiData: unknown;
     try {
       const geminiRes = await fetch(
-        `${GEMINI_URL}?key=${Deno.env.get("GEMINI_API_KEY")}`,
+        `${GEMINI_URL}?key=${GEMINI_API_KEY}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -151,7 +158,7 @@ Deno.serve(async (req) => {
       plan?.meta_diaria &&
       Array.isArray(plan?.dias) &&
       plan.dias.length === 15 &&
-      plan.dias.every((d) => typeof d.dia === "number" && Array.isArray(d.comidas) && d.comidas.length > 0);
+      plan.dias.every((d) => typeof d.dia === "number" && Array.isArray(d.comidas) && d.comidas.length >= 3);
 
     if (!valid) {
       await supabase.from("planes").update({ estado: "error" }).eq("id", planId);
@@ -161,18 +168,26 @@ Deno.serve(async (req) => {
     }
 
     // 8. Guardar plan listo
-    await supabase.from("planes").update({
+    const { error: updateError } = await supabase.from("planes").update({
       contenido_json: plan,
       estado: "listo",
       prompt_enviado: prompt,
       respuesta_ia: rawText,
     }).eq("id", planId);
 
+    if (updateError) {
+      await supabase.from("planes").update({ estado: "error" }).eq("id", planId);
+      return new Response(JSON.stringify({ error: "Error guardando plan" }), {
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ ok: true, plan_id: planId }), {
       status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
 
   } catch (err) {
+    console.error("generar-plan unexpected error:", err);
     return new Response(JSON.stringify({ error: "Error interno" }), {
       status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -180,6 +195,13 @@ Deno.serve(async (req) => {
 });
 
 function buildPrompt(diag: Record<string, unknown>): string {
+  const safe = (v: unknown, max = 200): string =>
+    String(v ?? "ninguna").slice(0, max).replace(/\n/g, " ");
+
+  const enfermedades = Array.isArray(diag.enfermedades) && diag.enfermedades.length > 0
+    ? safe(diag.enfermedades.join(", "))
+    : "ninguna";
+
   return `Eres un nutriólogo profesional. Genera un plan nutricional personalizado de exactamente 15 días.
 Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura exacta:
 
@@ -199,16 +221,16 @@ Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura 
 El array "dias" debe tener exactamente 15 elementos (dia 1 al 15). Cada día debe tener al menos 3 comidas.
 
 Datos del usuario:
-- Peso: ${diag.peso} kg
-- Estatura: ${diag.estatura} cm
-- Edad: ${diag.edad} años
-- Sexo: ${diag.sexo}
-- Objetivo: ${diag.objetivo}
-- Nivel de actividad: ${diag.nivel_actividad}
-- Hábitos alimenticios: ${diag.habitos_alimenticios}
-- Restricciones médicas: ${diag.restricciones_medicas ?? "ninguna"}
-- Alergias: ${diag.alergias ?? "ninguna"}
-- Enfermedades: ${Array.isArray(diag.enfermedades) && diag.enfermedades.length > 0 ? diag.enfermedades.join(", ") : "ninguna"}
-- Presupuesto quincenal: $${diag.presupuesto_quincenal} MXN
+- Peso: ${safe(diag.peso, 20)} kg
+- Estatura: ${safe(diag.estatura, 20)} cm
+- Edad: ${safe(diag.edad, 10)} años
+- Sexo: ${safe(diag.sexo, 20)}
+- Objetivo: ${safe(diag.objetivo)}
+- Nivel de actividad: ${safe(diag.nivel_actividad)}
+- Hábitos alimenticios: ${safe(diag.habitos_alimenticios)}
+- Restricciones médicas: ${safe(diag.restricciones_medicas)}
+- Alergias: ${safe(diag.alergias)}
+- Enfermedades: ${enfermedades}
+- Presupuesto quincenal: $${safe(diag.presupuesto_quincenal, 20)} MXN
 `;
 }
