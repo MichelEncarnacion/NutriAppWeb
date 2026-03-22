@@ -6,7 +6,7 @@ import Layout from "../components/Layout";
 
 export default function Lecciones() {
     const { session, perfil } = useAuth();
-    const uid = session.user.id;
+    const uid = session?.user?.id;
     const esSoloPremium = perfil?.tipo_usuario === "premium";
 
     const [lecciones, setLecciones] = useState([]);
@@ -16,46 +16,58 @@ export default function Lecciones() {
 
     useEffect(() => {
         const cargar = async () => {
-            const { data: lecs } = await supabase
-                .from("lecciones")
-                .select("id, titulo, contenido, orden")
-                .eq("activa", true)
-                .order("orden");
+            if (!uid || !perfil) return; // wait until both are loaded
+            try {
+                const { data: lecs, error: e1 } = await supabase
+                    .from("lecciones")
+                    .select("id, titulo, contenido, orden")
+                    .eq("activa", true)
+                    .order("orden");
 
-            const { data: prog } = await supabase
-                .from("lecciones_usuario")
-                .select("leccion_id, estado, fecha_disponible, fecha_completada")
-                .eq("perfil_id", uid);
-
-            const map = {};
-            (prog ?? []).forEach((p) => { map[p.leccion_id] = p; });
-
-            // Seed inicial: si no hay filas en lecciones_usuario y hay lecciones activas
-            if ((prog ?? []).length === 0 && (lecs ?? []).length > 0) {
-                await seedLecciones(lecs, esSoloPremium, uid);
-                // Recargar tras seed
-                const { data: progAfter } = await supabase
+                const { data: prog, error: e2 } = await supabase
                     .from("lecciones_usuario")
                     .select("leccion_id, estado, fecha_disponible, fecha_completada")
                     .eq("perfil_id", uid);
-                (progAfter ?? []).forEach((p) => { map[p.leccion_id] = p; });
-            }
 
-            setLecciones(lecs ?? []);
-            setProgreso(map);
-            setLoading(false);
+                if (e1 || e2) {
+                    console.error("Lecciones fetch errors:", { e1, e2 });
+                }
+
+                const map = {};
+                (prog ?? []).forEach((p) => { map[p.leccion_id] = p; });
+
+                if ((prog ?? []).length === 0 && (lecs ?? []).length > 0) {
+                    await seedLecciones(lecs, esSoloPremium, uid);
+                    const { data: progAfter } = await supabase
+                        .from("lecciones_usuario")
+                        .select("leccion_id, estado, fecha_disponible, fecha_completada")
+                        .eq("perfil_id", uid);
+                    (progAfter ?? []).forEach((p) => { map[p.leccion_id] = p; });
+                }
+
+                setLecciones(lecs ?? []);
+                setProgreso(map);
+            } catch (err) {
+                console.error("Lecciones load error:", err);
+            } finally {
+                setLoading(false);
+            }
         };
         cargar();
-    }, [uid, esSoloPremium]);
+    }, [uid, esSoloPremium, perfil]); // add perfil to deps
 
     const marcarCompletada = async (leccion) => {
-        // Marcar leccion actual como completada
-        await supabase.from("lecciones_usuario").upsert({
+        const { error: e1 } = await supabase.from("lecciones_usuario").upsert({
             perfil_id: uid,
             leccion_id: leccion.id,
             estado: "completada",
             fecha_completada: new Date().toISOString(),
         }, { onConflict: "perfil_id,leccion_id" });
+
+        if (e1) {
+            console.error("Error al marcar lección como completada:", e1);
+            return; // Don't update local state if DB write failed
+        }
 
         // Desbloquear siguiente lección
         const idx = lecciones.findIndex((l) => l.id === leccion.id);
@@ -64,12 +76,18 @@ export default function Lecciones() {
             const disponibleEn = esSoloPremium
                 ? new Date().toISOString()
                 : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-            await supabase.from("lecciones_usuario").upsert({
+
+            const { error: e2 } = await supabase.from("lecciones_usuario").upsert({
                 perfil_id: uid,
                 leccion_id: siguiente.id,
                 estado: "disponible",
                 fecha_disponible: disponibleEn,
             }, { onConflict: "perfil_id,leccion_id" });
+
+            if (e2) {
+                console.error("Error al desbloquear siguiente lección:", e2);
+            }
+
             setProgreso((p) => ({
                 ...p,
                 [leccion.id]: { ...p[leccion.id], estado: "completada" },
