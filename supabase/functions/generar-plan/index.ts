@@ -134,14 +134,18 @@ Deno.serve(async (req) => {
       );
       clearTimeout(timeoutId);
 
-      if (!geminiRes.ok) throw new Error("Gemini error: " + geminiRes.status);
+      if (!geminiRes.ok) {
+        const body = await geminiRes.text();
+        throw new Error(`Gemini ${geminiRes.status}: ${body.slice(0, 300)}`);
+      }
       geminiData = await geminiRes.json();
     } catch (err) {
       clearTimeout(timeoutId);
       await supabase.from("planes").update({ estado: "error" }).eq("id", planId);
-      const status = (err as Error).name === "AbortError" ? 504 : 500;
-      return new Response(JSON.stringify({ error: "Error generando plan" }), {
-        status, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      const isTimeout = (err as Error).name === "AbortError";
+      return new Response(JSON.stringify({ error: (err as Error).message }), {
+        status: isTimeout ? 504 : 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
