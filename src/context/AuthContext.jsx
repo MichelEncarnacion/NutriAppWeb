@@ -44,6 +44,16 @@ export function AuthProvider({ children }) {
         return false;
     };
 
+    // Marca el diagnóstico como completado en el estado local sin ir a la DB.
+    // Usado por Diagnostico.jsx para navegar inmediatamente sin esperar el trigger.
+    const marcarDiagnosticoCompletado = () => {
+        setPerfil((prev) => prev ? {
+            ...prev,
+            diagnostico_completado: true,
+            acepto_terminos: true,
+        } : prev);
+    };
+
     useEffect(() => {
         // 1. Sesión inicial (cuando el usuario ya tenía sesión guardada)
         supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -157,6 +167,7 @@ export function AuthProvider({ children }) {
         actualizarPerfil,
         cargarPerfil,
         recargarPerfil,
+        marcarDiagnosticoCompletado,
     };
 
     // Mientras resuelve la sesión inicial muestra pantalla de carga

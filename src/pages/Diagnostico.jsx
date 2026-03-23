@@ -316,7 +316,7 @@ const PASOS = [
 const TOTAL = PASOS.length; // 24
 
 export default function Diagnostico() {
-    const { session, recargarPerfil } = useAuth();
+    const { session, marcarDiagnosticoCompletado } = useAuth();
     const navigate = useNavigate();
 
     const [paso, setPaso] = useState(0);
@@ -395,20 +395,9 @@ export default function Diagnostico() {
             return;
         }
 
-        // NO llamar actualizarPerfil({ diagnostico_completado: true })
-        // El trigger on_diagnostico_created lo hace automáticamente en Postgres.
-        //
-        // recargarPerfil() llama cargarPerfil() + setPerfil() para que el contexto
-        // refleje diagnostico_completado=true y acepto_terminos=true.
-        // CRÍTICO: este await debe ir ANTES de navigate().
-        // Si se invierte el orden, PrivateRoute de /generando-plan ve
-        // aceptoTerminos=false y redirige a /terminos (loop infinito).
-        const recargado = await recargarPerfil();
-        if (!recargado) {
-            setError("Error al actualizar tu sesión. Por favor intenta de nuevo.");
-            setGuardando(false);
-            return;
-        }
+        // Actualizar el estado local inmediatamente sin esperar el trigger de Postgres.
+        // Esto evita el round-trip extra a la DB y hace la navegación instantánea.
+        marcarDiagnosticoCompletado();
 
         navigate("/generando-plan", {
             replace: true,
