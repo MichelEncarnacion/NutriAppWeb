@@ -29,14 +29,13 @@ Deno.serve(async (req) => {
       });
     }
 
-    const supabase = createClient(
+    // Verificar identidad con anon key + JWT del usuario
+    const authClient = createClient(
       Deno.env.get("SUPABASE_URL")!,
       Deno.env.get("SUPABASE_ANON_KEY")!,
-      { global: { headers: { Authorization: authHeader } } }
     );
-
     const token = authHeader.replace("Bearer ", "");
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: userError } = await authClient.auth.getUser(token);
     if (userError || !user) {
       return new Response(JSON.stringify({ error: "No autorizado" }), {
         status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -44,6 +43,12 @@ Deno.serve(async (req) => {
     }
 
     const perfilId = user.id;
+
+    // Cliente con service role para operaciones de DB (bypass RLS, identidad ya verificada)
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
+    );
 
     // 2. Leer diagnóstico
     const { data: diag, error: diagError } = await supabase
