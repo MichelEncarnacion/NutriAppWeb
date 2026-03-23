@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task.
 
-**Goal:** Rewrite `Panel.jsx` and `MiPlan.jsx` so they work correctly using only existing data from `planes.contenido_json`, with no dependency on the missing `registro_comidas` table.
+**Goal:** Rewrite `Panel.jsx` and `MiPlan.jsx` to display the user's generated nutrition plan using only existing data from `planes.contenido_json`, removing all dependencies on the unimplemented `registro_comidas` table.
 
 **Architecture:** Both pages fetch the user's active plan (`es_activo = true`, `estado = 'listo'`) from Supabase and derive all display data from the stored JSON. No new tables or edge functions are needed.
 
@@ -12,18 +12,31 @@
 
 ## Context
 
-### What's broken today
+### Current state of the pages
 
-`Panel.jsx` and `MiPlan.jsx` query a `registro_comidas` table that does not exist in the database. This causes runtime errors that make both pages non-functional.
+**Panel.jsx** — Partially broken. The `registro_comidas` query fails silently and falls back to zero values for "comidas completadas hoy" and "adherencia semanal". These sections show incorrect placeholder data. The page does render but displays misleading zeros.
+
+**MiPlan.jsx** — Broken. It queries `registro_comidas` for per-meal completion toggles. This causes runtime errors. The meal-toggle UI is non-functional.
 
 ### What stays untouched
 
 Auth flow, routing (`App.jsx`, `privateRoute.jsx`), `AuthContext.jsx`, `Layout.jsx`, `Diagnostico.jsx`, `GenerandoPlan.jsx`, `Lecciones.jsx`, `Progreso.jsx`, `Seguimiento.jsx`, and all admin pages remain unchanged.
 
+### Deliberate removals (confirmed by user)
+
+The following features from the current pages are **intentionally removed** in this rewrite, as they depend on `registro_comidas` which is out of scope:
+
+- ❌ "Comidas completadas hoy" KPI counter (Panel)
+- ❌ "Adherencia semanal" 7-day bar chart (Panel)
+- ❌ Per-meal completion toggle/checkbox (MiPlan)
+- ❌ Consumed calories/water tracking (Panel shows plan *goals* only, not consumed amounts)
+
+These are documented as future Phase 3 work in `Out of Scope`.
+
 ### Data available
 
 The `planes` table has:
-- `contenido_json` — full 15-day plan JSONB with this structure:
+- `contenido_json` — full 15-day plan JSONB:
   ```json
   {
     "meta_diaria": { "kcal": 1850, "proteina_g": 125, "carbos_g": 220, "grasas_g": 60, "agua_l": 2.5 },
@@ -47,26 +60,38 @@ The `planes` table has:
     ]
   }
   ```
-- `fecha_inicio` — date string (YYYY-MM-DD), used to calculate the current plan day
-- `fecha_fin` — date string (YYYY-MM-DD)
+- `fecha_inicio` — YYYY-MM-DD, used to calculate the current plan day
+- `fecha_fin` — YYYY-MM-DD
 - `es_activo` — boolean
 - `estado` — `'listo'` | `'generando'` | `'error'`
+
+No `metricas` table data is needed. Panel shows plan goals only.
 
 ---
 
 ## Shared Hook: `useActivePlan`
 
-A new custom hook `src/hooks/useActivePlan.js` isolates all plan-fetching logic so both pages share it without duplication.
+New file `src/hooks/useActivePlan.js` isolates plan-fetching logic so both pages share it without duplication.
 
+**Returns:** `{ plan, diaActual, isLoading, error }`
+- `plan` — the full `contenido_json` object, or `null` if no active plan exists
+- `diaActual` — integer 1–15 based on today vs `fecha_inicio`
+- `isLoading` — boolean
+- `error` — error object or null
+
+**Uses TanStack React Query** (`useQuery`) — `QueryClientProvider` must be added to `main.jsx` wrapping `<App />` as part of this implementation (currently missing).
+
+**Supabase query:**
 ```js
-// Returns: { plan, diaActual, loading, error }
-// plan = full contenido_json object or null
-// diaActual = integer 1–15 based on today vs fecha_inicio
+supabase
+  .from('planes')
+  .select('contenido_json, fecha_inicio, fecha_fin')
+  .eq('perfil_id', userId)
+  .eq('es_activo', true)
+  .eq('estado', 'listo')
+  .limit(1)
+  .single()
 ```
-
-Uses TanStack React Query (`useQuery`) to cache and deduplicate the Supabase fetch.
-
-**Query:** `SELECT contenido_json, fecha_inicio, fecha_fin FROM planes WHERE perfil_id = $userId AND es_activo = true AND estado = 'listo' LIMIT 1`
 
 **Day calculation:**
 ```js
@@ -80,62 +105,70 @@ const diaActual = Math.min(Math.max(diff + 1, 1), 15);
 
 ## Panel.jsx — Rewrite
 
-### Layout (chosen by user: Option C)
+### Layout (user-selected: Option C — combined)
 
-Three sections stacked vertically:
+Sections stacked vertically within `Layout`:
 
-1. **Header row** — "Día X de 15" badge (green) + plan dates
-2. **Primera comida del día** — card showing the first meal: name, suggested time, kcal, brief description
-3. **Metas diarias** — three metric pills: kcal goal, protein goal (g), water goal (L)
-4. **CTA button** — "Ver plan completo →" navigates to `/mi-plan`
+1. **Header row** — "Día X de 15" green badge + plan date range (`fecha_inicio` to `fecha_fin`)
+2. **Primera comida del día** — card with the first meal of `dias[diaActual - 1].comidas[0]`: name, `hora_sugerida`, kcal, description
+3. **Metas diarias** — three pills from `meta_diaria`: total kcal goal, proteína goal (g), agua goal (L)
+4. **CTA** — "Ver plan completo →" button → navigates to `/mi-plan`
 
 ### No-plan state
 
-If the user has no active `listo` plan:
-- Show a card with "Aún no tienes un plan activo" and a button "Generar mi plan" → navigates to `/diagnostico`
+When `plan === null` and not loading:
+- Card: "Aún no tienes un plan activo"
+- Button "Generar mi plan" → navigates to `/diagnostico` (not `/generando-plan` — that route requires `location.state.respuestas` and bounces back to `/diagnostico` if missing)
 
 ### Loading state
 
-Spinner centered (matching app design: `border-[#3DDC84]` on dark background)
+Centered spinner: `w-8 h-8 border-2 border-[#3DDC84] border-t-transparent rounded-full animate-spin`
 
 ### Error state
 
-Simple error message with a retry button that re-fetches.
+Error message + "Reintentar" button that calls `refetch()` from React Query.
 
 ---
 
 ## MiPlan.jsx — Rewrite
 
-### Layout (chosen by user: Option A)
-
-Single-day view with navigation arrows.
+### Layout (user-selected: Option A — one day at a time)
 
 **Header:**
-- ‹ arrow (disabled on day 1) — `diaSeleccionado` state decrements
-- "Día X de 15" + weekday date label
-- › arrow (disabled on day 15) — `diaSeleccionado` state increments
+- `‹` button — disabled when `diaSeleccionado === 1`, decrements state
+- Center: "Día X de 15" + computed weekday+date label from `fecha_inicio`
+- `›` button — disabled when `diaSeleccionado === 15`, increments state
 
-**Comidas list:**
+**Meals list:**
 
-Each meal rendered as a card with left-border color coded by `tipo`:
-- `desayuno` → `#F0A500` (orange)
-- `colacion_am` / `colacion_pm` → `#A855F7` (purple)
-- `comida` → `#3DDC84` (green)
-- `cena` → `#58A6FF` (blue)
+Each meal in `dias[diaSeleccionado - 1].comidas` rendered as a card with left-border color by `tipo`:
+
+| tipo | color |
+|------|-------|
+| `desayuno` | `#F0A500` orange |
+| `colacion_am` / `colacion_pm` | `#A855F7` purple |
+| `comida` | `#3DDC84` green |
+| `cena` | `#58A6FF` blue |
 
 Each card shows:
-- Meal type label + suggested time
-- Meal name (bold)
-- Description (muted)
-- Macro row: `kcal · Xg prot · Xg carbs · Xg grasas`
+- Tipo label (uppercased) + `hora_sugerida`
+- `nombre` (bold)
+- `descripcion` (muted text)
+- Macro row: `kcal kcal · Xg prot · Xg carbs · Xg grasas`
 
-**State:** `diaSeleccionado` initializes to `diaActual` from `useActivePlan`. Navigation arrows update it locally (no re-fetch needed — all 15 days are in memory).
+**No meal toggles.** Read-only display only.
 
-**Day total:** Below the meals list, a summary row: `Total del día: X kcal`
+**Day total:** Row below meals: `Total del día: X kcal` from `dias[diaSeleccionado - 1].kcal_total`
+
+**State:** `diaSeleccionado` initializes to `diaActual`. All navigation is local — no re-fetch needed since all 15 days are already in memory.
 
 ### No-plan state
 
-Same as Panel: "Aún no tienes un plan" + "Generar mi plan" button.
+Same as Panel: card + "Generar mi plan" → `/diagnostico`.
+
+### Loading / Error
+
+Same pattern as Panel (spinner / error + retry).
 
 ---
 
@@ -148,7 +181,7 @@ Same as Panel: "Aún no tienes un plan" + "Generar mi plan" button.
 | Border | `#2D3748` | Dividers |
 | Text primary | `#E6EDF3` | Headings |
 | Text muted | `#7D8590` | Labels |
-| Green | `#3DDC84` | Brand, desayuno |
+| Green | `#3DDC84` | Brand, CTA, comida |
 | Blue | `#58A6FF` | Cena |
 | Orange | `#F0A500` | Desayuno |
 | Purple | `#A855F7` | Colaciones |
@@ -159,17 +192,18 @@ Same as Panel: "Aún no tienes un plan" + "Generar mi plan" button.
 
 | File | Action | Notes |
 |------|--------|-------|
-| `src/hooks/useActivePlan.js` | **Create** | Shared plan-fetching hook |
-| `src/pages/Panel.jsx` | **Rewrite** | Remove registro_comidas, use useActivePlan |
-| `src/pages/MiPlan.jsx` | **Rewrite** | Day-by-day navigation, use useActivePlan |
+| `src/main.jsx` | **Modify** | Add `QueryClient` + `QueryClientProvider` wrapping `<App />` |
+| `src/hooks/useActivePlan.js` | **Create** | Shared plan-fetching hook with React Query |
+| `src/pages/Panel.jsx` | **Rewrite** | Remove registro_comidas + adherencia chart |
+| `src/pages/MiPlan.jsx` | **Rewrite** | Remove meal toggles, add day navigation |
 
 No database migrations, no edge function changes, no schema changes needed.
 
 ---
 
-## Out of Scope
+## Out of Scope (Phase 3 — future)
 
-- Meal check-off / registro_comidas (Phase 3, future)
-- Manual calorie/water tracking input
-- Progreso, Seguimiento, Lecciones pages (already separate)
-- Admin pages
+- `registro_comidas` table + meal check-off tracking
+- Consumed calories / water manual input
+- Adherencia semanal chart
+- Progreso, Seguimiento, Lecciones, Admin pages
