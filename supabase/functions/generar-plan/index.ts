@@ -67,7 +67,7 @@ Deno.serve(async (req) => {
 
     // 3. Verificar límite freemium
     const { data: puedeGenerar, error: limitError } = await supabase
-      .rpc("check_planes_freemium_limit", { p_perfil_id: perfilId });
+      .rpc("check_planes_freemium_limit", { uid: perfilId });
 
     if (limitError) {
       return new Response(JSON.stringify({ error: "Error verificando límite" }), {
