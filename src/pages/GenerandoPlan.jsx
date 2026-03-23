@@ -1,5 +1,5 @@
 // src/pages/GenerandoPlan.jsx
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
@@ -25,6 +25,7 @@ export default function GenerandoPlan() {
     const [msgIdx, setMsgIdx] = useState(0);
     const [error, setError] = useState(null);
     const [mostrarAviso, setMostrarAviso] = useState(false);
+    const generandoRef = useRef(false);
 
     // Rotar mensajes de carga
     useEffect(() => {
@@ -37,6 +38,8 @@ export default function GenerandoPlan() {
     // Llamar al backend para generar el plan
     useEffect(() => {
         if (!respuestas) { navigate("/diagnostico", { replace: true }); return; }
+        if (generandoRef.current) return;
+        generandoRef.current = true;
 
         const generar = async () => {
             // Obtiene el token JWT del usuario para autenticar la llamada
@@ -123,6 +126,12 @@ export default function GenerandoPlan() {
                     className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
                 >
                     Reintentar
+                </button>
+                <button
+                    onClick={() => navigate("/panel", { replace: true })}
+                    className="w-full py-3 bg-transparent border border-[#2D3748] text-[#7D8590] font-display rounded-xl hover:border-[#7D8590] transition-all text-sm"
+                >
+                    Ir al panel de todas formas
                 </button>
             </div>
         </div>

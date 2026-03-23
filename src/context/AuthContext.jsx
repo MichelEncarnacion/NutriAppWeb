@@ -4,6 +4,13 @@ import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
 
+// Races a promise against a timeout; resolves to fallback if it times out.
+const withTimeout = (promise, ms, fallback = null) =>
+    Promise.race([
+        promise,
+        new Promise(resolve => setTimeout(() => resolve(fallback), ms)),
+    ]);
+
 export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
     const [perfil, setPerfil] = useState(null);
@@ -14,14 +21,22 @@ export function AuthProvider({ children }) {
         // Los admins no tienen fila en perfiles — no consultamos
         if (session?.user?.app_metadata?.role === "admin") return null;
 
-        // Ambas queries en paralelo para reducir latencia
-        const [
-            { data: perfilData, error: perfilError },
-            { data: diagData },
-        ] = await Promise.all([
-            supabase.from("perfiles").select("*").eq("id", userId).single(),
-            supabase.from("diagnosticos").select("acepto_terminos").eq("perfil_id", userId).maybeSingle(),
-        ]);
+        // Ambas queries en paralelo, con timeout de 8s para evitar cuelgues
+        const result = await withTimeout(
+            Promise.all([
+                supabase.from("perfiles").select("*").eq("id", userId).single(),
+                supabase.from("diagnosticos").select("acepto_terminos").eq("perfil_id", userId).maybeSingle(),
+            ]),
+            8_000,
+            null, // fallback si hay timeout
+        );
+
+        if (!result) {
+            console.warn("cargarPerfil: timeout o sin respuesta");
+            return null;
+        }
+
+        const [{ data: perfilData, error: perfilError }, { data: diagData }] = result;
 
         if (perfilError) {
             console.error("Error cargando perfil:", perfilError.message);
@@ -55,41 +70,55 @@ export function AuthProvider({ children }) {
     };
 
     useEffect(() => {
-        // 1. Sesión inicial (cuando el usuario ya tenía sesión guardada)
-        supabase.auth.getSession().then(async ({ data: { session } }) => {
+        let mounted = true;
+
+        // 1. Sesión inicial — race contra timeout de 10s para evitar cuelgue en token refresh
+        const initSession = async () => {
             try {
+                const result = await withTimeout(
+                    supabase.auth.getSession(),
+                    10_000,
+                    { data: { session: null } },
+                );
+                if (!mounted) return;
+                const { data: { session } } = result;
                 setSession(session);
                 if (session?.user) {
                     const p = await cargarPerfil(session.user.id, session);
-                    setPerfil(p);
+                    if (mounted) setPerfil(p);
                 }
             } catch (e) {
                 console.error("Error cargando sesión inicial:", e);
             } finally {
-                setLoading(false);
+                if (mounted) setLoading(false);
             }
-        });
+        };
+        initSession();
 
         // 2. Escucha cambios: login, logout, token refresh
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
+                if (!mounted) return;
                 try {
                     setSession(session);
                     if (session?.user) {
                         const p = await cargarPerfil(session.user.id, session);
-                        setPerfil(p);
+                        if (mounted) setPerfil(p);
                     } else {
                         setPerfil(null);
                     }
                 } catch (e) {
                     console.error("Error en authStateChange:", e);
                 } finally {
-                    setLoading(false);
+                    if (mounted) setLoading(false);
                 }
             }
         );
 
-        return () => subscription.unsubscribe();
+        return () => {
+            mounted = false;
+            subscription.unsubscribe();
+        };
     }, []);
 
     // ── Helpers de autenticación ──────────────────────────────────────────
