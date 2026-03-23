@@ -84,7 +84,7 @@ export function AdminRoute({ children }) {
     }
 
     if (!esAdmin) {
-        return <Navigate to="/panel" replace />;
+        return <Navigate to="/admin/login" replace />;
     }
 
     return children;

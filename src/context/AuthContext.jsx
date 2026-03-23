@@ -125,11 +125,13 @@ export function AuthProvider({ children }) {
     // Lo guardamos como campo en perfiles para no hacer query extra
     const completoDiagnostico = perfil?.diagnostico_completado ?? false;
 
-    // Rol del usuario: 'demo' | 'freemium' | 'premium' | 'admin'
+    // Admin se detecta desde el JWT (app_metadata), no desde perfiles
+    const esAdmin = session?.user?.app_metadata?.role === "admin";
+
+    // Rol del usuario: 'demo' | 'freemium' | 'premium' (solo usuarios normales)
     const rol = perfil?.tipo_usuario ?? null;
 
     const esPremium = rol === "premium" || rol === "demo";
-    const esAdmin = rol === "admin";
 
     const value = {
         session,
