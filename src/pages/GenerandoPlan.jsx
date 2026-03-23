@@ -53,7 +53,8 @@ export default function GenerandoPlan() {
                         method: "POST",
                         headers: {
                             "Content-Type": "application/json",
-                            Authorization: `Bearer ${token}`,
+                            "Authorization": `Bearer ${token}`,
+                            "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
                         },
                         body: JSON.stringify({ respuestas, usuario_id: session.user.id }),
                         signal: controller.signal,
