@@ -10,7 +10,10 @@ export function AuthProvider({ children }) {
     const [loading, setLoading] = useState(true);
 
     // ── Carga el perfil extendido del usuario desde la tabla `perfiles` ──
-    const cargarPerfil = async (userId) => {
+    const cargarPerfil = async (userId, session) => {
+        // Los admins no tienen fila en perfiles — no consultamos
+        if (session?.user?.app_metadata?.role === "admin") return null;
+
         const { data: perfilData, error: perfilError } = await supabase
             .from("perfiles")
             .select("*")
@@ -39,7 +42,7 @@ export function AuthProvider({ children }) {
 
     const recargarPerfil = async () => {
         if (!session?.user) return false;
-        const p = await cargarPerfil(session.user.id);
+        const p = await cargarPerfil(session.user.id, session);
         if (p) {
             setPerfil(p);
             return true;
@@ -50,25 +53,35 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         // 1. Sesión inicial (cuando el usuario ya tenía sesión guardada)
         supabase.auth.getSession().then(async ({ data: { session } }) => {
-            setSession(session);
-            if (session?.user) {
-                const p = await cargarPerfil(session.user.id);
-                setPerfil(p);
+            try {
+                setSession(session);
+                if (session?.user) {
+                    const p = await cargarPerfil(session.user.id, session);
+                    setPerfil(p);
+                }
+            } catch (e) {
+                console.error("Error cargando sesión inicial:", e);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         });
 
         // 2. Escucha cambios: login, logout, token refresh
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
-                setSession(session);
-                if (session?.user) {
-                    const p = await cargarPerfil(session.user.id);
-                    setPerfil(p);
-                } else {
-                    setPerfil(null);
+                try {
+                    setSession(session);
+                    if (session?.user) {
+                        const p = await cargarPerfil(session.user.id, session);
+                        setPerfil(p);
+                    } else {
+                        setPerfil(null);
+                    }
+                } catch (e) {
+                    console.error("Error en authStateChange:", e);
+                } finally {
+                    setLoading(false);
                 }
-                setLoading(false);
             }
         );
 
@@ -152,8 +165,12 @@ export function AuthProvider({ children }) {
         recargarPerfil,
     };
 
-    // Mientras resuelve la sesión inicial no renderiza nada
-    if (loading) return null;
+    // Mientras resuelve la sesión inicial muestra pantalla de carga
+    if (loading) return (
+        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-[#3DDC84] border-t-transparent rounded-full animate-spin" />
+        </div>
+    );
 
     return (
         <AuthContext.Provider value={value}>
