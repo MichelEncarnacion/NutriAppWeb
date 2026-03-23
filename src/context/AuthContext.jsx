@@ -14,25 +14,19 @@ export function AuthProvider({ children }) {
         // Los admins no tienen fila en perfiles — no consultamos
         if (session?.user?.app_metadata?.role === "admin") return null;
 
-        const { data: perfilData, error: perfilError } = await supabase
-            .from("perfiles")
-            .select("*")
-            .eq("id", userId)
-            .single();
+        // Ambas queries en paralelo para reducir latencia
+        const [
+            { data: perfilData, error: perfilError },
+            { data: diagData },
+        ] = await Promise.all([
+            supabase.from("perfiles").select("*").eq("id", userId).single(),
+            supabase.from("diagnosticos").select("acepto_terminos").eq("perfil_id", userId).maybeSingle(),
+        ]);
 
         if (perfilError) {
             console.error("Error cargando perfil:", perfilError.message);
             return null;
         }
-
-        // acepto_terminos vive en diagnosticos, no en perfiles.
-        // .maybeSingle() maneja correctamente el caso de usuario nuevo
-        // sin diagnóstico (retorna null en lugar de error).
-        const { data: diagData } = await supabase
-            .from("diagnosticos")
-            .select("acepto_terminos")
-            .eq("perfil_id", userId)
-            .maybeSingle();
 
         return {
             ...perfilData,
