@@ -3,6 +3,38 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
+import {
+    ResponsiveContainer,
+    LineChart,
+    Line,
+    XAxis,
+    Tooltip,
+} from "recharts";
+
+const STAT_PILLS = [
+    { key: "peso",              label: "Peso",      unit: "kg", color: "#3DDC84", bueno: false },
+    { key: "porcentaje_grasa",  label: "% Grasa",   unit: "%",  color: "#FF6B6B", bueno: false },
+    { key: "porcentaje_musculo",label: "% Músculo", unit: "%",  color: "#58A6FF", bueno: true  },
+];
+
+function ChartTooltip({ active, payload, label }) {
+    if (!active || !payload?.length) return null;
+    const d = payload[0]?.payload;
+    return (
+        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
+            <p className="text-[#7D8590] mb-1">{label}</p>
+            {d?.peso != null && (
+                <p className="text-[#3DDC84]">Peso: {d.peso} kg</p>
+            )}
+            {d?.porcentaje_grasa != null && (
+                <p className="text-[#FF6B6B]">Grasa: {d.porcentaje_grasa}%</p>
+            )}
+            {d?.porcentaje_musculo != null && (
+                <p className="text-[#58A6FF]">Músculo: {d.porcentaje_musculo}%</p>
+            )}
+        </div>
+    );
+}
 
 export default function Progreso() {
     const { session, perfil } = useAuth();
@@ -35,7 +67,7 @@ export default function Progreso() {
         cargar();
     }, [uid, esFreemium]);
 
-    const ultima = metricas[0] ?? null;
+    const ultima  = metricas[0] ?? null;
     const segunda = metricas[1] ?? null;
 
     const delta = (campo) => {
@@ -44,28 +76,48 @@ export default function Progreso() {
         return { valor: d, positivo: Number(d) > 0 };
     };
 
-    const CAMPOS = [
-        { key: "peso", label: "Peso", unit: "kg", bueno: false },
-        { key: "porcentaje_grasa", label: "% Grasa", unit: "%", bueno: false },
-        { key: "porcentaje_musculo", label: "% Músculo", unit: "%", bueno: true },
-        { key: "calorias_consumidas", label: "Calorías", unit: "kcal", bueno: true },
-    ];
+    // Normalize to % change from baseline so all 3 series share one Y axis
+    const chartData = (() => {
+        if (metricas.length < 2) return [];
+        const cronologico = [...metricas].reverse(); // oldest first
+        const base = cronologico[0];
+        return cronologico.map((m) => ({
+            fecha: new Date(m.fecha).toLocaleDateString("es-MX", {
+                day: "numeric", month: "short",
+            }),
+            peso_norm: base.peso != null && m.peso != null
+                ? ((m.peso - base.peso) / base.peso) * 100 : null,
+            grasa_norm: base.porcentaje_grasa != null && m.porcentaje_grasa != null
+                ? ((m.porcentaje_grasa - base.porcentaje_grasa) / base.porcentaje_grasa) * 100 : null,
+            musculo_norm: base.porcentaje_musculo != null && m.porcentaje_musculo != null
+                ? ((m.porcentaje_musculo - base.porcentaje_musculo) / base.porcentaje_musculo) * 100 : null,
+            // actual values for tooltip
+            peso: m.peso,
+            porcentaje_grasa: m.porcentaje_grasa,
+            porcentaje_musculo: m.porcentaje_musculo,
+        }));
+    })();
 
     return (
         <Layout>
             <div className="flex flex-col gap-5 max-w-3xl relative">
+
+                {/* Header */}
                 <div>
                     <h1 className="text-white text-2xl font-black font-display mb-1">Progreso</h1>
-                    <p className="text-[#7D8590] text-xs">Seguimiento de tus métricas corporales a lo largo del tiempo</p>
+                    <p className="text-[#7D8590] text-xs">
+                        Seguimiento de tus métricas corporales a lo largo del tiempo
+                    </p>
                 </div>
 
-                {/* Overlay bloqueante para Freemium */}
+                {/* Freemium overlay — unchanged */}
                 {esFreemium && (
                     <div className="absolute inset-0 z-10 bg-[#0D1117]/90 rounded-xl flex flex-col items-center justify-center gap-5 p-8 text-center min-h-[400px]">
                         <span className="text-5xl">📊</span>
                         <h2 className="text-white text-xl font-bold font-display">Tu progreso, protegido</h2>
                         <p className="text-[#7D8590] text-sm leading-relaxed max-w-xs">
-                            Con Premium puedes ver tus métricas históricas, gráficas de peso, % grasa y músculo a lo largo del tiempo.
+                            Con Premium puedes ver tus métricas históricas, gráficas de peso, % grasa y
+                            músculo a lo largo del tiempo.
                         </p>
                         <button className="px-6 py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm">
                             Hazte Premium ✨
@@ -73,57 +125,116 @@ export default function Progreso() {
                     </div>
                 )}
 
-                {/* Tarjetas de métricas */}
+                {/* Loading skeleton */}
                 {loading ? (
-                    <div className="grid grid-cols-2 gap-3">
-                        {[...Array(4)].map((_, i) => <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl h-32 animate-pulse" />)}
-                    </div>
+                    <>
+                        <div className="flex gap-3">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl h-20 animate-pulse" />
+                            ))}
+                        </div>
+                        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl h-48 animate-pulse" />
+                    </>
+
+                /* Empty state */
                 ) : !ultima ? (
                     <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-8 text-center">
                         <span className="text-4xl block mb-3">📊</span>
                         <p className="text-white font-bold mb-2">Sin métricas registradas</p>
-                        <p className="text-[#7D8590] text-sm">Completa tu primer formulario de seguimiento para ver tu progreso.</p>
+                        <p className="text-[#7D8590] text-sm">
+                            Completa tu primer formulario de seguimiento para ver tu progreso.
+                        </p>
                     </div>
+
                 ) : (
-                    <div className="grid grid-cols-2 gap-3">
-                        {CAMPOS.map((c) => {
-                            if (ultima[c.key] == null) return null;
-                            const d = delta(c.key);
-                            const mejora = d ? (c.bueno ? d.positivo : !d.positivo) : null;
-                            return (
-                                <div key={c.key} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-4 hover:-translate-y-0.5 transition-transform">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <p className="text-[9px] text-[#7D8590] font-bold tracking-widest">{c.label.toUpperCase()}</p>
+                    <>
+                        {/* Stat pills */}
+                        <div className="flex gap-3">
+                            {STAT_PILLS.map((s) => {
+                                if (ultima[s.key] == null) return null;
+                                const d = delta(s.key);
+                                const mejora = d
+                                    ? (s.bueno ? d.positivo : !d.positivo)
+                                    : null;
+                                return (
+                                    <div key={s.key} className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-center">
+                                        <p className="text-[9px] text-[#7D8590] font-bold tracking-widest mb-1">
+                                            {s.label.toUpperCase()}
+                                        </p>
+                                        <p className="font-display font-black text-lg" style={{ color: s.color }}>
+                                            {ultima[s.key]}
+                                            <span className="text-xs font-normal text-[#7D8590]"> {s.unit}</span>
+                                        </p>
                                         {d && (
-                                            <span className={`text-xs font-bold font-display ${mejora ? "text-[#3DDC84]" : "text-[#FF6B6B]"}`}>
-                                                {Number(d.valor) > 0 ? "+" : ""}{d.valor}
-                                            </span>
+                                            <p className={`text-xs font-bold mt-0.5 ${mejora ? "text-[#3DDC84]" : "text-[#FF6B6B]"}`}>
+                                                {Number(d.valor) > 0 ? "▲" : "▼"} {Math.abs(d.valor)}
+                                            </p>
                                         )}
                                     </div>
-                                    <div className="font-display font-black text-2xl text-white mb-3">
-                                        {ultima[c.key]}
-                                        <span className="text-sm text-[#7D8590] font-normal"> {c.unit}</span>
-                                    </div>
-                                    {/* Mini sparkline */}
-                                    <div className="flex gap-0.5 items-end h-8">
-                                        {metricas.slice().reverse().map((m, i) => m[c.key] != null && (
-                                            <div
-                                                key={i}
-                                                className="flex-1 rounded-sm"
-                                                style={{
-                                                    height: `${Math.max(10, (m[c.key] / Math.max(...metricas.map((x) => x[c.key] ?? 0))) * 100)}%`,
-                                                    background: i === metricas.length - 1 ? "#3DDC84" : "rgba(61,220,132,.3)",
-                                                }}
-                                            />
-                                        ))}
-                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Combined LineChart — only when ≥2 data points */}
+                        {chartData.length >= 2 && (
+                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">EVOLUCIÓN</p>
+                                <div className="flex gap-4 mb-3">
+                                    {[
+                                        { color: "#3DDC84", label: "Peso" },
+                                        { color: "#FF6B6B", label: "Grasa" },
+                                        { color: "#58A6FF", label: "Músculo" },
+                                    ].map((l) => (
+                                        <div key={l.label} className="flex items-center gap-1.5">
+                                            <div className="w-4 h-0.5 rounded-full" style={{ background: l.color }} />
+                                            <span className="text-[10px] text-[#7D8590]">{l.label}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            );
-                        })}
-                    </div>
+                                <ResponsiveContainer width="100%" height={160}>
+                                    <LineChart
+                                        data={chartData}
+                                        margin={{ top: 4, right: 4, left: -24, bottom: 0 }}
+                                    >
+                                        <XAxis
+                                            dataKey="fecha"
+                                            tick={{ fontSize: 10, fill: "#7D8590" }}
+                                            axisLine={false}
+                                            tickLine={false}
+                                        />
+                                        <Tooltip content={<ChartTooltip />} />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="peso_norm"
+                                            stroke="#3DDC84"
+                                            strokeWidth={2}
+                                            dot={false}
+                                            connectNulls
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="grasa_norm"
+                                            stroke="#FF6B6B"
+                                            strokeWidth={2}
+                                            dot={false}
+                                            connectNulls
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="musculo_norm"
+                                            stroke="#58A6FF"
+                                            strokeWidth={2}
+                                            dot={false}
+                                            connectNulls
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                            </div>
+                        )}
+                    </>
                 )}
 
-                {/* Historial */}
+                {/* History list — unchanged */}
                 {metricas.length > 0 && (
                     <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
                         <h3 className="text-white font-bold font-display text-sm mb-4">Historial de registros</h3>
@@ -131,17 +242,30 @@ export default function Progreso() {
                             {metricas.map((m, i) => (
                                 <div key={i} className="flex items-center gap-4 py-3 text-sm flex-wrap">
                                     <span className="text-[#7D8590] text-xs w-20 flex-shrink-0">
-                                        {new Date(m.fecha).toLocaleDateString("es-MX", { day: "numeric", month: "short" })}
+                                        {new Date(m.fecha).toLocaleDateString("es-MX", {
+                                            day: "numeric", month: "short",
+                                        })}
                                     </span>
-                                    {m.peso != null && <span className="text-white font-semibold">{m.peso} kg</span>}
-                                    {m.porcentaje_grasa != null && <span className="text-[#7D8590]">Grasa: {m.porcentaje_grasa}%</span>}
-                                    {m.porcentaje_musculo != null && <span className="text-[#7D8590]">Músculo: {m.porcentaje_musculo}%</span>}
-                                    {i === 0 && <span className="ml-auto text-[10px] bg-[rgba(61,220,132,.12)] text-[#3DDC84] font-bold px-2 py-0.5 rounded-full">ACTUAL</span>}
+                                    {m.peso != null && (
+                                        <span className="text-white font-semibold">{m.peso} kg</span>
+                                    )}
+                                    {m.porcentaje_grasa != null && (
+                                        <span className="text-[#7D8590]">Grasa: {m.porcentaje_grasa}%</span>
+                                    )}
+                                    {m.porcentaje_musculo != null && (
+                                        <span className="text-[#7D8590]">Músculo: {m.porcentaje_musculo}%</span>
+                                    )}
+                                    {i === 0 && (
+                                        <span className="ml-auto text-[10px] bg-[rgba(61,220,132,.12)] text-[#3DDC84] font-bold px-2 py-0.5 rounded-full">
+                                            ACTUAL
+                                        </span>
+                                    )}
                                 </div>
                             ))}
                         </div>
                     </div>
                 )}
+
             </div>
         </Layout>
     );
