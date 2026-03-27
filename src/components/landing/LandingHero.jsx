@@ -51,7 +51,7 @@ export default function LandingHero() {
                   mb: 3,
                   borderRadius: "20px",
                   height: "auto",
-                  py: 0.5,
+                  "& .MuiChip-label": { py: 0.5, px: 1.5 },
                 }}
               />
             </motion.div>
@@ -160,6 +160,8 @@ export default function LandingHero() {
                 component="img"
                 src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80"
                 alt="Plan nutricional personalizado"
+                fetchPriority="high"
+                onError={(e) => { e.currentTarget.style.display = "none"; }}
                 sx={{
                   width: "100%",
                   maxWidth: 500,
