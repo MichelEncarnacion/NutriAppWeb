@@ -116,7 +116,7 @@ Deno.serve(async (req) => {
     // 5. Llamar a Gemini con timeout 25s
     const prompt = buildPrompt(diag);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 25_000);
+    const timeoutId = setTimeout(() => controller.abort(), 90_000);
 
     let geminiData: unknown;
     try {
@@ -127,7 +127,10 @@ Deno.serve(async (req) => {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { responseMimeType: "application/json" },
+            generationConfig: {
+              responseMimeType: "application/json",
+              thinkingConfig: { thinkingBudget: 0 },
+            },
           }),
           signal: controller.signal,
         }

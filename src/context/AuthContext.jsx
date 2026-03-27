@@ -1,5 +1,5 @@
 // src/context/AuthContext.jsx
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
@@ -15,6 +15,9 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
     const [perfil, setPerfil] = useState(null);
     const [loading, setLoading] = useState(true);
+    // Ref para saber si ya tenemos un perfil válido — evita el spinner
+    // cuando el browser re-dispara eventos al volver a la tab.
+    const perfilCargadoRef = useRef(false);
 
     // ── Carga el perfil extendido del usuario desde la tabla `perfiles` ──
     const cargarPerfil = async (userId, session) => {
@@ -85,7 +88,10 @@ export function AuthProvider({ children }) {
                 setSession(session);
                 if (session?.user) {
                     const p = await cargarPerfil(session.user.id, session);
-                    if (mounted) setPerfil(p);
+                    if (mounted && p !== null) {
+                        setPerfil(p);
+                        perfilCargadoRef.current = true;
+                    }
                 }
             } catch (e) {
                 console.error("Error cargando sesión inicial:", e);
@@ -100,29 +106,37 @@ export function AuthProvider({ children }) {
             async (event, session) => {
                 if (!mounted) return;
 
+                // INITIAL_SESSION se dispara al montar — initSession ya lo maneja.
                 // TOKEN_REFRESHED solo renueva el JWT — el perfil no cambia.
-                // Re-cargar el perfil aquí causa redirects falsos si la query
-                // tarda más de 8s (tab inactiva → browser throttling → timeout → perfil=null).
-                if (event === 'TOKEN_REFRESHED') {
+                // Ignorar ambos aquí evita cargarPerfil duplicado y redirects
+                // falsos cuando el browser throttlea tabs inactivas.
+                if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
                     setSession(session);
                     return;
                 }
 
-                // Mostrar spinner mientras se carga el perfil para evitar
-                // que PrivateRoute redirija con perfil = null (race condition)
-                if (mounted) setLoading(true);
+                // Si ya tenemos un perfil válido, actualizar en background sin spinner.
+                // Esto evita el bloqueo de ~8s al volver a una tab inactiva.
+                const yaTenePerfil = perfilCargadoRef.current;
+                if (!yaTenePerfil && mounted) setLoading(true);
                 try {
                     setSession(session);
                     if (session?.user) {
                         const p = await cargarPerfil(session.user.id, session);
-                        if (mounted) setPerfil(p);
+                        // Solo actualizar el perfil si la query tuvo éxito.
+                        // Si hubo timeout (p === null) mantenemos el perfil previo.
+                        if (mounted && p !== null) {
+                            setPerfil(p);
+                            perfilCargadoRef.current = true;
+                        }
                     } else {
                         setPerfil(null);
+                        perfilCargadoRef.current = false;
                     }
                 } catch (e) {
                     console.error("Error en authStateChange:", e);
                 } finally {
-                    if (mounted) setLoading(false);
+                    if (!yaTenePerfil && mounted) setLoading(false);
                 }
             }
         );

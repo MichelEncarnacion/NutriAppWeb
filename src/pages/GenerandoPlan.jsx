@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { supabase } from "../lib/supabase";
 
 const MENSAJES = [
     "Analizando tus respuestas...",
@@ -38,13 +37,13 @@ export default function GenerandoPlan() {
     // Llamar al backend para generar el plan
     useEffect(() => {
         if (!respuestas) { navigate("/diagnostico", { replace: true }); return; }
+        if (!session) return; // Esperar a que AuthContext cargue la sesión
         if (generandoRef.current) return;
         generandoRef.current = true;
 
         const generar = async () => {
-            // Obtiene el token JWT del usuario para autenticar la llamada
-            const { data: { session: s } } = await supabase.auth.getSession();
-            const token = s?.access_token;
+            // Usa el token JWT del contexto de auth (ya verificado y fresco)
+            const token = session?.access_token;
 
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 60_000);
@@ -88,7 +87,7 @@ export default function GenerandoPlan() {
         };
 
         generar();
-    }, []);
+    }, [session]);
 
     // ── Aviso médico ──────────────────────────────────────────────────────
     if (mostrarAviso) return (
