@@ -13,14 +13,18 @@ export default function Lecciones() {
     const [lecciones, setLecciones] = useState([]);
     const [progreso, setProgreso] = useState({});
     const [activa, setActiva] = useState(null);
+    const [sheetMounted, setSheetMounted] = useState(false);
     const [loading, setLoading] = useState(true);
 
     // Lock body scroll while sheet is open
     useEffect(() => {
         if (activa) {
             document.body.style.overflow = "hidden";
+            // Defer to next frame so the initial translate-y-full renders first
+            requestAnimationFrame(() => setSheetMounted(true));
         } else {
             document.body.style.overflow = "";
+            setSheetMounted(false);
         }
         return () => { document.body.style.overflow = ""; };
     }, [activa]);
@@ -238,7 +242,7 @@ export default function Lecciones() {
                     />
 
                     {/* Sheet */}
-                    <div className="fixed bottom-0 inset-x-0 z-50 bg-[#161B22] border-t border-[#2D3748] rounded-t-2xl max-h-[85vh] flex flex-col translate-y-0 transition-transform duration-300 ease-out">
+                    <div className={`fixed bottom-0 inset-x-0 z-50 bg-[#161B22] border-t border-[#2D3748] rounded-t-2xl max-h-[85vh] flex flex-col transition-transform duration-300 ease-out ${sheetMounted ? "translate-y-0" : "translate-y-full"}`}>
 
                         {/* Handle */}
                         <div className="w-10 h-1 bg-[#2D3748] mx-auto mt-3 mb-2 rounded-full flex-shrink-0" />
