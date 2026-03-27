@@ -99,6 +99,18 @@ export function AuthProvider({ children }) {
         const { data: { subscription } } = supabase.auth.onAuthStateChange(
             async (event, session) => {
                 if (!mounted) return;
+
+                // TOKEN_REFRESHED solo renueva el JWT — el perfil no cambia.
+                // Re-cargar el perfil aquí causa redirects falsos si la query
+                // tarda más de 8s (tab inactiva → browser throttling → timeout → perfil=null).
+                if (event === 'TOKEN_REFRESHED') {
+                    setSession(session);
+                    return;
+                }
+
+                // Mostrar spinner mientras se carga el perfil para evitar
+                // que PrivateRoute redirija con perfil = null (race condition)
+                if (mounted) setLoading(true);
                 try {
                     setSession(session);
                     if (session?.user) {
