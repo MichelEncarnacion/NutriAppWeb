@@ -52,7 +52,7 @@ export default function Progreso() {
             try {
                 const { data, error } = await supabase
                     .from("metricas")
-                    .select("fecha, peso, porcentaje_grasa, porcentaje_musculo, calorias_consumidas, agua_ml")
+                    .select("fecha, peso, porcentaje_grasa, porcentaje_musculo")
                     .eq("perfil_id", uid)
                     .order("fecha", { ascending: false })
                     .limit(10);
@@ -72,8 +72,9 @@ export default function Progreso() {
 
     const delta = (campo) => {
         if (!ultima || !segunda || ultima[campo] == null || segunda[campo] == null) return null;
-        const d = (ultima[campo] - segunda[campo]).toFixed(1);
-        return { valor: d, positivo: Number(d) > 0 };
+        const d = parseFloat((ultima[campo] - segunda[campo]).toFixed(1));
+        if (d === 0) return null;
+        return { valor: d, positivo: d > 0 };
     };
 
     // Normalize to % change from baseline so all 3 series share one Y axis
@@ -180,14 +181,10 @@ export default function Progreso() {
                             <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
                                 <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">EVOLUCIÓN</p>
                                 <div className="flex gap-4 mb-3">
-                                    {[
-                                        { color: "#3DDC84", label: "Peso" },
-                                        { color: "#FF6B6B", label: "Grasa" },
-                                        { color: "#58A6FF", label: "Músculo" },
-                                    ].map((l) => (
-                                        <div key={l.label} className="flex items-center gap-1.5">
-                                            <div className="w-4 h-0.5 rounded-full" style={{ background: l.color }} />
-                                            <span className="text-[10px] text-[#7D8590]">{l.label}</span>
+                                    {STAT_PILLS.map((s) => (
+                                        <div key={s.key} className="flex items-center gap-1.5">
+                                            <div className="w-4 h-0.5 rounded-full" style={{ background: s.color }} />
+                                            <span className="text-[10px] text-[#7D8590]">{s.label}</span>
                                         </div>
                                     ))}
                                 </div>
@@ -202,7 +199,7 @@ export default function Progreso() {
                                             axisLine={false}
                                             tickLine={false}
                                         />
-                                        <Tooltip content={<ChartTooltip />} />
+                                        <Tooltip content={ChartTooltip} />
                                         <Line
                                             type="monotone"
                                             dataKey="peso_norm"
@@ -240,7 +237,7 @@ export default function Progreso() {
                         <h3 className="text-white font-bold font-display text-sm mb-4">Historial de registros</h3>
                         <div className="flex flex-col divide-y divide-[#2D3748]">
                             {metricas.map((m, i) => (
-                                <div key={i} className="flex items-center gap-4 py-3 text-sm flex-wrap">
+                                <div key={m.fecha} className="flex items-center gap-4 py-3 text-sm flex-wrap">
                                     <span className="text-[#7D8590] text-xs w-20 flex-shrink-0">
                                         {new Date(m.fecha).toLocaleDateString("es-MX", {
                                             day: "numeric", month: "short",
