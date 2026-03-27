@@ -6,7 +6,7 @@ export const C = {
   bgFooter:  "#060a0f",
   bgAlt:     "#0a0f16",
   green:     "#3DDC84",
-  teal:      "#58A6FF",
+  blue:      "#58A6FF",
   textPrimary: "#E6EDF3",
   textMuted:   "#7D8590",
   border:    "rgba(61,220,132,0.15)",
