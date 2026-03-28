@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography, Button, Chip } from "@mui/material";
 import { motion } from "framer-motion";
 import { C, fadeInUp, stagger } from "./landingTokens";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function LandingHero() {
   const navigate = useNavigate();
+  const { session } = useAuth();
 
   return (
     <Box
@@ -93,7 +95,7 @@ export default function LandingHero() {
             <motion.div variants={fadeInUp}>
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 5 }}>
                 <Button
-                  onClick={() => navigate("/registro")}
+                  onClick={() => navigate(session ? "/panel" : "/registro")}
                   variant="contained"
                   size="large"
                   sx={{
@@ -104,21 +106,23 @@ export default function LandingHero() {
                     "&:hover": { bgcolor: "#5EF0A0" },
                   }}
                 >
-                  Comenzar gratis →
+                  {session ? "Ir al panel →" : "Comenzar gratis →"}
                 </Button>
-                <Button
-                  onClick={() => navigate("/login")}
-                  variant="outlined"
-                  size="large"
-                  sx={{
-                    borderColor: C.border, color: C.textMuted,
-                    textTransform: "none", borderRadius: "12px",
-                    px: 4, py: 1.5, fontSize: "1rem",
-                    "&:hover": { borderColor: C.green, color: C.textPrimary },
-                  }}
-                >
-                  Ya tengo cuenta
-                </Button>
+                {!session && (
+                  <Button
+                    onClick={() => navigate("/login")}
+                    variant="outlined"
+                    size="large"
+                    sx={{
+                      borderColor: C.border, color: C.textMuted,
+                      textTransform: "none", borderRadius: "12px",
+                      px: 4, py: 1.5, fontSize: "1rem",
+                      "&:hover": { borderColor: C.green, color: C.textPrimary },
+                    }}
+                  >
+                    Ya tengo cuenta
+                  </Button>
+                )}
               </Box>
             </motion.div>
 

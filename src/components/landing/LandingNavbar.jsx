@@ -3,9 +3,11 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Container } from "@mui/material";
 import { C } from "./landingTokens";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function LandingNavbar() {
   const navigate = useNavigate();
+  const { session } = useAuth();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -41,17 +43,20 @@ export default function LandingNavbar() {
 
           {/* CTAs */}
           <Box sx={{ display: "flex", gap: 1.5, alignItems: "center" }}>
+            {!session && (
+              <Button
+                onClick={() => navigate("/login")}
+                sx={{
+                  display: { xs: "none", sm: "inline-flex" },
+                  color: C.textMuted, textTransform: "none", fontWeight: 600,
+                  "&:hover": { color: C.textPrimary, background: "transparent" },
+                }}
+              >
+                Iniciar sesión
+              </Button>
+            )}
             <Button
-              onClick={() => navigate("/login")}
-              sx={{
-                color: C.textMuted, textTransform: "none", fontWeight: 600,
-                "&:hover": { color: C.textPrimary, background: "transparent" },
-              }}
-            >
-              Iniciar sesión
-            </Button>
-            <Button
-              onClick={() => navigate("/registro")}
+              onClick={() => navigate(session ? "/panel" : "/registro")}
               variant="contained"
               sx={{
                 bgcolor: C.green, color: "#000", fontWeight: 700,
@@ -60,7 +65,7 @@ export default function LandingNavbar() {
                 boxShadow: "none",
               }}
             >
-              Comenzar gratis
+              {session ? "Ir al panel" : "Comenzar gratis"}
             </Button>
           </Box>
         </Box>

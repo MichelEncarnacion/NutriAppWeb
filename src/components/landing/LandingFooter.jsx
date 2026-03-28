@@ -4,6 +4,7 @@ import { Box, Container, Typography, Button, IconButton } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { C } from "./landingTokens";
+import { useAuth } from "../../hooks/useAuth";
 
 const NAV_LINKS = [
   { label: "Cómo funciona",         href: "#como-funciona" },
@@ -14,6 +15,7 @@ const NAV_LINKS = [
 
 export default function LandingFooter() {
   const navigate = useNavigate();
+  const { session } = useAuth();
 
   return (
     <Box sx={{ bgcolor: C.bgFooter, borderTop: `1px solid ${C.border}`, pt: 8, pb: 4 }}>
@@ -101,7 +103,7 @@ export default function LandingFooter() {
               Únete gratis hoy
             </Typography>
             <Button
-              onClick={() => navigate("/registro")}
+              onClick={() => navigate(session ? "/panel" : "/registro")}
               variant="contained"
               fullWidth
               sx={{
@@ -111,7 +113,7 @@ export default function LandingFooter() {
                 "&:hover": { bgcolor: "#5EF0A0" },
               }}
             >
-              Crear cuenta gratis
+              {session ? "Ir al panel" : "Crear cuenta gratis"}
             </Button>
           </Box>
         </Box>
