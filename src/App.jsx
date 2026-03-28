@@ -12,7 +12,7 @@ import TerminosCondiciones from "./pages/TerminosCondiciones";
 // ── Páginas de onboarding ────────────────────────────────────────────────
 import Diagnostico from "./pages/Diagnostico";
 import GenerandoPlan from "./pages/GenerandoPlan";
-import Bienvenida from "./pages/Bienvenida";
+import Landing from "./pages/Landing";
 
 // ── Páginas principales (usuario) ───────────────────────────────────────
 import Panel from "./pages/Panel";
@@ -35,9 +35,7 @@ export default function App() {
         <Routes>
 
           {/* ── Raíz ─────────────────────────────────────── */}
-          <Route path="/" element={
-            <PublicOnlyRoute><Bienvenida /></PublicOnlyRoute>
-          } />
+          <Route path="/" element={<Landing />} />
 
           {/* ── Auth (solo si NO hay sesión) ──────────────── */}
           <Route path="/login" element={

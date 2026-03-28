@@ -25,3 +25,12 @@ dist-ssr
 .env
 .env.local
 .env.development.local
+
+.mcp.json
+.claude
+*.md
+*.pid
+*.html
+*.txt
+.gitignore
+*-stopped
