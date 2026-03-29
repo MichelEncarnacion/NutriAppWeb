@@ -2,9 +2,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
+import { useAuth } from "../../hooks/useAuth";
 import AdminLayout from "../../components/AdminLayout";
 
 export default function AdminUsuarios() {
+    const { session } = useAuth();
     const [users, setUsers] = useState([]);
     const [filtro, setFiltro] = useState("todos");
     const [search, setSearch] = useState("");
@@ -28,7 +30,6 @@ export default function AdminUsuarios() {
 
     const regenerarPlan = async (id) => {
         setRegenerando((p) => ({ ...p, [id]: "loading" }));
-        const { data: { session } } = await supabase.auth.getSession();
         let hasError = true;
         try {
             const res = await fetch(
