@@ -328,6 +328,14 @@ export default function Diagnostico() {
     const valor = respuestas[pregunta.campo];
     const progreso = Math.round(((paso) / TOTAL) * 100);
 
+    // Inicializa sliders al valor mínimo al llegar a esa pregunta,
+    // para que la validación no falle cuando el usuario no los toca.
+    useEffect(() => {
+        if (pregunta.tipo === "slider" && respuestas[pregunta.campo] === undefined) {
+            setResp((r) => ({ ...r, [pregunta.campo]: pregunta.min }));
+        }
+    }, [pregunta.campo]); // eslint-disable-line react-hooks/exhaustive-deps
+
     // ── Handlers ──────────────────────────────────────────────────────────
     const setValor = (v) => {
         setError(null);
