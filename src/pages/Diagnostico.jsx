@@ -315,6 +315,13 @@ const PASOS = [
 
 const TOTAL = PASOS.length; // 24
 
+// Pre-compute block metadata once
+const BLOQUES = [...new Set(PASOS.map((p) => p.bloque))];
+const BLOQUE_INFO = BLOQUES.map((nombre) => {
+    const indices = PASOS.reduce((acc, p, i) => (p.bloque === nombre ? [...acc, i] : acc), []);
+    return { nombre, inicio: indices[0], count: indices.length, emoji: PASOS[indices[0]].emoji };
+});
+
 export default function Diagnostico() {
     const { session, marcarDiagnosticoCompletado } = useAuth();
     const navigate = useNavigate();
@@ -323,13 +330,12 @@ export default function Diagnostico() {
     const [respuestas, setResp] = useState({});
     const [error, setError] = useState(null);
     const [guardando, setGuardando] = useState(false);
+    const [splashInfo, setSplashInfo] = useState(null); // null = show question, obj = show splash
 
     const pregunta = PASOS[paso];
     const valor = respuestas[pregunta.campo];
-    const progreso = Math.round(((paso) / TOTAL) * 100);
 
-    // Inicializa sliders al valor mínimo al llegar a esa pregunta,
-    // para que la validación no falle cuando el usuario no los toca.
+    // Inicializa sliders al valor mínimo al llegar a esa pregunta
     useEffect(() => {
         if (pregunta.tipo === "slider" && respuestas[pregunta.campo] === undefined) {
             setResp((r) => ({ ...r, [pregunta.campo]: pregunta.min }));
@@ -344,11 +350,7 @@ export default function Diagnostico() {
 
     const toggleMulti = (v) => {
         const actual = respuestas[pregunta.campo] ?? [];
-        // Si elige "ninguno/ninguna", limpia los demás
-        if (v === "ninguno" || v === "ninguna") {
-            setValor([v]);
-            return;
-        }
+        if (v === "ninguno" || v === "ninguna") { setValor([v]); return; }
         const sinNinguno = actual.filter((x) => x !== "ninguno" && x !== "ninguna");
         const existe = sinNinguno.includes(v);
         setValor(existe ? sinNinguno.filter((x) => x !== v) : [...sinNinguno, v]);
@@ -362,8 +364,22 @@ export default function Diagnostico() {
 
     const avanzar = () => {
         if (!validar()) { setError("Por favor responde esta pregunta para continuar."); return; }
-        if (paso < TOTAL - 1) { setPaso((p) => p + 1); setError(null); }
-        else { guardar(); }
+        if (paso < TOTAL - 1) {
+            const nextPaso = paso + 1;
+            const bloqueActual = PASOS[paso].bloque;
+            const bloqueNext = PASOS[nextPaso].bloque;
+            setError(null);
+            if (bloqueNext !== bloqueActual) {
+                const info = BLOQUE_INFO.find((b) => b.nombre === bloqueNext);
+                const num = BLOQUES.indexOf(bloqueNext) + 1;
+                setSplashInfo({ nombre: bloqueNext, emoji: info.emoji, numero: num, totalEnBloque: info.count });
+                setTimeout(() => { setSplashInfo(null); setPaso(nextPaso); }, 1600);
+            } else {
+                setPaso(nextPaso);
+            }
+        } else {
+            guardar();
+        }
     };
 
     const retroceder = () => { if (paso > 0) { setPaso((p) => p - 1); setError(null); } };
@@ -371,14 +387,9 @@ export default function Diagnostico() {
     // ── Guardar en Supabase ───────────────────────────────────────────────
     const guardar = async () => {
         setGuardando(true);
-        const tieneEnfermedad =
-            (respuestas.enfermedades ?? []).some((e) => e !== "ninguna");
-
-        // Solo campos que existen en el schema de diagnosticos.
-        // Los demás campos del formulario (meta_personal, ocupacion, tipo_ejercicio, etc.)
-        // se pasan completos a la Edge Function via navigate state.
+        const tieneEnfermedad = (respuestas.enfermedades ?? []).some((e) => e !== "ninguna");
         const datos = {
-            perfil_id: session.user.id,          // era usuario_id — corregido
+            perfil_id: session.user.id,
             acepto_terminos: true,
             peso: Number(respuestas.peso_kg) || null,
             estatura: Number(respuestas.estatura_cm) || null,
@@ -393,9 +404,7 @@ export default function Diagnostico() {
             presupuesto_quincenal: Number(respuestas.presupuesto_quincenal) || null,
         };
 
-        const { error: dbError } = await supabase
-            .from("diagnosticos")
-            .insert(datos);
+        const { error: dbError } = await supabase.from("diagnosticos").insert(datos);
 
         if (dbError) {
             setError("Error al guardar. Intenta de nuevo.");
@@ -403,189 +412,214 @@ export default function Diagnostico() {
             return;
         }
 
-        // Actualizar el estado local inmediatamente sin esperar el trigger de Postgres.
-        // Esto evita el round-trip extra a la DB y hace la navegación instantánea.
         marcarDiagnosticoCompletado();
-
-        navigate("/generando-plan", {
-            replace: true,
-            state: { respuestas, tieneEnfermedad },
-        });
+        navigate("/generando-plan", { replace: true, state: { respuestas, tieneEnfermedad } });
     };
 
     // ── Render ────────────────────────────────────────────────────────────
+    const bloqueActualIdx = BLOQUES.indexOf(pregunta.bloque);
+
     return (
         <div className="min-h-screen bg-[#0D1117] flex flex-col items-center justify-center px-4 py-8 font-sans">
 
-            {/* Barra de progreso */}
+            {/* Barra de progreso segmentada por bloques */}
             <div className="w-full max-w-xl mb-6">
                 <div className="flex justify-between items-center mb-2">
                     <span className="text-xs text-[#7D8590] font-semibold tracking-wide">
                         {pregunta.bloque.toUpperCase()}
                     </span>
                     <span className="text-xs text-[#3DDC84] font-bold font-display">
-                        {paso + 1} / {TOTAL}
+                        Bloque {bloqueActualIdx + 1} de {BLOQUES.length}
                     </span>
                 </div>
-                <div className="h-1.5 bg-[#1C2330] rounded-full overflow-hidden">
-                    <div
-                        className="h-full bg-gradient-to-r from-[#3DDC84] to-[#58A6FF] rounded-full transition-all duration-500"
-                        style={{ width: `${progreso}%` }}
-                    />
+                <div className="flex gap-1">
+                    {BLOQUE_INFO.map((b, i) => {
+                        const isPast = paso >= b.inicio + b.count;
+                        const isCurrent = i === bloqueActualIdx;
+                        const fraction = isPast ? 1 : isCurrent ? (paso - b.inicio + 1) / b.count : 0;
+                        return (
+                            <div key={b.nombre} className="flex-1 h-1.5 bg-[#1C2330] rounded-full overflow-hidden">
+                                <div
+                                    className="h-full bg-gradient-to-r from-[#3DDC84] to-[#58A6FF] rounded-full transition-all duration-500"
+                                    style={{ width: `${fraction * 100}%` }}
+                                />
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
 
-            {/* Tarjeta de pregunta */}
-            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-xl p-8 flex flex-col gap-6">
-
-                {/* Pregunta */}
-                <div>
-                    <span className="text-4xl block mb-3">{pregunta.emoji}</span>
-                    <h2 className="text-white text-xl font-bold leading-snug font-display">
-                        {pregunta.pregunta}
-                    </h2>
+            {/* Splash de bloque */}
+            {splashInfo && (
+                <div
+                    className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-xl p-10 flex flex-col items-center gap-4 text-center"
+                    style={{ animation: "fadeInQuestion 0.3s ease-out" }}
+                >
+                    <span className="text-5xl">{splashInfo.emoji}</span>
+                    <div>
+                        <p className="text-[10px] text-[#3DDC84] font-bold tracking-widest mb-1">
+                            BLOQUE {splashInfo.numero} DE {BLOQUES.length}
+                        </p>
+                        <h2 className="text-white text-2xl font-black font-display">{splashInfo.nombre}</h2>
+                        <p className="text-[#7D8590] text-sm mt-1">{splashInfo.totalEnBloque} preguntas</p>
+                    </div>
                 </div>
+            )}
 
-                {/* Input según tipo */}
-                {pregunta.tipo === "numero" && (
-                    <div className="flex items-center gap-3">
+            {/* Tarjeta de pregunta */}
+            {!splashInfo && (
+                <div
+                    key={paso}
+                    className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-xl p-8 flex flex-col gap-6"
+                    style={{ animation: "fadeInQuestion 0.22s ease-out" }}
+                >
+                    {/* Pregunta */}
+                    <div>
+                        <span className="text-4xl block mb-3">{pregunta.emoji}</span>
+                        <h2 className="text-white text-xl font-bold leading-snug font-display">
+                            {pregunta.pregunta}
+                        </h2>
+                    </div>
+
+                    {/* Input según tipo */}
+                    {pregunta.tipo === "numero" && (
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="number"
+                                min={pregunta.min}
+                                max={pregunta.max}
+                                placeholder={pregunta.placeholder}
+                                value={valor ?? ""}
+                                onChange={(e) => setValor(e.target.value)}
+                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-lg w-40 outline-none focus:border-[#3DDC84] transition-colors"
+                            />
+                            {pregunta.sufijo && (
+                                <span className="text-[#7D8590] text-base">{pregunta.sufijo}</span>
+                            )}
+                        </div>
+                    )}
+
+                    {pregunta.tipo === "texto" && (
                         <input
-                            type="number"
-                            min={pregunta.min}
-                            max={pregunta.max}
+                            type="text"
                             placeholder={pregunta.placeholder}
+                            value={valor ?? ""}
+                            onChange={(e) => setValor(e.target.value)}
+                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors"
+                        />
+                    )}
+
+                    {pregunta.tipo === "texto_largo" && (
+                        <textarea
+                            placeholder={pregunta.placeholder}
+                            value={valor ?? ""}
+                            onChange={(e) => setValor(e.target.value)}
+                            rows={3}
+                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors resize-none"
+                        />
+                    )}
+
+                    {pregunta.tipo === "hora" && (
+                        <input
+                            type="time"
                             value={valor ?? ""}
                             onChange={(e) => setValor(e.target.value)}
                             className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-lg w-40 outline-none focus:border-[#3DDC84] transition-colors"
                         />
-                        {pregunta.sufijo && (
-                            <span className="text-[#7D8590] text-base">{pregunta.sufijo}</span>
-                        )}
-                    </div>
-                )}
+                    )}
 
-                {pregunta.tipo === "texto" && (
-                    <input
-                        type="text"
-                        placeholder={pregunta.placeholder}
-                        value={valor ?? ""}
-                        onChange={(e) => setValor(e.target.value)}
-                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors"
-                    />
-                )}
-
-                {pregunta.tipo === "texto_largo" && (
-                    <textarea
-                        placeholder={pregunta.placeholder}
-                        value={valor ?? ""}
-                        onChange={(e) => setValor(e.target.value)}
-                        rows={3}
-                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors resize-none"
-                    />
-                )}
-
-                {pregunta.tipo === "hora" && (
-                    <input
-                        type="time"
-                        value={valor ?? ""}
-                        onChange={(e) => setValor(e.target.value)}
-                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-lg w-40 outline-none focus:border-[#3DDC84] transition-colors"
-                    />
-                )}
-
-                {pregunta.tipo === "slider" && (
-                    <div className="flex flex-col gap-3">
-                        <div className="flex justify-between text-xs text-[#7D8590]">
-                            <span>{pregunta.min} días</span>
-                            <span className="text-[#3DDC84] font-bold text-base">
-                                {valor ?? pregunta.min} días
-                            </span>
-                            <span>{pregunta.max} días</span>
+                    {pregunta.tipo === "slider" && (
+                        <div className="flex flex-col gap-3">
+                            <div className="flex justify-between text-xs text-[#7D8590]">
+                                <span>{pregunta.min} días</span>
+                                <span className="text-[#3DDC84] font-bold text-base">
+                                    {valor ?? pregunta.min} días
+                                </span>
+                                <span>{pregunta.max} días</span>
+                            </div>
+                            <input
+                                type="range"
+                                min={pregunta.min}
+                                max={pregunta.max}
+                                value={valor ?? pregunta.min}
+                                onChange={(e) => setValor(Number(e.target.value))}
+                                className="w-full accent-[#3DDC84] cursor-pointer"
+                            />
                         </div>
-                        <input
-                            type="range"
-                            min={pregunta.min}
-                            max={pregunta.max}
-                            value={valor ?? pregunta.min}
-                            onChange={(e) => setValor(Number(e.target.value))}
-                            className="w-full accent-[#3DDC84] cursor-pointer"
-                        />
-                    </div>
-                )}
+                    )}
 
-                {pregunta.tipo === "opciones" && (
-                    <div className={`grid gap-3 ${pregunta.grande ? "grid-cols-1" : "grid-cols-2"}`}>
-                        {pregunta.opciones.map((op) => (
-                            <button
-                                key={op.valor}
-                                onClick={() => setValor(op.valor)}
-                                className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all
-                  ${valor === op.valor
-                                        ? "border-[#3DDC84] bg-[rgba(61,220,132,0.12)] text-white"
-                                        : "border-[#2D3748] bg-[#1C2330] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
-                                    }`}
-                            >
-                                <span className="text-xl">{op.emoji}</span>
-                                <div>
-                                    <div className="text-sm font-semibold">{op.etiqueta}</div>
-                                    {op.desc && <div className="text-xs text-[#7D8590] mt-0.5">{op.desc}</div>}
-                                </div>
-                            </button>
-                        ))}
-                    </div>
-                )}
-
-                {pregunta.tipo === "multiselect" && (
-                    <div className="grid grid-cols-2 gap-2">
-                        {pregunta.opciones.map((op) => {
-                            const sel = (valor ?? []).includes(op.valor);
-                            return (
+                    {pregunta.tipo === "opciones" && (
+                        <div className={`grid gap-3 ${pregunta.grande ? "grid-cols-1" : "grid-cols-2"}`}>
+                            {pregunta.opciones.map((op) => (
                                 <button
                                     key={op.valor}
-                                    onClick={() => toggleMulti(op.valor)}
-                                    className={`flex items-center gap-2 p-3 rounded-xl border text-left transition-all
-                    ${sel
+                                    onClick={() => setValor(op.valor)}
+                                    className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all
+                      ${valor === op.valor
                                             ? "border-[#3DDC84] bg-[rgba(61,220,132,0.12)] text-white"
                                             : "border-[#2D3748] bg-[#1C2330] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
                                         }`}
                                 >
-                                    <span>{op.emoji}</span>
-                                    <span className="text-sm">{op.etiqueta}</span>
-                                    {sel && <span className="ml-auto text-[#3DDC84] text-xs">✓</span>}
+                                    <span className="text-xl">{op.emoji}</span>
+                                    <div>
+                                        <div className="text-sm font-semibold">{op.etiqueta}</div>
+                                        {op.desc && <div className="text-xs text-[#7D8590] mt-0.5">{op.desc}</div>}
+                                    </div>
                                 </button>
-                            );
-                        })}
-                    </div>
-                )}
-
-                {/* Error */}
-                {error && (
-                    <p className="text-[#FF6B6B] text-sm">⚠️ {error}</p>
-                )}
-
-                {/* Navegación */}
-                <div className="flex gap-3 pt-2">
-                    {paso > 0 && (
-                        <button
-                            onClick={retroceder}
-                            className="px-5 py-3 rounded-xl border border-[#2D3748] text-[#7D8590] text-sm hover:border-[#3DDC84] hover:text-white transition-all"
-                        >
-                            ← Atrás
-                        </button>
+                            ))}
+                        </div>
                     )}
-                    <button
-                        onClick={avanzar}
-                        disabled={guardando}
-                        className="flex-1 py-3 rounded-xl bg-[#3DDC84] text-black font-bold font-display text-sm tracking-wide hover:bg-[#5EF0A0] transition-all disabled:opacity-60"
-                    >
-                        {guardando
-                            ? "Guardando..."
-                            : paso === TOTAL - 1
-                                ? "Generar mi plan nutricional 🚀"
-                                : "Continuar →"}
-                    </button>
+
+                    {pregunta.tipo === "multiselect" && (
+                        <div className="grid grid-cols-2 gap-2">
+                            {pregunta.opciones.map((op) => {
+                                const sel = (valor ?? []).includes(op.valor);
+                                return (
+                                    <button
+                                        key={op.valor}
+                                        onClick={() => toggleMulti(op.valor)}
+                                        className={`flex items-center gap-2 p-3 rounded-xl border text-left transition-all
+                        ${sel
+                                                ? "border-[#3DDC84] bg-[rgba(61,220,132,0.12)] text-white"
+                                                : "border-[#2D3748] bg-[#1C2330] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
+                                            }`}
+                                    >
+                                        <span>{op.emoji}</span>
+                                        <span className="text-sm">{op.etiqueta}</span>
+                                        {sel && <span className="ml-auto text-[#3DDC84] text-xs">✓</span>}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {/* Error */}
+                    {error && <p className="text-[#FF6B6B] text-sm">⚠️ {error}</p>}
+
+                    {/* Navegación */}
+                    <div className="flex gap-3 pt-2">
+                        {paso > 0 && (
+                            <button
+                                onClick={retroceder}
+                                className="px-5 py-3 rounded-xl border border-[#2D3748] text-[#7D8590] text-sm hover:border-[#3DDC84] hover:text-white transition-all"
+                            >
+                                ← Atrás
+                            </button>
+                        )}
+                        <button
+                            onClick={avanzar}
+                            disabled={guardando}
+                            className="flex-1 py-3 rounded-xl bg-[#3DDC84] text-black font-bold font-display text-sm tracking-wide hover:bg-[#5EF0A0] transition-all disabled:opacity-60"
+                        >
+                            {guardando
+                                ? "Guardando..."
+                                : paso === TOTAL - 1
+                                    ? "Generar mi plan nutricional 🚀"
+                                    : "Continuar →"}
+                        </button>
+                    </div>
                 </div>
-            </div>
+            )}
         </div>
     );
 }

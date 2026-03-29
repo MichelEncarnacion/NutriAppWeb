@@ -74,6 +74,17 @@ body {
 }
 
 /* ── Animaciones ─────────────────────────────────────────── */
+@keyframes fadeInQuestion {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 @keyframes fadeUp {
   from {
     opacity: 0;
