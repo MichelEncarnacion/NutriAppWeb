@@ -21,10 +21,12 @@ export default function MiPlan() {
   const comidasDelDia = plan?.dias?.[dia - 1]?.comidas ?? []
   const kcalTotal = plan?.dias?.[dia - 1]?.kcal_total ?? 0
 
-  const fechaDia = fechaInicio
-    ? new Date(new Date(fechaInicio).getTime() + (dia - 1) * 86_400_000)
-        .toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" })
-    : ""
+  const fechaDia = (() => {
+    if (!fechaInicio) return "";
+    const [y, m, d] = fechaInicio.split("-").map(Number);
+    const date = new Date(y, m - 1, d + (dia - 1));
+    return date.toLocaleDateString("es-MX", { weekday: "long", day: "numeric", month: "long" });
+  })()
 
   const irAnterior = () => setDiaOffset(Math.max(1, dia - 1))
   const irSiguiente = () => setDiaOffset(Math.min(15, dia + 1))
@@ -82,6 +84,24 @@ export default function MiPlan() {
           </div>
         ) : (
           <>
+            {/* ── Mini day bar ── */}
+            <div className="flex gap-1.5 justify-center flex-wrap px-1">
+              {Array.from({ length: 15 }, (_, i) => i + 1).map((d) => (
+                <button
+                  key={d}
+                  onClick={() => setDiaOffset(d)}
+                  title={`Día ${d}`}
+                  className="transition-all"
+                  style={{
+                    width: 12, height: 12,
+                    borderRadius: "50%",
+                    background: d === dia ? "#3DDC84" : d < dia ? "rgba(61,220,132,.35)" : "#2D3748",
+                    transform: d === dia ? "scale(1.3)" : "scale(1)",
+                  }}
+                />
+              ))}
+            </div>
+
             {/* ── Day navigator ── */}
             <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-4 flex items-center justify-between">
               <button
@@ -146,13 +166,37 @@ export default function MiPlan() {
               })}
             </div>
 
-            {/* ── Day total ── */}
-            {comidasDelDia.length > 0 && (
-              <div className="bg-[rgba(61,220,132,.06)] border border-[rgba(61,220,132,.18)] rounded-2xl p-4 flex justify-between items-center">
-                <span className="text-sm text-[#7D8590]">Total del día {dia}</span>
-                <span className="font-display font-black text-[#3DDC84] text-lg">{kcalTotal} kcal</span>
-              </div>
-            )}
+            {/* ── Day total + macros ── */}
+            {comidasDelDia.length > 0 && (() => {
+              const macros = comidasDelDia.reduce(
+                (acc, c) => ({
+                  prot: acc.prot + (c.proteina_g ?? 0),
+                  carbs: acc.carbs + (c.carbos_g ?? 0),
+                  grasas: acc.grasas + (c.grasas_g ?? 0),
+                }),
+                { prot: 0, carbs: 0, grasas: 0 }
+              );
+              return (
+                <>
+                  <div className="bg-[rgba(61,220,132,.06)] border border-[rgba(61,220,132,.18)] rounded-2xl p-4 flex justify-between items-center">
+                    <span className="text-sm text-[#7D8590]">Total del día {dia}</span>
+                    <span className="font-display font-black text-[#3DDC84] text-lg">{kcalTotal} kcal</span>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { label: "Proteína", value: macros.prot, color: "#58A6FF" },
+                      { label: "Carbos", value: macros.carbs, color: "#F0A500" },
+                      { label: "Grasas", value: macros.grasas, color: "#A855F7" },
+                    ].map(({ label, value, color }) => (
+                      <div key={label} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-center">
+                        <p className="font-display font-black text-lg" style={{ color }}>{value}g</p>
+                        <p className="text-[10px] text-[#7D8590] mt-0.5">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              );
+            })()}
           </>
         )}
       </div>
