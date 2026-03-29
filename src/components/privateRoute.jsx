@@ -31,9 +31,13 @@ export default function PrivateRoute({
         rol,
         aceptoTerminos,
         completoDiagnostico,
+        loading,
     } = useAuth();
 
     const location = useLocation();
+
+    // Mientras resuelve auth, no redirigir
+    if (loading) return null;
 
     // 1. Sin sesión → Login
     if (!session) {
