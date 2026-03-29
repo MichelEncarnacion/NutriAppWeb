@@ -20,6 +20,7 @@ import MiPlan from "./pages/MiPlan";
 import Lecciones from "./pages/Lecciones";
 import Progreso from "./pages/Progreso";
 import Seguimiento from "./pages/Seguimiento";
+import ListaCompras from "./pages/ListaCompras";
 
 // ── Panel admin ──────────────────────────────────────────────────────────
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -92,6 +93,11 @@ export default function App() {
           <Route path="/seguimiento" element={
             <PrivateRoute>
               <Seguimiento />
+            </PrivateRoute>
+          } />
+          <Route path="/lista-compras" element={
+            <PrivateRoute>
+              <ListaCompras />
             </PrivateRoute>
           } />
 

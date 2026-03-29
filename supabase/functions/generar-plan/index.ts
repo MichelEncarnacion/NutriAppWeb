@@ -245,11 +245,25 @@ function buildPrompt(diag: Record<string, unknown>): string {
     ? safe(diag.enfermedades.join(", "))
     : "ninguna";
 
-  return `Eres un nutriólogo profesional. Genera un plan nutricional personalizado de exactamente 15 días.
+  return `Actúa como un nutriólogo especializado en salud pública y economía familiar de México. Eres experto diseñando planes nutricionales para la población mexicana, principalmente del estado de Puebla, México. Tu objetivo es maximizar la nutrición minimizando el gasto, usando alimentos accesibles en mercados y tiendas locales de la región (frijoles, tortillas, verduras de temporada, proteínas económicas como huevo, pollo, atún, sardina, hígado, leguminosas, etc.).
+
+Genera un plan nutricional personalizado de exactamente 15 días basado en las respuestas del cuestionario del usuario que se muestran abajo. Respeta estrictamente su presupuesto quincenal, sus restricciones médicas, alergias y enfermedades. Prioriza ingredientes de bajo costo y alta densidad nutricional típicos de Puebla y México.
+
 Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura exacta:
 
 {
   "meta_diaria": { "kcal": number, "proteina_g": number, "carbos_g": number, "grasas_g": number, "agua_l": number },
+  "lista_compras": {
+    "costo_total_estimado": number,
+    "items": [
+      {
+        "categoria": "Proteínas|Verduras y frutas|Cereales y tortillas|Lácteos|Leguminosas|Condimentos y otros",
+        "nombre": string,
+        "cantidad": string,
+        "costo_aproximado": number
+      }
+    ]
+  },
   "dias": [
     {
       "dia": number,
@@ -262,8 +276,9 @@ Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura 
 }
 
 El array "dias" debe tener exactamente 15 elementos (dia 1 al 15). Cada día debe tener al menos 3 comidas.
+El campo "lista_compras" debe contener TODOS los ingredientes necesarios para los 15 días, consolidados y sin repetir, con cantidades totales para toda la quincena y precios aproximados en MXN según el mercado local de Puebla, México. El costo_total_estimado debe estar dentro del presupuesto quincenal del usuario.
 
-Datos del usuario:
+Respuestas del cuestionario del usuario:
 - Peso: ${safe(diag.peso, 20)} kg
 - Estatura: ${safe(diag.estatura, 20)} cm
 - Edad: ${safe(diag.edad, 10)} años

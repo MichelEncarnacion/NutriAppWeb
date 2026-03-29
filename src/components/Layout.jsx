@@ -7,6 +7,7 @@ import { supabase } from "../lib/supabase";
 const NAV = [
     { to: "/panel", label: "Panel General", icon: "⊞" },
     { to: "/mi-plan", label: "Mi Plan", icon: "🥗" },
+    { to: "/lista-compras", label: "Lista de Compras", icon: "🛒" },
     { to: "/lecciones", label: "Lecciones", icon: "📖" },
     { to: "/progreso", label: "Progreso", icon: "📈", soloPremiun: true },
 ];
