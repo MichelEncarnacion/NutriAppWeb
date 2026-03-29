@@ -1,13 +1,23 @@
 // src/pages/TerminosCondiciones.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
 
 export default function TerminosCondiciones() {
     const navigate = useNavigate();
+    const { session } = useAuth();
     const [aceptado, setAceptado] = useState(false);
+    const [guardando, setGuardando] = useState(false);
 
-    const handleAceptar = () => {
-        if (!aceptado) return;
+    const handleAceptar = async () => {
+        if (!aceptado || !session) return;
+        setGuardando(true);
+        await supabase.from("diagnosticos").upsert(
+            { perfil_id: session.user.id, acepto_terminos: true },
+            { onConflict: "perfil_id" }
+        );
+        setGuardando(false);
         navigate("/diagnostico", { replace: true });
     };
 
@@ -64,14 +74,14 @@ export default function TerminosCondiciones() {
 
                     <button
                         onClick={handleAceptar}
-                        disabled={!aceptado}
+                        disabled={!aceptado || guardando}
                         className={`w-full py-3 rounded-xl font-bold font-display text-sm tracking-wide transition-all
-              ${aceptado
+              ${aceptado && !guardando
                                 ? "bg-[#3DDC84] text-black hover:bg-[#5EF0A0] cursor-pointer"
                                 : "bg-[#1C2330] text-[#7D8590] cursor-not-allowed border border-[#2D3748]"
                             }`}
                     >
-                        Aceptar y continuar →
+                        {guardando ? "Guardando..." : "Aceptar y continuar →"}
                     </button>
                 </div>
             </div>
