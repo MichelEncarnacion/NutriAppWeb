@@ -115,31 +115,70 @@ function RecentUsers() {
 
 function ErrorPlanes() {
     const [planes, setPlanes] = useState([]);
-    useEffect(() => {
+    const [regenerando, setRegenerando] = useState({}); // { [planId]: 'loading' | 'ok' | 'error' }
+
+    const cargar = () => {
         supabase.from("planes").select("id,perfil_id,estado,created_at")
             .eq("estado", "error").order("created_at", { ascending: false }).limit(5)
             .then(({ data }) => setPlanes(data ?? []));
-    }, []);
+    };
+
+    useEffect(() => { cargar(); }, []);
+
+    const regenerar = async (plan) => {
+        setRegenerando((s) => ({ ...s, [plan.id]: "loading" }));
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            const token = session?.access_token;
+            const res = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-plan`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`,
+                        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    },
+                    body: JSON.stringify({ target_perfil_id: plan.perfil_id }),
+                }
+            );
+            if (!res.ok) throw new Error();
+            setRegenerando((s) => ({ ...s, [plan.id]: "ok" }));
+            setTimeout(() => cargar(), 2000);
+        } catch {
+            setRegenerando((s) => ({ ...s, [plan.id]: "error" }));
+        }
+    };
 
     if (planes.length === 0)
         return <p className="text-[#7D8590] text-sm">✅ No hay planes con error actualmente.</p>;
 
     return (
         <div className="flex flex-col gap-2">
-            {planes.map((p) => (
-                <div key={p.id} className="flex items-center justify-between bg-[rgba(255,107,107,.06)] border border-[rgba(255,107,107,.2)] rounded-xl p-3">
-                    <div>
-                        <p className="text-white text-xs font-semibold">Plan {p.id.slice(0, 8)}…</p>
-                        <p className="text-[#7D8590] text-[11px]">{new Date(p.created_at).toLocaleString("es-MX")}</p>
+            {planes.map((p) => {
+                const estado = regenerando[p.id];
+                return (
+                    <div key={p.id} className="flex items-center justify-between bg-[rgba(255,107,107,.06)] border border-[rgba(255,107,107,.2)] rounded-xl p-3">
+                        <div>
+                            <p className="text-white text-xs font-semibold">Plan {p.id.slice(0, 8)}…</p>
+                            <p className="text-[#7D8590] text-[11px]">{new Date(p.created_at).toLocaleString("es-MX")}</p>
+                        </div>
+                        <button
+                            onClick={() => regenerar(p)}
+                            disabled={estado === "loading" || estado === "ok"}
+                            className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all disabled:opacity-60
+                                ${estado === "ok"
+                                    ? "bg-[#3DDC84] text-black"
+                                    : estado === "error"
+                                        ? "bg-[rgba(255,107,107,.3)] text-[#FF6B6B]"
+                                        : "bg-[#FF6B6B] text-white hover:bg-[#ff8585]"
+                                }`}
+                        >
+                            {estado === "loading" ? "Generando…" : estado === "ok" ? "✓ Listo" : estado === "error" ? "Reintentar" : "Regenerar"}
+                        </button>
                     </div>
-                    <button
-                        onClick={() => alert(`Regenerar plan ${p.id.slice(0, 8)} — funcionalidad pendiente de implementar.`)}
-                        className="text-xs bg-[#FF6B6B] text-white px-3 py-1.5 rounded-lg font-bold hover:bg-[#ff8585] transition-all"
-                    >
-                        Regenerar
-                    </button>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
