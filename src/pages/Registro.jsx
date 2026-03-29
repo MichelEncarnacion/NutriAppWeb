@@ -128,34 +128,6 @@ function traducirError(msg) {
     return "Ocurrió un error. Intenta de nuevo.";
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// src/pages/AuthCallback.jsx
-// Maneja el redirect de OAuth (Google / Facebook) y redirige según estado
-// ─────────────────────────────────────────────────────────────────────────────
-export function AuthCallback() {
-    // Supabase maneja el token en la URL automáticamente.
-    // onAuthStateChange en AuthContext lo detecta y actualiza la sesión.
-    // Este componente solo necesita esperar y redirigir.
-    const { session, aceptoTerminos, completoDiagnostico } = useAuth?.() ?? {};
-    const navigate = useNavigate();
-
-    // Redirige según el estado del usuario
-    if (session) {
-        if (!aceptoTerminos) return navigate("/terminos", { replace: true });
-        if (!completoDiagnostico) return navigate("/diagnostico", { replace: true });
-        return navigate("/panel", { replace: true });
-    }
-
-    return (
-        <div style={styles.page}>
-            <div style={{ textAlign: "center", color: "#7D8590" }}>
-                <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
-                <p style={{ fontFamily: "'DM Sans',sans-serif" }}>Verificando sesión…</p>
-            </div>
-        </div>
-    );
-}
-
 // ── Estilos compartidos ──────────────────────────────────────────────────
 const styles = {
     page: {
