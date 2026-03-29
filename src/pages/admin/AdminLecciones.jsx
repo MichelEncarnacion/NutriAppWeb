@@ -44,7 +44,7 @@ export default function AdminLecciones() {
                 {/* Formulario nueva lección */}
                 <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
                     <h3 className="text-white font-bold font-display text-sm mb-4">+ Nueva lección</h3>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {[
                             { key: "orden", label: "Orden", type: "number", placeholder: "9" },
                             { key: "duracion_mins", label: "Duración (min)", type: "number", placeholder: "10" },
@@ -74,7 +74,8 @@ export default function AdminLecciones() {
 
                 {/* Lista de lecciones */}
                 <div className="bg-[#161B22] border border-[#2D3748] rounded-xl overflow-hidden">
-                    <table className="w-full text-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full text-sm min-w-[560px]">
                         <thead className="bg-[#1C2330]">
                             <tr className="text-[#7D8590] text-left">
                                 {["N°", "Título", "Duración", "Categoría", "Estado", "Acciones"].map((h) => (
@@ -111,6 +112,7 @@ export default function AdminLecciones() {
                             }
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </AdminLayout>
