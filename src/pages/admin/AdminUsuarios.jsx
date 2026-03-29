@@ -28,9 +28,7 @@ export default function AdminUsuarios() {
 
     const regenerarPlan = async (id) => {
         setRegenerando((p) => ({ ...p, [id]: "loading" }));
-        const { data: { session } } = await supabase.auth.getSession();
         const { error } = await supabase.functions.invoke("generar-plan", {
-            headers: { Authorization: `Bearer ${session?.access_token}` },
             body: { target_perfil_id: id },
         });
         setRegenerando((p) => ({ ...p, [id]: error ? "error" : "ok" }));

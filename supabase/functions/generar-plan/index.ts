@@ -55,11 +55,15 @@ Deno.serve(async (req) => {
     let effectivePerfilId = perfilId;
     let isAdminRegeneration = false;
     try {
-      const body = await req.json();
+      const bodyText = await req.text();
+      console.log("[generar-plan] raw body:", bodyText);
+      const body = bodyText ? JSON.parse(bodyText) : null;
+      console.log("[generar-plan] parsed body:", JSON.stringify(body));
       if (body?.target_perfil_id) {
         const isAdmin =
           user.app_metadata?.role === "admin" ||
           user.user_metadata?.role === "admin";
+        console.log("[generar-plan] isAdmin:", isAdmin, "app_metadata:", JSON.stringify(user.app_metadata));
         if (!isAdmin) {
           return new Response(JSON.stringify({ error: "No autorizado para regenerar planes de otros usuarios" }), {
             status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -68,9 +72,11 @@ Deno.serve(async (req) => {
         effectivePerfilId = body.target_perfil_id;
         isAdminRegeneration = true;
       }
-    } catch {
+    } catch (bodyErr) {
+      console.error("[generar-plan] error parsing body:", bodyErr);
       // Body vacío o inválido — continuar con perfilId del JWT
     }
+    console.log("[generar-plan] effectivePerfilId:", effectivePerfilId, "isAdminRegeneration:", isAdminRegeneration);
 
     // 2. Leer diagnóstico
     const { data: diag, error: diagError } = await supabase
