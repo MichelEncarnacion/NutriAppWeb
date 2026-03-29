@@ -9,6 +9,7 @@ export default function AdminUsuarios() {
     const [filtro, setFiltro] = useState("todos");
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
+    const [regenerando, setRegenerando] = useState({});
 
     const cargar = async () => {
         let q = supabase.from("perfiles").select("*").order("fecha_registro", { ascending: false });
@@ -25,9 +26,15 @@ export default function AdminUsuarios() {
         cargar();
     };
 
-    const toggleActivo = async (id, activo) => {
-        await supabase.from("perfiles").update({ activo: !activo }).eq("id", id);
-        cargar();
+    const regenerarPlan = async (id) => {
+        setRegenerando((p) => ({ ...p, [id]: "loading" }));
+        const { data: { session } } = await supabase.auth.getSession();
+        const { error } = await supabase.functions.invoke("generar-plan", {
+            headers: { Authorization: `Bearer ${session?.access_token}` },
+            body: { target_perfil_id: id },
+        });
+        setRegenerando((p) => ({ ...p, [id]: error ? "error" : "ok" }));
+        setTimeout(() => setRegenerando((p) => { const n = { ...p }; delete n[id]; return n; }), 3000);
     };
 
     const filtrados = users.filter((u) =>
@@ -95,20 +102,24 @@ export default function AdminUsuarios() {
                                             {new Date(u.fecha_registro).toLocaleDateString("es-MX")}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className={`text-xs font-bold ${u.activo ? "text-[#3DDC84]" : "text-[#FF6B6B]"}`}>
-                                                {u.activo ? "● Activo" : "○ Inactivo"}
-                                            </span>
+                                            <span className="text-xs font-bold text-[#3DDC84]">● Activo</span>
                                         </td>
                                         <td className="px-4 py-3">
                                             <button
-                                                onClick={() => toggleActivo(u.id, u.activo)}
-                                                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all
-                            ${u.activo
-                                                        ? "bg-[rgba(255,107,107,.12)] text-[#FF6B6B] hover:bg-[rgba(255,107,107,.2)]"
-                                                        : "bg-[rgba(61,220,132,.12)] text-[#3DDC84] hover:bg-[rgba(61,220,132,.2)]"
+                                                onClick={() => regenerarPlan(u.id)}
+                                                disabled={!!regenerando[u.id]}
+                                                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all disabled:opacity-60
+                                                    ${regenerando[u.id] === "ok"
+                                                        ? "bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
+                                                        : regenerando[u.id] === "error"
+                                                            ? "bg-[rgba(255,107,107,.12)] text-[#FF6B6B]"
+                                                            : "bg-[rgba(88,166,255,.12)] text-[#58A6FF] hover:bg-[rgba(88,166,255,.2)]"
                                                     }`}
                                             >
-                                                {u.activo ? "Desactivar" : "Activar"}
+                                                {regenerando[u.id] === "loading" ? "Generando…"
+                                                    : regenerando[u.id] === "ok" ? "✓ Listo"
+                                                    : regenerando[u.id] === "error" ? "✗ Error"
+                                                    : "Regenerar Plan"}
                                             </button>
                                         </td>
                                     </tr>
