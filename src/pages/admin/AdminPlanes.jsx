@@ -6,12 +6,11 @@ import AdminLayout from "../../components/AdminLayout";
 
 export default function AdminPlanes() {
     const [planes, setPlanes] = useState([]);
-    const [detalle, setDetalle] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         supabase.from("planes")
-            .select("id,perfil_id,estado,created_at,prompt_usado")
+            .select("id,perfil_id,estado,created_at")
             .order("created_at", { ascending: false }).limit(30)
             .then(({ data }) => { setPlanes(data ?? []); setLoading(false); });
     }, []);
@@ -29,7 +28,7 @@ export default function AdminPlanes() {
                     <table className="w-full text-sm">
                         <thead className="bg-[#1C2330]">
                             <tr className="text-[#7D8590] text-left">
-                                {["Plan ID", "Usuario", "Estado", "Fecha", ""].map((h) => (
+                                {["Plan ID", "Usuario", "Estado", "Fecha"].map((h) => (
                                     <th key={h} className="px-4 py-3 text-xs font-bold tracking-wide">{h}</th>
                                 ))}
                             </tr>
@@ -37,7 +36,7 @@ export default function AdminPlanes() {
                         <tbody className="divide-y divide-[#2D3748]">
                             {loading
                                 ? [...Array(8)].map((_, i) => (
-                                    <tr key={i}><td colSpan={5} className="px-4 py-3"><div className="h-4 bg-[#2D3748] rounded animate-pulse" /></td></tr>
+                                    <tr key={i}><td colSpan={4} className="px-4 py-3"><div className="h-4 bg-[#2D3748] rounded animate-pulse" /></td></tr>
                                 ))
                                 : planes.map((p) => {
                                     const e = ESTADO[p.estado] ?? ESTADO.error;
@@ -49,9 +48,6 @@ export default function AdminPlanes() {
                                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: e.bg, color: e.color }}>{e.label}</span>
                                             </td>
                                             <td className="px-4 py-3 text-[#7D8590] text-xs">{new Date(p.created_at).toLocaleDateString("es-MX")}</td>
-                                            <td className="px-4 py-3">
-                                                <button onClick={() => setDetalle(p)} className="text-xs text-[#A855F7] hover:underline">Ver prompt</button>
-                                            </td>
                                         </tr>
                                     );
                                 })
@@ -61,20 +57,6 @@ export default function AdminPlanes() {
                 </div>
             </div>
 
-            {/* Modal detalle */}
-            {detalle && (
-                <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-2xl p-6 flex flex-col gap-4 max-h-[80vh] overflow-y-auto">
-                        <div className="flex justify-between">
-                            <h3 className="text-white font-bold font-display">Prompt del plan</h3>
-                            <button onClick={() => setDetalle(null)} className="text-[#7D8590] hover:text-white">✕</button>
-                        </div>
-                        <pre className="bg-[#0D1117] rounded-xl p-4 text-[#3DDC84] text-xs overflow-x-auto whitespace-pre-wrap font-mono">
-                            {detalle.prompt_usado ?? "Prompt no disponible"}
-                        </pre>
-                    </div>
-                </div>
-            )}
         </AdminLayout>
     );
 }
