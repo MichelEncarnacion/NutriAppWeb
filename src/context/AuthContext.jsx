@@ -4,7 +4,7 @@ import { supabase } from "../lib/supabase";
 
 const AuthContext = createContext(null);
 
-// Races a promise against a timeout; resolves to fallback if it times out.
+// Races a promise against a timeout. AbortErrors se convierten en fallback.
 const withTimeout = (promise, ms, fallback = null) =>
     Promise.race([
         promise,
@@ -14,31 +14,45 @@ const withTimeout = (promise, ms, fallback = null) =>
         throw e;
     });
 
+// Pausa ms milisegundos.
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
 export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
     const [perfil, setPerfil] = useState(null);
     const [loading, setLoading] = useState(true);
-    // Ref para saber si ya tenemos un perfil válido — evita el spinner
-    // cuando el browser re-dispara eventos al volver a la tab.
+    // true  → ya tenemos perfil válido
     const perfilCargadoRef = useRef(false);
+    // true  → hay una carga de perfil en curso (evita llamadas duplicadas)
+    const cargandoPerfilRef = useRef(false);
 
     // ── Carga el perfil extendido del usuario desde la tabla `perfiles` ──
+    // Reintenta una vez si el primer intento falla por timeout/AbortError
+    // (el Web Lock de Supabase puede estar contestado al recargar la página).
     const cargarPerfil = async (userId, session) => {
         // Los admins no tienen fila en perfiles — no consultamos
         if (session?.user?.app_metadata?.role === "admin") return null;
 
-        // Ambas queries en paralelo, con timeout de 8s para evitar cuelgues
-        const result = await withTimeout(
+        const ejecutar = () => withTimeout(
             Promise.all([
                 supabase.from("perfiles").select("*").eq("id", userId).single(),
                 supabase.from("diagnosticos").select("acepto_terminos").eq("perfil_id", userId).maybeSingle(),
             ]),
-            8_000,
-            null, // fallback si hay timeout
+            5_000,  // 5s — si hay AbortError/timeout, reintentamos
+            null,
         );
 
+        let result = await ejecutar();
+
+        // Primer intento falló (timeout o AbortError): esperar a que el
+        // Web Lock se estabilice y reintentar una vez más.
         if (!result) {
-            console.warn("cargarPerfil: timeout o sin respuesta");
+            await sleep(1_500);
+            result = await ejecutar();
+        }
+
+        if (!result) {
+            console.warn("cargarPerfil: sin respuesta tras reintentar");
             return null;
         }
 
@@ -56,6 +70,17 @@ export function AuthProvider({ children }) {
         };
     };
 
+    // Carga el perfil evitando llamadas duplicadas concurrentes.
+    const cargarPerfilGuardado = async (userId, session) => {
+        if (cargandoPerfilRef.current) return null;
+        cargandoPerfilRef.current = true;
+        try {
+            return await cargarPerfil(userId, session);
+        } finally {
+            cargandoPerfilRef.current = false;
+        }
+    };
+
     const recargarPerfil = async () => {
         if (!session?.user) return false;
         try {
@@ -65,7 +90,7 @@ export function AuthProvider({ children }) {
                 return true;
             }
         } catch {
-            // AbortError u otros errores transitorios — ignorar
+            // errores transitorios — ignorar
         }
         return false;
     };
@@ -83,8 +108,7 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         let mounted = true;
 
-        // 1. Sesión inicial — race contra timeout de 10s para evitar cuelgue en token refresh
-        // Si getSession() falla por AbortError (lock robado al recargar), reintenta una vez.
+        // 1. Sesión inicial — con retry si getSession() falla por AbortError.
         const initSession = async () => {
             try {
                 let result = await withTimeout(
@@ -92,10 +116,9 @@ export function AuthProvider({ children }) {
                     10_000,
                     { data: { session: null } },
                 );
-                // AbortError → withTimeout devuelve { data: { session: null } }.
-                // Esperamos a que el lock se estabilice y reintentamos.
+                // Si no hay sesión puede ser AbortError — reintentamos tras 800ms.
                 if (!result?.data?.session) {
-                    await new Promise(r => setTimeout(r, 600));
+                    await sleep(800);
                     if (!mounted) return;
                     result = await withTimeout(
                         supabase.auth.getSession(),
@@ -107,7 +130,7 @@ export function AuthProvider({ children }) {
                 const { data: { session } } = result;
                 setSession(session);
                 if (session?.user) {
-                    const p = await cargarPerfil(session.user.id, session);
+                    const p = await cargarPerfilGuardado(session.user.id, session);
                     if (mounted && p !== null) {
                         setPerfil(p);
                         perfilCargadoRef.current = true;
@@ -132,24 +155,19 @@ export function AuthProvider({ children }) {
                     setSession(session);
                     return;
                 }
-                // INITIAL_SESSION: initSession ya lo maneja normalmente.
-                // Pero si initSession falló (AbortError al recargar), el perfil
-                // no está cargado — en ese caso sí cargamos el perfil aquí.
+                // INITIAL_SESSION: initSession lo maneja. Solo actuamos aquí
+                // si initSession falló y el perfil todavía no está cargado.
                 if (event === 'INITIAL_SESSION' && perfilCargadoRef.current) {
                     setSession(session);
                     return;
                 }
 
-                // Si ya tenemos un perfil válido, actualizar en background sin spinner.
-                // Esto evita el bloqueo de ~8s al volver a una tab inactiva.
                 const yaTenePerfil = perfilCargadoRef.current;
                 if (!yaTenePerfil && mounted) setLoading(true);
                 try {
                     setSession(session);
                     if (session?.user) {
-                        const p = await cargarPerfil(session.user.id, session);
-                        // Solo actualizar el perfil si la query tuvo éxito.
-                        // Si hubo timeout (p === null) mantenemos el perfil previo.
+                        const p = await cargarPerfilGuardado(session.user.id, session);
                         if (mounted && p !== null) {
                             setPerfil(p);
                             perfilCargadoRef.current = true;
@@ -203,8 +221,6 @@ export function AuthProvider({ children }) {
             .select()
             .single();
         if (!error) {
-            // Preservar acepto_terminos que viene de diagnosticos,
-            // no del objeto perfiles retornado por Supabase.
             setPerfil({
                 ...data,
                 acepto_terminos: perfil?.acepto_terminos ?? false,
@@ -215,19 +231,10 @@ export function AuthProvider({ children }) {
 
     // ── Helpers de estado del usuario ────────────────────────────────────
 
-    // ¿El usuario ya aceptó términos y condiciones?
     const aceptoTerminos = perfil?.acepto_terminos ?? false;
-
-    // ¿El usuario ya completó el diagnóstico?
-    // Lo guardamos como campo en perfiles para no hacer query extra
     const completoDiagnostico = perfil?.diagnostico_completado ?? false;
-
-    // Admin se detecta desde el JWT (app_metadata), no desde perfiles
     const esAdmin = session?.user?.app_metadata?.role === "admin";
-
-    // Rol del usuario: 'demo' | 'freemium' | 'premium' (solo usuarios normales)
     const rol = perfil?.tipo_usuario ?? null;
-
     const esPremium = rol === "premium" || rol === "demo";
 
     const value = {
@@ -250,7 +257,6 @@ export function AuthProvider({ children }) {
         marcarDiagnosticoCompletado,
     };
 
-    // Mientras resuelve la sesión inicial muestra pantalla de carga
     if (loading) return (
         <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-[#3DDC84] border-t-transparent rounded-full animate-spin" />
