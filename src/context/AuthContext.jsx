@@ -9,7 +9,10 @@ const withTimeout = (promise, ms, fallback = null) =>
     Promise.race([
         promise,
         new Promise(resolve => setTimeout(() => resolve(fallback), ms)),
-    ]).catch(() => fallback);
+    ]).catch((e) => {
+        if (e?.name === "AbortError") return fallback;
+        throw e;
+    });
 
 export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
@@ -81,13 +84,25 @@ export function AuthProvider({ children }) {
         let mounted = true;
 
         // 1. Sesión inicial — race contra timeout de 10s para evitar cuelgue en token refresh
+        // Si getSession() falla por AbortError (lock robado al recargar), reintenta una vez.
         const initSession = async () => {
             try {
-                const result = await withTimeout(
+                let result = await withTimeout(
                     supabase.auth.getSession(),
                     10_000,
                     { data: { session: null } },
                 );
+                // AbortError → withTimeout devuelve { data: { session: null } }.
+                // Esperamos a que el lock se estabilice y reintentamos.
+                if (!result?.data?.session) {
+                    await new Promise(r => setTimeout(r, 600));
+                    if (!mounted) return;
+                    result = await withTimeout(
+                        supabase.auth.getSession(),
+                        10_000,
+                        { data: { session: null } },
+                    );
+                }
                 if (!mounted) return;
                 const { data: { session } } = result;
                 setSession(session);
@@ -112,11 +127,15 @@ export function AuthProvider({ children }) {
             async (event, session) => {
                 if (!mounted) return;
 
-                // INITIAL_SESSION se dispara al montar — initSession ya lo maneja.
                 // TOKEN_REFRESHED solo renueva el JWT — el perfil no cambia.
-                // Ignorar ambos aquí evita cargarPerfil duplicado y redirects
-                // falsos cuando el browser throttlea tabs inactivas.
-                if (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+                if (event === 'TOKEN_REFRESHED') {
+                    setSession(session);
+                    return;
+                }
+                // INITIAL_SESSION: initSession ya lo maneja normalmente.
+                // Pero si initSession falló (AbortError al recargar), el perfil
+                // no está cargado — en ese caso sí cargamos el perfil aquí.
+                if (event === 'INITIAL_SESSION' && perfilCargadoRef.current) {
                     setSession(session);
                     return;
                 }
