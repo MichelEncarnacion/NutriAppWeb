@@ -27,7 +27,7 @@ export default function Seguimiento() {
             .rpc("get_plan_activo", { p_usuario_id: session.user.id });
 
         const { error } = await supabase.from("seguimientos").insert({
-            usuario_id: session.user.id,
+            perfil_id: session.user.id,
             plan_id: plan?.[0]?.id,
             peso_kg: form.peso_kg ? Number(form.peso_kg) : null,
             pct_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
@@ -40,13 +40,13 @@ export default function Seguimiento() {
         if (!error) {
             // También guarda en métricas para el dashboard
             await supabase.from("metricas").upsert({
-                usuario_id: session.user.id,
+                perfil_id: session.user.id,
                 fecha: new Date().toISOString().split("T")[0],
                 peso_kg: form.peso_kg ? Number(form.peso_kg) : null,
                 pct_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
                 pct_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
                 fuente: "manual",
-            }, { onConflict: "usuario_id,fecha" });
+            }, { onConflict: "perfil_id,fecha" });
 
             navigate("/panel");
         }
