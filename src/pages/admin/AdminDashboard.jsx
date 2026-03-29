@@ -67,7 +67,7 @@ export default function AdminDashboard() {
 function RecentUsers() {
     const [users, setUsers] = useState([]);
     useEffect(() => {
-        supabase.from("perfiles").select("id,nombre,email,tipo_usuario,fecha_registro,activo")
+        supabase.from("perfiles").select("id,nombre,email,tipo_usuario,fecha_registro")
             .order("fecha_registro", { ascending: false }).limit(8)
             .then(({ data }) => setUsers(data ?? []));
     }, []);
@@ -83,7 +83,7 @@ function RecentUsers() {
             <table className="w-full text-sm">
                 <thead>
                     <tr className="text-[#7D8590] text-left border-b border-[#2D3748]">
-                        {["Nombre", "Email", "Tipo", "Registro", "Estado"].map((h) => (
+                        {["Nombre", "Email", "Tipo", "Registro"].map((h) => (
                             <th key={h} className="pb-3 pr-4 text-xs font-bold tracking-wide">{h}</th>
                         ))}
                     </tr>
@@ -102,9 +102,7 @@ function RecentUsers() {
                                     {new Date(u.fecha_registro).toLocaleDateString("es-MX")}
                                 </td>
                                 <td className="py-3">
-                                    <span className={`text-[10px] font-bold ${u.activo ? "text-[#3DDC84]" : "text-[#FF6B6B]"}`}>
-                                        {u.activo ? "● Activo" : "○ Inactivo"}
-                                    </span>
+                                    <span className="text-[10px] font-bold text-[#3DDC84]">● Activo</span>
                                 </td>
                             </tr>
                         );
