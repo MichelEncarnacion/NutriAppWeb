@@ -37,16 +37,14 @@ function ChartTooltip({ active, payload, label }) {
 }
 
 export default function Progreso() {
-    const { session, perfil } = useAuth();
+    const { session } = useAuth();
     const uid = session?.user?.id;
-    const esFreemium = perfil?.tipo_usuario === "freemium";
 
     const [metricas, setMetricas] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         if (!uid) return;
-        if (esFreemium) { setLoading(false); return; }
 
         const cargar = async () => {
             try {
@@ -65,7 +63,7 @@ export default function Progreso() {
             }
         };
         cargar();
-    }, [uid, esFreemium]);
+    }, [uid]);
 
     const ultima  = metricas[0] ?? null;
     const segunda = metricas[1] ?? null;
@@ -110,21 +108,6 @@ export default function Progreso() {
                         Seguimiento de tus métricas corporales a lo largo del tiempo
                     </p>
                 </div>
-
-                {/* Freemium overlay — unchanged */}
-                {esFreemium && (
-                    <div className="absolute inset-0 z-10 bg-[#0D1117]/90 rounded-xl flex flex-col items-center justify-center gap-5 p-8 text-center min-h-[400px]">
-                        <span className="text-5xl">📊</span>
-                        <h2 className="text-white text-xl font-bold font-display">Tu progreso, protegido</h2>
-                        <p className="text-[#7D8590] text-sm leading-relaxed max-w-xs">
-                            Con Premium puedes ver tus métricas históricas, gráficas de peso, % grasa y
-                            músculo a lo largo del tiempo.
-                        </p>
-                        <button className="px-6 py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm">
-                            Hazte Premium ✨
-                        </button>
-                    </div>
-                )}
 
                 {/* Loading skeleton */}
                 {loading ? (
