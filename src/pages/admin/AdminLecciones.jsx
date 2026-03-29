@@ -8,11 +8,11 @@ import AdminLayout from "../../components/AdminLayout";
 export default function AdminLecciones() {
     const [lecciones, setLecciones] = useState([]);
     const [editando, setEditando] = useState(null);
-    const [nueva, setNueva] = useState({ numero: "", titulo: "", descripcion: "", duracion_mins: "", categoria: "nutricion", publicada: true });
+    const [nueva, setNueva] = useState({ orden: "", titulo: "", contenido: "", duracion_mins: "", categoria: "nutricion", activa: true });
     const [loading, setLoading] = useState(true);
 
     const cargar = async () => {
-        const { data } = await supabase.from("lecciones").select("*").order("numero");
+        const { data } = await supabase.from("lecciones").select("*").order("orden");
         setLecciones(data ?? []);
         setLoading(false);
     };
@@ -21,19 +21,19 @@ export default function AdminLecciones() {
 
     const guardarNueva = async () => {
         await supabase.from("lecciones").insert({
-            numero: Number(nueva.numero),
+            orden: Number(nueva.orden),
             titulo: nueva.titulo,
-            descripcion: nueva.descripcion,
+            contenido: nueva.contenido,
             duracion_mins: Number(nueva.duracion_mins),
             categoria: nueva.categoria,
-            publicada: nueva.publicada,
+            activa: nueva.activa,
         });
-        setNueva({ numero: "", titulo: "", descripcion: "", duracion_mins: "", categoria: "nutricion", publicada: true });
+        setNueva({ orden: "", titulo: "", contenido: "", duracion_mins: "", categoria: "nutricion", activa: true });
         cargar();
     };
 
-    const togglePublicada = async (id, pub) => {
-        await supabase.from("lecciones").update({ publicada: !pub }).eq("id", id);
+    const toggleActiva = async (id, activa) => {
+        await supabase.from("lecciones").update({ activa: !activa }).eq("id", id);
         cargar();
     };
 
@@ -46,10 +46,10 @@ export default function AdminLecciones() {
                     <h3 className="text-white font-bold font-display text-sm mb-4">+ Nueva lección</h3>
                     <div className="grid grid-cols-2 gap-3">
                         {[
-                            { key: "numero", label: "N°", type: "number", placeholder: "9" },
+                            { key: "orden", label: "Orden", type: "number", placeholder: "9" },
                             { key: "duracion_mins", label: "Duración (min)", type: "number", placeholder: "10" },
                             { key: "titulo", label: "Título", type: "text", placeholder: "Nombre de la lección", col: 2 },
-                            { key: "descripcion", label: "Descripción", type: "text", placeholder: "Breve descripción...", col: 2 },
+                            { key: "contenido", label: "Contenido (Markdown)", type: "text", placeholder: "## Título\n\nContenido...", col: 2 },
                         ].map((f) => (
                             <div key={f.key} className={f.col === 2 ? "col-span-2" : ""}>
                                 <label className="text-xs text-[#7D8590] mb-1 block">{f.label}</label>
@@ -65,7 +65,7 @@ export default function AdminLecciones() {
                     </div>
                     <button
                         onClick={guardarNueva}
-                        disabled={!nueva.titulo || !nueva.numero}
+                        disabled={!nueva.titulo || !nueva.orden}
                         className="mt-4 px-5 py-2.5 bg-[#A855F7] text-white font-bold font-display text-sm rounded-xl hover:bg-[#C084FC] transition-all disabled:opacity-50"
                     >
                         Crear lección
@@ -89,21 +89,21 @@ export default function AdminLecciones() {
                                 ))
                                 : lecciones.map((l) => (
                                     <tr key={l.id} className="hover:bg-[rgba(255,255,255,.02)] transition-colors">
-                                        <td className="px-4 py-3 text-[#A855F7] font-black font-display">{l.numero}</td>
+                                        <td className="px-4 py-3 text-[#A855F7] font-black font-display">{l.orden}</td>
                                         <td className="px-4 py-3 text-white font-semibold">{l.titulo}</td>
                                         <td className="px-4 py-3 text-[#7D8590]">{l.duracion_mins} min</td>
                                         <td className="px-4 py-3 text-[#7D8590] capitalize">{l.categoria}</td>
                                         <td className="px-4 py-3">
-                                            <span className={`text-[10px] font-bold ${l.publicada ? "text-[#3DDC84]" : "text-[#7D8590]"}`}>
-                                                {l.publicada ? "● Publicada" : "○ Oculta"}
+                                            <span className={`text-[10px] font-bold ${l.activa ? "text-[#3DDC84]" : "text-[#7D8590]"}`}>
+                                                {l.activa ? "● Activa" : "○ Oculta"}
                                             </span>
                                         </td>
                                         <td className="px-4 py-3 flex gap-2">
                                             <button
-                                                onClick={() => togglePublicada(l.id, l.publicada)}
+                                                onClick={() => toggleActiva(l.id, l.activa)}
                                                 className="text-[11px] font-bold px-2 py-1 rounded-lg bg-[rgba(168,85,247,.12)] text-[#A855F7] hover:bg-[rgba(168,85,247,.2)] transition-all"
                                             >
-                                                {l.publicada ? "Ocultar" : "Publicar"}
+                                                {l.activa ? "Ocultar" : "Activar"}
                                             </button>
                                         </td>
                                     </tr>
