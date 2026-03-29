@@ -50,11 +50,33 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
     );
 
+    // Soporte para regeneración desde admin: si el JWT es de un admin
+    // y el body incluye target_perfil_id, generar el plan para ese usuario.
+    let effectivePerfilId = perfilId;
+    let isAdminRegeneration = false;
+    try {
+      const body = await req.json();
+      if (body?.target_perfil_id) {
+        const isAdmin =
+          user.app_metadata?.role === "admin" ||
+          user.user_metadata?.role === "admin";
+        if (!isAdmin) {
+          return new Response(JSON.stringify({ error: "No autorizado para regenerar planes de otros usuarios" }), {
+            status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        effectivePerfilId = body.target_perfil_id;
+        isAdminRegeneration = true;
+      }
+    } catch {
+      // Body vacío o inválido — continuar con perfilId del JWT
+    }
+
     // 2. Leer diagnóstico
     const { data: diag, error: diagError } = await supabase
       .from("diagnosticos")
       .select("peso, estatura, edad, sexo, objetivo, nivel_actividad, habitos_alimenticios, restricciones_medicas, alergias, enfermedades, presupuesto_quincenal")
-      .eq("perfil_id", perfilId)
+      .eq("perfil_id", effectivePerfilId)
       .order("created_at", { ascending: false })
       .limit(1)
       .single();
@@ -65,27 +87,29 @@ Deno.serve(async (req) => {
       });
     }
 
-    // 3. Verificar límite freemium
-    const { data: puedeGenerar, error: limitError } = await supabase
-      .rpc("check_planes_freemium_limit", { uid: perfilId });
+    // 3. Verificar límite freemium (omitir si es regeneración por admin)
+    if (!isAdminRegeneration) {
+      const { data: puedeGenerar, error: limitError } = await supabase
+        .rpc("check_planes_freemium_limit", { uid: effectivePerfilId });
 
-    if (limitError) {
-      return new Response(JSON.stringify({ error: "Error verificando límite" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
+      if (limitError) {
+        return new Response(JSON.stringify({ error: "Error verificando límite" }), {
+          status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
-    if (puedeGenerar === false) {
-      return new Response(JSON.stringify({ error: "plan_limit_reached" }), {
-        status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      if (puedeGenerar === false) {
+        return new Response(JSON.stringify({ error: "plan_limit_reached" }), {
+          status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // 4. Desactivar planes anteriores activos del usuario
     await supabase
       .from("planes")
       .update({ es_activo: false })
-      .eq("perfil_id", perfilId)
+      .eq("perfil_id", effectivePerfilId)
       .eq("es_activo", true);
 
     // Crear registro en planes con estado='generando'
@@ -96,7 +120,7 @@ Deno.serve(async (req) => {
     const { data: planRow, error: insertError } = await supabase
       .from("planes")
       .insert({
-        perfil_id: perfilId,
+        perfil_id: effectivePerfilId,
         estado: "generando",
         fecha_inicio: hoy,
         fecha_fin: fechaFin,
