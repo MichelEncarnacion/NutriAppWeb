@@ -81,7 +81,7 @@ export default function Progreso() {
         const cronologico = [...metricas].reverse(); // oldest first
         const base = cronologico[0];
         return cronologico.map((m) => ({
-            fecha: new Date(m.fecha).toLocaleDateString("es-MX", {
+            fecha: new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
                 day: "numeric", month: "short",
             }),
             peso_norm: base.peso != null && m.peso != null
@@ -222,7 +222,7 @@ export default function Progreso() {
                             {metricas.map((m, i) => (
                                 <div key={m.fecha} className="flex items-center gap-4 py-3 text-sm flex-wrap">
                                     <span className="text-[#7D8590] text-xs w-20 flex-shrink-0">
-                                        {new Date(m.fecha).toLocaleDateString("es-MX", {
+                                        {new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
                                             day: "numeric", month: "short",
                                         })}
                                     </span>
