@@ -40,7 +40,10 @@ export function useActivePlan() {
   const diaActual = data?.fecha_inicio
     ? Math.min(
         Math.max(
-          Math.floor((new Date() - new Date(data.fecha_inicio)) / 86_400_000) + 1,
+          Math.floor(
+            (Date.now() - new Date(data.fecha_inicio + "T00:00:00").getTime()) /
+              86_400_000
+          ) + 1,
           1
         ),
         15
