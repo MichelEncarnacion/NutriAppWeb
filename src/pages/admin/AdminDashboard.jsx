@@ -9,36 +9,68 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         const cargar = async () => {
+            const hace7dias = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+                .toISOString().split("T")[0];
+
             const [
                 { count: totalUsers },
                 { count: premium },
-                { count: planes },
+                { count: planesTotal },
                 { count: lecciones },
+                { count: planesListos },
+                { count: planesError },
+                { data: activosData },
             ] = await Promise.all([
                 supabase.from("perfiles").select("*", { count: "exact", head: true }),
                 supabase.from("perfiles").select("*", { count: "exact", head: true }).eq("tipo_usuario", "premium"),
                 supabase.from("planes").select("*", { count: "exact", head: true }),
                 supabase.from("lecciones").select("*", { count: "exact", head: true }),
+                supabase.from("planes").select("*", { count: "exact", head: true }).eq("estado", "listo"),
+                supabase.from("planes").select("*", { count: "exact", head: true }).eq("estado", "error"),
+                supabase.from("resumen_diario").select("perfil_id").gte("fecha", hace7dias),
             ]);
-            setStats({ totalUsers, premium, planes, lecciones });
+
+            const activos7d = new Set((activosData ?? []).map((r) => r.perfil_id)).size;
+            const tasaPremium = totalUsers > 0 ? Math.round((premium / totalUsers) * 100) : 0;
+
+            setStats({ totalUsers, premium, planesTotal, lecciones, planesListos, planesError, activos7d, tasaPremium });
         };
         cargar();
     }, []);
 
-    const KPIS = [
+    const KPIS_ROW1 = [
         { label: "Usuarios totales", value: stats?.totalUsers ?? "—", icon: "👥", color: "#58A6FF" },
         { label: "Premium activos", value: stats?.premium ?? "—", icon: "✦", color: "#F0A500" },
-        { label: "Planes generados", value: stats?.planes ?? "—", icon: "🥗", color: "#3DDC84" },
+        { label: "Planes generados", value: stats?.planesTotal ?? "—", icon: "🥗", color: "#3DDC84" },
         { label: "Lecciones activas", value: stats?.lecciones ?? "—", icon: "📖", color: "#A855F7" },
+    ];
+
+    const KPIS_ROW2 = [
+        { label: "Planes listos", value: stats?.planesListos ?? "—", icon: "✅", color: "#3DDC84" },
+        { label: "Planes con error", value: stats?.planesError ?? "—", icon: "⚠️", color: "#FF6B6B" },
+        { label: "Activos (7 días)", value: stats?.activos7d ?? "—", icon: "🔥", color: "#F0A500" },
+        { label: "Tasa premium", value: stats ? `${stats.tasaPremium}%` : "—", icon: "📈", color: "#58A6FF" },
     ];
 
     return (
         <AdminLayout titulo="Dashboard">
             <div className="flex flex-col gap-6">
 
-                {/* KPIs */}
+                {/* KPIs fila 1 */}
                 <div className="grid grid-cols-4 gap-4">
-                    {KPIS.map((k, i) => (
+                    {KPIS_ROW1.map((k, i) => (
+                        <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 relative overflow-hidden">
+                            <div className="text-2xl mb-3">{k.icon}</div>
+                            <div className="font-display font-black text-3xl" style={{ color: k.color }}>{k.value}</div>
+                            <div className="text-xs text-[#7D8590] mt-1">{k.label}</div>
+                            <div className="absolute top-0 right-0 w-16 h-16 rounded-full opacity-10" style={{ background: k.color, filter: "blur(20px)" }} />
+                        </div>
+                    ))}
+                </div>
+
+                {/* KPIs fila 2 */}
+                <div className="grid grid-cols-4 gap-4">
+                    {KPIS_ROW2.map((k, i) => (
                         <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 relative overflow-hidden">
                             <div className="text-2xl mb-3">{k.icon}</div>
                             <div className="font-display font-black text-3xl" style={{ color: k.color }}>{k.value}</div>
