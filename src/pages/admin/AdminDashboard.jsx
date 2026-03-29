@@ -118,7 +118,7 @@ function RecentUsers() {
 function ErrorPlanes() {
     const [planes, setPlanes] = useState([]);
     useEffect(() => {
-        supabase.from("planes").select("id,usuario_id,estado,created_at")
+        supabase.from("planes").select("id,perfil_id,estado,created_at")
             .eq("estado", "error").order("created_at", { ascending: false }).limit(5)
             .then(({ data }) => setPlanes(data ?? []));
     }, []);

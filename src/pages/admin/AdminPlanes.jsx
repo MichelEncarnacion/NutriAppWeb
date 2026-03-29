@@ -11,7 +11,7 @@ export default function AdminPlanes() {
 
     useEffect(() => {
         supabase.from("planes")
-            .select("id,usuario_id,estado,created_at,objetivo,kcal_objetivo,modelo_ia,prompt_usado")
+            .select("id,perfil_id,estado,created_at,objetivo,kcal_objetivo,modelo_ia,prompt_usado")
             .order("created_at", { ascending: false }).limit(30)
             .then(({ data }) => { setPlanes(data ?? []); setLoading(false); });
     }, []);
@@ -44,7 +44,7 @@ export default function AdminPlanes() {
                                     return (
                                         <tr key={p.id} className="hover:bg-[rgba(255,255,255,.02)] transition-colors">
                                             <td className="px-4 py-3 text-[#7D8590] font-mono text-xs">{p.id.slice(0, 8)}…</td>
-                                            <td className="px-4 py-3 text-[#7D8590] font-mono text-xs">{p.usuario_id.slice(0, 8)}…</td>
+                                            <td className="px-4 py-3 text-[#7D8590] font-mono text-xs">{p.perfil_id?.slice(0, 8) ?? "—"}…</td>
                                             <td className="px-4 py-3 text-white text-xs">{p.objetivo?.replace(/_/g, " ") ?? "—"}</td>
                                             <td className="px-4 py-3 text-[#3DDC84] font-display font-bold text-xs">{p.kcal_objetivo ?? "—"}</td>
                                             <td className="px-4 py-3">
