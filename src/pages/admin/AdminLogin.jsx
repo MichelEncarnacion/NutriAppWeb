@@ -19,7 +19,15 @@ export default function AdminLogin() {
 
         // Verifica custom claim de admin en el JWT
         const jwt = data.session?.access_token;
-        const payload = JSON.parse(atob(jwt.split(".")[1]));
+        let payload = null;
+        try {
+            payload = JSON.parse(atob(jwt.split(".")[1]));
+        } catch {
+            await supabase.auth.signOut();
+            setError("Token inválido. Intenta de nuevo.");
+            setLoading(false);
+            return;
+        }
         if (payload?.user_metadata?.role !== "admin" && payload?.app_metadata?.role !== "admin") {
             await supabase.auth.signOut();
             setError("No tienes permisos de administrador.");
