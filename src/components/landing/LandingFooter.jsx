@@ -9,7 +9,7 @@ import { useAuth } from "../../hooks/useAuth";
 const NAV_LINKS = [
   { label: "Cómo funciona",         href: "#como-funciona" },
   { label: "Preguntas frecuentes",  href: "#faq" },
-  { label: "Términos y condiciones", to: "/terminos-condiciones" },
+  { label: "Términos y condiciones", to: "/terminos" },
   { label: "Iniciar sesión",         to: "/login" },
 ];
 
