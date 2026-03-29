@@ -1,10 +1,126 @@
 // src/pages/Lecciones.jsx
-import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
+import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 
+// ─── Parsea el markdown en slides individuales ───────────────────────────────
+function parsearSlides(contenido) {
+    if (!contenido?.trim()) return [];
+
+    const bloques = contenido.split(/\n{2,}/).map(b => b.trim()).filter(Boolean);
+
+    const slides = [];
+    let buffer = null;
+
+    for (const bloque of bloques) {
+        const esHeading = /^#{1,3}\s/.test(bloque);
+
+        if (esHeading) {
+            if (buffer) slides.push(buffer);
+            buffer = { tipo: detectarTipo(bloque), texto: bloque };
+        } else {
+            if (!buffer) {
+                buffer = { tipo: detectarTipo(bloque), texto: bloque };
+            } else {
+                // Si el bloque actual encaja con el buffer, lo adjunto
+                const tipoActual = detectarTipo(bloque);
+                if (buffer.tipo === tipoActual && buffer.texto.length < 300) {
+                    buffer.texto += "\n\n" + bloque;
+                } else {
+                    slides.push(buffer);
+                    buffer = { tipo: tipoActual, texto: bloque };
+                }
+            }
+        }
+
+        // Flush si el buffer ya es largo
+        if (buffer && buffer.texto.length > 500) {
+            slides.push(buffer);
+            buffer = null;
+        }
+    }
+
+    if (buffer) slides.push(buffer);
+    return slides;
+}
+
+function detectarTipo(texto) {
+    if (/^#{1,3}\s/.test(texto)) return "heading";
+    if (/^>/.test(texto)) return "callout";
+    if (/^[-*]\s/.test(texto) || /^\d+\.\s/.test(texto)) return "lista";
+    return "texto";
+}
+
+// ─── Renders un slide individual ─────────────────────────────────────────────
+function RenderSlide({ slide }) {
+    const lineas = slide.texto.split("\n");
+
+    if (slide.tipo === "heading") {
+        const heading = lineas[0].replace(/^#{1,3}\s/, "");
+        const cuerpo = lineas.slice(1).join("\n").trim();
+        return (
+            <div className="flex flex-col gap-4">
+                <h2 className="font-black font-display text-white leading-tight" style={{ fontSize: "1.6rem" }}>
+                    {heading}
+                </h2>
+                {cuerpo && <RenderTexto texto={cuerpo} />}
+            </div>
+        );
+    }
+
+    if (slide.tipo === "callout") {
+        const texto = slide.texto.replace(/^>\s?/gm, "").trim();
+        return (
+            <div
+                className="rounded-2xl p-5 flex gap-4"
+                style={{ background: "rgba(61,220,132,0.08)", border: "1px solid rgba(61,220,132,0.2)" }}
+            >
+                <span className="text-2xl flex-shrink-0">💡</span>
+                <p className="text-[#3DDC84] text-base leading-relaxed font-medium">{texto}</p>
+            </div>
+        );
+    }
+
+    if (slide.tipo === "lista") {
+        const items = lineas
+            .map(l => l.replace(/^[-*]\s|\d+\.\s/, "").trim())
+            .filter(Boolean);
+        return (
+            <div className="flex flex-col gap-3">
+                {items.map((item, i) => (
+                    <div key={i} className="flex gap-3 items-start">
+                        <div
+                            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-bold font-display text-xs"
+                            style={{ background: "rgba(61,220,132,0.12)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)", marginTop: "1px" }}
+                        >
+                            {i + 1}
+                        </div>
+                        <p className="text-[#C9D1D9] text-[0.95rem] leading-relaxed flex-1">{item}</p>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    return <RenderTexto texto={slide.texto} />;
+}
+
+function RenderTexto({ texto }) {
+    // Aplica **bold** inline
+    const partes = texto.split(/(\*\*[^*]+\*\*)/g);
+    const renderPartes = partes.map((p, i) => {
+        if (/^\*\*[^*]+\*\*$/.test(p)) {
+            return <strong key={i} className="text-white font-bold">{p.slice(2, -2)}</strong>;
+        }
+        return <span key={i}>{p}</span>;
+    });
+    return (
+        <p className="text-[#8B949E] leading-[1.8] text-[0.95rem]">{renderPartes}</p>
+    );
+}
+
+// ─── Componente principal ─────────────────────────────────────────────────────
 export default function Lecciones() {
     const { session, perfil, esPremium } = useAuth();
     const uid = session?.user?.id;
@@ -16,9 +132,19 @@ export default function Lecciones() {
     const [sheetMounted, setSheetMounted] = useState(false);
     const [loading, setLoading] = useState(true);
 
+    const [slides, setSlides] = useState([]);
+    const [slideIdx, setSlideIdx] = useState(0);
+    const [animDir, setAnimDir] = useState(0); // -1 atrás, 1 adelante
+    const [animKey, setAnimKey] = useState(0);
+    const touchStartX = useRef(null);
+
     useEffect(() => {
         if (activa) {
             document.body.style.overflow = "hidden";
+            const parsed = parsearSlides(activa.contenido);
+            setSlides(parsed.length > 0 ? parsed : [{ tipo: "texto", texto: activa.contenido }]);
+            setSlideIdx(0);
+            setAnimDir(0);
             requestAnimationFrame(() => setSheetMounted(true));
         } else {
             document.body.style.overflow = "";
@@ -111,15 +237,30 @@ export default function Lecciones() {
         const p = progreso[leccion.id];
         if (!p) return false;
         if (p.estado === "completada") return true;
-        if (p.estado === "disponible") {
-            return !p.fecha_disponible || new Date(p.fecha_disponible) <= new Date();
-        }
+        if (p.estado === "disponible") return !p.fecha_disponible || new Date(p.fecha_disponible) <= new Date();
         return false;
+    };
+
+    const irSlide = (dir) => {
+        const siguiente = slideIdx + dir;
+        if (siguiente < 0 || siguiente >= slides.length) return;
+        setAnimDir(dir);
+        setAnimKey(k => k + 1);
+        setSlideIdx(siguiente);
+    };
+
+    const handleTouchStart = (e) => { touchStartX.current = e.touches[0].clientX; };
+    const handleTouchEnd = (e) => {
+        if (touchStartX.current === null) return;
+        const diff = touchStartX.current - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) irSlide(diff > 0 ? 1 : -1);
+        touchStartX.current = null;
     };
 
     const completadas = Object.values(progreso).filter((p) => p?.estado === "completada").length;
     const total = lecciones.length;
     const pct = total > 0 ? Math.round((completadas / total) * 100) : 0;
+    const esUltimoSlide = slideIdx === slides.length - 1;
 
     return (
         <Layout>
@@ -152,24 +293,17 @@ export default function Lecciones() {
                                 }}
                             />
                         </div>
-                        {/* Tick marks */}
                         <div className="flex justify-between mt-1.5 px-0.5">
                             {lecciones.map((lec) => {
                                 const p = progreso[lec.id];
                                 const done = p?.estado === "completada";
-                                return (
-                                    <div
-                                        key={lec.id}
-                                        className="w-1 h-1 rounded-full"
-                                        style={{ background: done ? "#3DDC84" : "#2D3748" }}
-                                    />
-                                );
+                                return <div key={lec.id} className="w-1 h-1 rounded-full" style={{ background: done ? "#3DDC84" : "#2D3748" }} />;
                             })}
                         </div>
                     </div>
                 )}
 
-                {/* Lessons */}
+                {/* Lessons list */}
                 {loading ? (
                     <div className="flex flex-col gap-3">
                         {[...Array(5)].map((_, i) => (
@@ -184,7 +318,7 @@ export default function Lecciones() {
                     </div>
                 ) : (
                     <div className="flex flex-col gap-2">
-                        {lecciones.map((lec, i) => {
+                        {lecciones.map((lec) => {
                             const p = progreso[lec.id];
                             const completada = p?.estado === "completada";
                             const desbloqueada = estaDesbloqueada(lec);
@@ -193,7 +327,6 @@ export default function Lecciones() {
                             const diasRestantes = p?.fecha_disponible
                                 ? Math.max(0, Math.ceil((new Date(p.fecha_disponible) - new Date()) / 86400000))
                                 : null;
-
                             const num = String(lec.orden).padStart(2, "0");
 
                             return (
@@ -202,106 +335,50 @@ export default function Lecciones() {
                                     onClick={() => disponible && setActiva(lec)}
                                     className="relative overflow-hidden rounded-2xl border transition-all duration-200"
                                     style={{
-                                        background: completada
-                                            ? "rgba(22,27,34,0.6)"
-                                            : disponible
-                                                ? "#161B22"
-                                                : "rgba(22,27,34,0.4)",
-                                        borderColor: completada
-                                            ? "rgba(61,220,132,0.15)"
-                                            : disponible
-                                                ? "#2D3748"
-                                                : "rgba(45,55,72,0.4)",
+                                        background: completada ? "rgba(22,27,34,0.6)" : disponible ? "#161B22" : "rgba(22,27,34,0.4)",
+                                        borderColor: completada ? "rgba(61,220,132,0.15)" : disponible ? "#2D3748" : "rgba(45,55,72,0.4)",
                                         cursor: disponible ? "pointer" : "default",
                                         opacity: bloqueada ? 0.5 : 1,
                                     }}
                                     onMouseEnter={e => {
-                                        if (disponible) {
-                                            e.currentTarget.style.borderColor = "#3DDC84";
-                                            e.currentTarget.style.transform = "translateY(-1px)";
-                                        }
+                                        if (disponible) { e.currentTarget.style.borderColor = "#3DDC84"; e.currentTarget.style.transform = "translateY(-1px)"; }
                                     }}
                                     onMouseLeave={e => {
                                         e.currentTarget.style.borderColor = completada ? "rgba(61,220,132,0.15)" : "#2D3748";
                                         e.currentTarget.style.transform = "translateY(0)";
                                     }}
                                 >
-                                    {/* Large background number */}
-                                    <span
-                                        className="absolute right-3 top-1/2 -translate-y-1/2 font-display font-black select-none pointer-events-none"
-                                        style={{
-                                            fontSize: "4.5rem",
-                                            lineHeight: 1,
-                                            color: completada ? "rgba(61,220,132,0.06)" : "rgba(255,255,255,0.03)",
-                                            letterSpacing: "-0.05em",
-                                        }}
-                                    >
+                                    <span className="absolute right-3 top-1/2 -translate-y-1/2 font-display font-black select-none pointer-events-none"
+                                        style={{ fontSize: "4.5rem", lineHeight: 1, color: completada ? "rgba(61,220,132,0.06)" : "rgba(255,255,255,0.03)", letterSpacing: "-0.05em" }}>
                                         {num}
                                     </span>
-
-                                    {/* Left accent bar */}
-                                    <div
-                                        className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
-                                        style={{
-                                            background: completada
-                                                ? "rgba(61,220,132,0.4)"
-                                                : disponible
-                                                    ? "#3DDC84"
-                                                    : "rgba(45,55,72,0.6)",
-                                        }}
-                                    />
-
+                                    <div className="absolute left-0 top-0 bottom-0 w-[3px] rounded-l-2xl"
+                                        style={{ background: completada ? "rgba(61,220,132,0.4)" : disponible ? "#3DDC84" : "rgba(45,55,72,0.6)" }} />
                                     <div className="flex items-center gap-4 px-5 py-4 pl-6">
-                                        {/* Status indicator */}
-                                        <div
-                                            className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-display font-black text-xs"
+                                        <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 font-display font-black text-xs"
                                             style={{
-                                                background: completada
-                                                    ? "rgba(61,220,132,0.15)"
-                                                    : disponible
-                                                        ? "rgba(61,220,132,0.1)"
-                                                        : "rgba(45,55,72,0.4)",
-                                                border: completada
-                                                    ? "1px solid rgba(61,220,132,0.3)"
-                                                    : disponible
-                                                        ? "1px solid rgba(61,220,132,0.2)"
-                                                        : "1px solid rgba(45,55,72,0.5)",
+                                                background: completada ? "rgba(61,220,132,0.15)" : disponible ? "rgba(61,220,132,0.1)" : "rgba(45,55,72,0.4)",
+                                                border: completada ? "1px solid rgba(61,220,132,0.3)" : disponible ? "1px solid rgba(61,220,132,0.2)" : "1px solid rgba(45,55,72,0.5)",
                                                 color: completada ? "#3DDC84" : disponible ? "#3DDC84" : "#4A5568",
-                                            }}
-                                        >
+                                            }}>
                                             {completada ? "✓" : bloqueada ? "🔒" : lec.orden}
                                         </div>
-
-                                        {/* Text */}
                                         <div className="flex-1 min-w-0">
-                                            <p
-                                                className="text-sm font-semibold leading-tight"
-                                                style={{ color: completada ? "#7D8590" : bloqueada ? "#4A5568" : "#E6EDF3" }}
-                                            >
+                                            <p className="text-sm font-semibold leading-tight"
+                                                style={{ color: completada ? "#7D8590" : bloqueada ? "#4A5568" : "#E6EDF3" }}>
                                                 {lec.titulo}
                                             </p>
                                             <p className="text-[10px] mt-0.5 font-medium" style={{
-                                                color: completada ? "rgba(61,220,132,0.7)"
-                                                    : bloqueada && diasRestantes ? "#F0A500"
-                                                        : "#4A5568"
+                                                color: completada ? "rgba(61,220,132,0.7)" : bloqueada && diasRestantes ? "#F0A500" : "#4A5568"
                                             }}>
-                                                {completada
-                                                    ? "Completada"
-                                                    : bloqueada && diasRestantes && diasRestantes > 0
-                                                        ? `Disponible en ${diasRestantes} ${diasRestantes === 1 ? "día" : "días"}`
-                                                        : disponible
-                                                            ? "Disponible ahora"
-                                                            : ""}
+                                                {completada ? "Completada"
+                                                    : bloqueada && diasRestantes && diasRestantes > 0 ? `Disponible en ${diasRestantes} ${diasRestantes === 1 ? "día" : "días"}`
+                                                        : disponible ? "Disponible ahora" : ""}
                                             </p>
                                         </div>
-
                                         {disponible && (
-                                            <div
-                                                className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs"
-                                                style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84" }}
-                                            >
-                                                →
-                                            </div>
+                                            <div className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 text-xs"
+                                                style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84" }}>→</div>
                                         )}
                                     </div>
                                 </div>
@@ -311,148 +388,142 @@ export default function Lecciones() {
                 )}
             </div>
 
-            {/* Bottom sheet */}
+            {/* ── Lección modal estilo Duolingo ──────────────────────────── */}
             {activa && (
                 <>
+                    {/* Backdrop */}
                     <div
                         className="fixed inset-0 z-40"
-                        style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+                        style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)" }}
                         onClick={() => setActiva(null)}
                     />
 
+                    {/* Sheet */}
                     <div
                         className="fixed bottom-0 inset-x-0 z-50 flex flex-col rounded-t-3xl transition-transform duration-300 ease-out"
                         style={{
                             background: "#0D1117",
                             borderTop: "1px solid rgba(61,220,132,0.15)",
-                            maxHeight: "88vh",
+                            height: "88vh",
                             transform: sheetMounted ? "translateY(0)" : "translateY(100%)",
                         }}
+                        onTouchStart={handleTouchStart}
+                        onTouchEnd={handleTouchEnd}
                     >
                         {/* Handle */}
                         <div className="flex justify-center pt-3 pb-1 flex-shrink-0">
                             <div className="w-8 h-1 rounded-full" style={{ background: "rgba(61,220,132,0.3)" }} />
                         </div>
 
-                        {/* Header */}
-                        <div className="flex items-start justify-between px-6 pt-3 pb-4 flex-shrink-0">
-                            <div className="flex-1 pr-4">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span
-                                        className="text-[10px] font-black font-display tracking-[0.18em] px-2 py-0.5 rounded-full"
-                                        style={{
-                                            background: "rgba(61,220,132,0.1)",
-                                            color: "#3DDC84",
-                                            border: "1px solid rgba(61,220,132,0.2)"
-                                        }}
-                                    >
+                        {/* Top bar: título + cerrar + dots */}
+                        <div className="px-5 pt-2 pb-3 flex-shrink-0">
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[10px] font-black font-display tracking-[0.18em] px-2 py-0.5 rounded-full"
+                                        style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)" }}>
                                         LECCIÓN {activa.orden}
                                     </span>
+                                    <span className="text-[10px] text-[#4A5568] font-medium">
+                                        {slideIdx + 1} / {slides.length}
+                                    </span>
                                 </div>
-                                <h2 className="text-white font-black font-display text-xl leading-tight">
-                                    {activa.titulo}
-                                </h2>
+                                <button
+                                    onClick={() => setActiva(null)}
+                                    className="w-7 h-7 rounded-full flex items-center justify-center transition-colors text-xs"
+                                    style={{ background: "rgba(255,255,255,0.05)", color: "#7D8590" }}
+                                >✕</button>
                             </div>
-                            <button
-                                onClick={() => setActiva(null)}
-                                className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 transition-colors"
-                                style={{ background: "rgba(255,255,255,0.05)", color: "#7D8590" }}
-                                onMouseEnter={e => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.color = "#fff"; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.05)"; e.currentTarget.style.color = "#7D8590"; }}
-                            >
-                                ✕
-                            </button>
+
+                            {/* Progress dots */}
+                            <div className="flex gap-1.5">
+                                {slides.map((_, i) => (
+                                    <div
+                                        key={i}
+                                        className="rounded-full transition-all duration-300"
+                                        style={{
+                                            height: "3px",
+                                            flex: i === slideIdx ? "2" : "1",
+                                            background: i < slideIdx ? "#3DDC84" : i === slideIdx ? "#3DDC84" : "rgba(45,55,72,0.8)",
+                                            opacity: i < slideIdx ? 0.5 : 1,
+                                        }}
+                                    />
+                                ))}
+                            </div>
                         </div>
 
-                        {/* Divider */}
-                        <div className="h-px mx-6 flex-shrink-0" style={{ background: "rgba(45,55,72,0.6)" }} />
+                        {/* Slide content */}
+                        <div className="flex-1 overflow-hidden px-6 pb-2 flex flex-col justify-center">
+                            {/* Título de la lección en primer slide */}
+                            {slideIdx === 0 && (
+                                <p className="text-[#3DDC84] font-black font-display text-sm mb-5 tracking-wide">
+                                    {activa.titulo}
+                                </p>
+                            )}
 
-                        {/* Scrollable content */}
-                        <div className="overflow-y-auto flex-1 px-6 py-5">
-                            <div className="max-w-lg">
-                                <ReactMarkdown
-                                    components={{
-                                        h1: ({ children }) => (
-                                            <h2 className="font-black font-display text-white text-lg mt-6 mb-3 leading-tight first:mt-0">
-                                                {children}
-                                            </h2>
-                                        ),
-                                        h2: ({ children }) => (
-                                            <h2 className="font-black font-display text-white text-base mt-6 mb-3 leading-tight first:mt-0">
-                                                {children}
-                                            </h2>
-                                        ),
-                                        h3: ({ children }) => (
-                                            <h3 className="font-bold text-[#E6EDF3] text-sm mt-4 mb-2 leading-tight">
-                                                {children}
-                                            </h3>
-                                        ),
-                                        p: ({ children }) => (
-                                            <p className="text-[#8B949E] text-sm leading-[1.75] mb-4">
-                                                {children}
-                                            </p>
-                                        ),
-                                        strong: ({ children }) => (
-                                            <strong className="font-bold text-[#E6EDF3]">{children}</strong>
-                                        ),
-                                        ul: ({ children }) => (
-                                            <ul className="mb-4 space-y-2">{children}</ul>
-                                        ),
-                                        ol: ({ children }) => (
-                                            <ol className="mb-4 space-y-2 list-none counter-reset-item">{children}</ol>
-                                        ),
-                                        li: ({ children }) => (
-                                            <li className="flex gap-3 text-[#8B949E] text-sm leading-relaxed">
-                                                <span className="mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ background: "#3DDC84", marginTop: "0.45em" }} />
-                                                <span>{children}</span>
-                                            </li>
-                                        ),
-                                        blockquote: ({ children }) => (
-                                            <div
-                                                className="my-4 px-4 py-3 rounded-xl text-sm"
-                                                style={{
-                                                    background: "rgba(61,220,132,0.06)",
-                                                    borderLeft: "3px solid #3DDC84",
-                                                }}
-                                            >
-                                                <span className="text-[#3DDC84] font-medium">{children}</span>
-                                            </div>
-                                        ),
-                                        code: ({ children }) => (
-                                            <code
-                                                className="px-1.5 py-0.5 rounded text-xs font-mono"
-                                                style={{ background: "rgba(61,220,132,0.08)", color: "#3DDC84" }}
-                                            >
-                                                {children}
-                                            </code>
-                                        ),
-                                        hr: () => (
-                                            <div className="my-5 h-px" style={{ background: "rgba(45,55,72,0.6)" }} />
-                                        ),
+                            {slides.length > 0 && (
+                                <div
+                                    key={animKey}
+                                    style={{
+                                        animation: `slideIn${animDir >= 0 ? "Right" : "Left"} 0.25s ease-out both`,
                                     }}
                                 >
-                                    {activa.contenido}
-                                </ReactMarkdown>
-                            </div>
+                                    <RenderSlide slide={slides[slideIdx]} />
+                                </div>
+                            )}
                         </div>
 
-                        {/* Footer CTA */}
-                        <div className="px-6 py-4 flex-shrink-0" style={{ borderTop: "1px solid rgba(45,55,72,0.6)" }}>
-                            <button
-                                onClick={() => marcarCompletada(activa)}
-                                className="w-full py-3.5 font-bold font-display rounded-2xl text-sm transition-all duration-200"
-                                style={{
-                                    background: "linear-gradient(135deg, #3DDC84, #2bc96e)",
-                                    color: "#0D1117",
-                                    boxShadow: "0 4px 20px rgba(61,220,132,0.25)",
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.boxShadow = "0 4px 28px rgba(61,220,132,0.4)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                                onMouseLeave={e => { e.currentTarget.style.boxShadow = "0 4px 20px rgba(61,220,132,0.25)"; e.currentTarget.style.transform = "translateY(0)"; }}
-                            >
-                                Completar lección ✓
-                            </button>
+                        {/* Navigation */}
+                        <div className="px-5 pb-6 pt-3 flex-shrink-0 flex flex-col gap-3"
+                            style={{ borderTop: "1px solid rgba(45,55,72,0.4)" }}>
+
+                            {esUltimoSlide ? (
+                                <button
+                                    onClick={() => marcarCompletada(activa)}
+                                    className="w-full py-3.5 font-bold font-display rounded-2xl text-sm transition-all duration-200"
+                                    style={{
+                                        background: "linear-gradient(135deg, #3DDC84, #2bc96e)",
+                                        color: "#0D1117",
+                                        boxShadow: "0 4px 20px rgba(61,220,132,0.3)",
+                                    }}
+                                >
+                                    ¡Completar lección! 🎉
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={() => irSlide(1)}
+                                    className="w-full py-3.5 font-bold font-display rounded-2xl text-sm transition-all duration-200"
+                                    style={{
+                                        background: "rgba(61,220,132,0.1)",
+                                        color: "#3DDC84",
+                                        border: "1px solid rgba(61,220,132,0.2)",
+                                    }}
+                                >
+                                    Siguiente →
+                                </button>
+                            )}
+
+                            {slideIdx > 0 && (
+                                <button
+                                    onClick={() => irSlide(-1)}
+                                    className="text-[#4A5568] text-xs text-center font-medium py-1 transition-colors hover:text-[#7D8590]"
+                                >
+                                    ← Anterior
+                                </button>
+                            )}
                         </div>
                     </div>
+
+                    {/* CSS animations */}
+                    <style>{`
+                        @keyframes slideInRight {
+                            from { opacity: 0; transform: translateX(28px); }
+                            to   { opacity: 1; transform: translateX(0); }
+                        }
+                        @keyframes slideInLeft {
+                            from { opacity: 0; transform: translateX(-28px); }
+                            to   { opacity: 1; transform: translateX(0); }
+                        }
+                    `}</style>
                 </>
             )}
         </Layout>
@@ -462,18 +533,14 @@ export default function Lecciones() {
 async function seedLecciones(lecciones, esSoloPremium, uid) {
     if (esSoloPremium) {
         const rows = lecciones.map((l) => ({
-            perfil_id: uid,
-            leccion_id: l.id,
-            estado: "disponible",
-            fecha_disponible: new Date().toISOString(),
+            perfil_id: uid, leccion_id: l.id,
+            estado: "disponible", fecha_disponible: new Date().toISOString(),
         }));
         await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
     } else {
         await supabase.from("lecciones_usuario").upsert({
-            perfil_id: uid,
-            leccion_id: lecciones[0].id,
-            estado: "disponible",
-            fecha_disponible: new Date().toISOString(),
+            perfil_id: uid, leccion_id: lecciones[0].id,
+            estado: "disponible", fecha_disponible: new Date().toISOString(),
         }, { onConflict: "perfil_id,leccion_id" });
     }
 }
