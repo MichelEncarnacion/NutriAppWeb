@@ -11,7 +11,7 @@ export default function AdminPlanes() {
 
     useEffect(() => {
         supabase.from("planes")
-            .select("id,perfil_id,estado,created_at,objetivo,kcal_objetivo,modelo_ia,prompt_usado")
+            .select("id,perfil_id,estado,created_at,prompt_usado")
             .order("created_at", { ascending: false }).limit(30)
             .then(({ data }) => { setPlanes(data ?? []); setLoading(false); });
     }, []);
@@ -29,7 +29,7 @@ export default function AdminPlanes() {
                     <table className="w-full text-sm">
                         <thead className="bg-[#1C2330]">
                             <tr className="text-[#7D8590] text-left">
-                                {["Plan ID", "Usuario", "Objetivo", "Calorías", "Estado", "Fecha", ""].map((h) => (
+                                {["Plan ID", "Usuario", "Estado", "Fecha", ""].map((h) => (
                                     <th key={h} className="px-4 py-3 text-xs font-bold tracking-wide">{h}</th>
                                 ))}
                             </tr>
@@ -37,7 +37,7 @@ export default function AdminPlanes() {
                         <tbody className="divide-y divide-[#2D3748]">
                             {loading
                                 ? [...Array(8)].map((_, i) => (
-                                    <tr key={i}><td colSpan={7} className="px-4 py-3"><div className="h-4 bg-[#2D3748] rounded animate-pulse" /></td></tr>
+                                    <tr key={i}><td colSpan={5} className="px-4 py-3"><div className="h-4 bg-[#2D3748] rounded animate-pulse" /></td></tr>
                                 ))
                                 : planes.map((p) => {
                                     const e = ESTADO[p.estado] ?? ESTADO.error;
@@ -45,8 +45,6 @@ export default function AdminPlanes() {
                                         <tr key={p.id} className="hover:bg-[rgba(255,255,255,.02)] transition-colors">
                                             <td className="px-4 py-3 text-[#7D8590] font-mono text-xs">{p.id.slice(0, 8)}…</td>
                                             <td className="px-4 py-3 text-[#7D8590] font-mono text-xs">{p.perfil_id?.slice(0, 8) ?? "—"}…</td>
-                                            <td className="px-4 py-3 text-white text-xs">{p.objetivo?.replace(/_/g, " ") ?? "—"}</td>
-                                            <td className="px-4 py-3 text-[#3DDC84] font-display font-bold text-xs">{p.kcal_objetivo ?? "—"}</td>
                                             <td className="px-4 py-3">
                                                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: e.bg, color: e.color }}>{e.label}</span>
                                             </td>
