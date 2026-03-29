@@ -25,7 +25,8 @@ export default function AdminPlanes() {
         <AdminLayout titulo="Planes generados por IA">
             <div className="flex flex-col gap-4">
                 <div className="bg-[#161B22] border border-[#2D3748] rounded-xl overflow-hidden">
-                    <table className="w-full text-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full text-sm min-w-[400px]">
                         <thead className="bg-[#1C2330]">
                             <tr className="text-[#7D8590] text-left">
                                 {["Plan ID", "Usuario", "Estado", "Fecha"].map((h) => (
@@ -54,6 +55,7 @@ export default function AdminPlanes() {
                             }
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 

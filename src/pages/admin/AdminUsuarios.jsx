@@ -85,7 +85,8 @@ export default function AdminUsuarios() {
 
                 {/* Tabla */}
                 <div className="bg-[#161B22] border border-[#2D3748] rounded-xl overflow-hidden">
-                    <table className="w-full text-sm">
+                    <div className="overflow-x-auto">
+                    <table className="w-full text-sm min-w-[640px]">
                         <thead className="bg-[#1C2330]">
                             <tr className="text-[#7D8590] text-left">
                                 {["Nombre", "Email", "Tipo", "Registro", "Estado", "Acciones"].map((h) => (
@@ -142,6 +143,7 @@ export default function AdminUsuarios() {
                             }
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </AdminLayout>

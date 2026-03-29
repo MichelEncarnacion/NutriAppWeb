@@ -57,7 +57,7 @@ export default function AdminDashboard() {
             <div className="flex flex-col gap-6">
 
                 {/* KPIs fila 1 */}
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {KPIS_ROW1.map((k, i) => (
                         <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 relative overflow-hidden">
                             <div className="text-2xl mb-3">{k.icon}</div>
@@ -69,7 +69,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* KPIs fila 2 */}
-                <div className="grid grid-cols-4 gap-4">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {KPIS_ROW2.map((k, i) => (
                         <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 relative overflow-hidden">
                             <div className="text-2xl mb-3">{k.icon}</div>
