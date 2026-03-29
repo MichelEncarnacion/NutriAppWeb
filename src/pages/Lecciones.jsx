@@ -60,11 +60,18 @@ function RenderSlide({ slide }) {
         const heading = lineas[0].replace(/^#{1,3}\s/, "");
         const cuerpo = lineas.slice(1).join("\n").trim();
         return (
-            <div className="flex flex-col gap-4">
-                <h2 className="font-black font-display text-white leading-tight" style={{ fontSize: "1.6rem" }}>
-                    {heading}
-                </h2>
-                {cuerpo && <RenderTexto texto={cuerpo} />}
+            <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-3">
+                    <div className="w-8 h-[3px] rounded-full" style={{ background: "linear-gradient(90deg, #3DDC84, #58A6FF)" }} />
+                    <h2 className="font-black font-display text-white leading-[1.15]" style={{ fontSize: "1.85rem", letterSpacing: "-0.02em" }}>
+                        {heading}
+                    </h2>
+                </div>
+                {cuerpo && (
+                    <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                        <RenderTexto texto={cuerpo} />
+                    </div>
+                )}
             </div>
         );
     }
@@ -72,12 +79,17 @@ function RenderSlide({ slide }) {
     if (slide.tipo === "callout") {
         const texto = slide.texto.replace(/^>\s?/gm, "").trim();
         return (
-            <div
-                className="rounded-2xl p-5 flex gap-4"
-                style={{ background: "rgba(61,220,132,0.08)", border: "1px solid rgba(61,220,132,0.2)" }}
-            >
-                <span className="text-2xl flex-shrink-0">💡</span>
-                <p className="text-[#3DDC84] text-base leading-relaxed font-medium">{texto}</p>
+            <div className="rounded-2xl p-5 flex flex-col gap-3"
+                style={{
+                    background: "linear-gradient(135deg, rgba(61,220,132,0.07), rgba(88,166,255,0.04))",
+                    border: "1px solid rgba(61,220,132,0.22)",
+                    boxShadow: "0 0 30px rgba(61,220,132,0.06) inset",
+                }}>
+                <div className="flex items-center gap-2">
+                    <span className="text-lg">💡</span>
+                    <span className="text-[10px] font-black font-display tracking-[0.18em]" style={{ color: "#3DDC84" }}>DATO CLAVE</span>
+                </div>
+                <p className="text-white text-[1rem] leading-[1.75] font-medium">{texto}</p>
             </div>
         );
     }
@@ -87,36 +99,39 @@ function RenderSlide({ slide }) {
             .map(l => l.replace(/^[-*]\s|\d+\.\s/, "").trim())
             .filter(Boolean);
         return (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-2.5">
                 {items.map((item, i) => (
-                    <div key={i} className="flex gap-3 items-start">
-                        <div
-                            className="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-bold font-display text-xs"
-                            style={{ background: "rgba(61,220,132,0.12)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)", marginTop: "1px" }}
-                        >
+                    <div key={i} className="flex gap-3 items-start rounded-xl p-3.5 transition-colors"
+                        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                        <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 font-bold font-display text-[11px]"
+                            style={{ background: "rgba(61,220,132,0.15)", color: "#3DDC84", marginTop: "1px" }}>
                             {i + 1}
                         </div>
-                        <p className="text-[#C9D1D9] text-[0.95rem] leading-relaxed flex-1">{item}</p>
+                        <p className="text-[#C9D1D9] text-[0.9rem] leading-[1.7] flex-1">{item}</p>
                     </div>
                 ))}
             </div>
         );
     }
 
-    return <RenderTexto texto={slide.texto} />;
+    // texto
+    return (
+        <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)" }}>
+            <RenderTexto texto={slide.texto} />
+        </div>
+    );
 }
 
 function RenderTexto({ texto }) {
-    // Aplica **bold** inline
     const partes = texto.split(/(\*\*[^*]+\*\*)/g);
     const renderPartes = partes.map((p, i) => {
         if (/^\*\*[^*]+\*\*$/.test(p)) {
-            return <strong key={i} className="text-white font-bold">{p.slice(2, -2)}</strong>;
+            return <strong key={i} className="text-white font-semibold">{p.slice(2, -2)}</strong>;
         }
         return <span key={i}>{p}</span>;
     });
     return (
-        <p className="text-[#8B949E] leading-[1.8] text-[0.95rem]">{renderPartes}</p>
+        <p className="text-[#9CA3AF] leading-[1.9] text-[0.95rem]">{renderPartes}</p>
     );
 }
 
@@ -452,12 +467,15 @@ export default function Lecciones() {
                         </div>
 
                         {/* Slide content */}
-                        <div className="flex-1 overflow-hidden px-6 pb-2 flex flex-col justify-center">
+                        <div className="flex-1 overflow-y-auto px-5 pb-2 flex flex-col justify-center">
                             {/* Título de la lección en primer slide */}
                             {slideIdx === 0 && (
-                                <p className="text-[#3DDC84] font-black font-display text-sm mb-5 tracking-wide">
-                                    {activa.titulo}
-                                </p>
+                                <div className="mb-5 flex items-center gap-2">
+                                    <div className="w-1.5 h-1.5 rounded-full" style={{ background: "#3DDC84" }} />
+                                    <p className="text-[#3DDC84] font-black font-display text-xs tracking-[0.15em] uppercase">
+                                        {activa.titulo}
+                                    </p>
+                                </div>
                             )}
 
                             {slides.length > 0 && (
