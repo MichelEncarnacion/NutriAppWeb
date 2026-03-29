@@ -6,9 +6,9 @@ import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 
 export default function Lecciones() {
-    const { session, perfil } = useAuth();
+    const { session, perfil, esPremium } = useAuth();
     const uid = session?.user?.id;
-    const esSoloPremium = perfil?.tipo_usuario === "premium";
+    const esSoloPremium = esPremium;
 
     const [lecciones, setLecciones] = useState([]);
     const [progreso, setProgreso] = useState({});
