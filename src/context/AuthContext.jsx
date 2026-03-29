@@ -9,7 +9,7 @@ const withTimeout = (promise, ms, fallback = null) =>
     Promise.race([
         promise,
         new Promise(resolve => setTimeout(() => resolve(fallback), ms)),
-    ]);
+    ]).catch(() => fallback);
 
 export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
@@ -42,7 +42,8 @@ export function AuthProvider({ children }) {
         const [{ data: perfilData, error: perfilError }, { data: diagData }] = result;
 
         if (perfilError) {
-            console.error("Error cargando perfil:", perfilError.message);
+            if (!perfilError.message?.includes("AbortError"))
+                console.error("Error cargando perfil:", perfilError.message);
             return null;
         }
 
@@ -54,10 +55,14 @@ export function AuthProvider({ children }) {
 
     const recargarPerfil = async () => {
         if (!session?.user) return false;
-        const p = await cargarPerfil(session.user.id, session);
-        if (p) {
-            setPerfil(p);
-            return true;
+        try {
+            const p = await cargarPerfil(session.user.id, session);
+            if (p) {
+                setPerfil(p);
+                return true;
+            }
+        } catch {
+            // AbortError u otros errores transitorios — ignorar
         }
         return false;
     };
@@ -94,7 +99,8 @@ export function AuthProvider({ children }) {
                     }
                 }
             } catch (e) {
-                console.error("Error cargando sesión inicial:", e);
+                if (e?.name !== "AbortError")
+                    console.error("Error cargando sesión inicial:", e);
             } finally {
                 if (mounted) setLoading(false);
             }
