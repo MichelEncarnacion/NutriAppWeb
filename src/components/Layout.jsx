@@ -1,7 +1,8 @@
 // src/components/Layout.jsx
 import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
 
 const NAV = [
     { to: "/panel", label: "Panel General", icon: "⊞" },
@@ -145,39 +146,60 @@ export default function Layout({ children }) {
 
 // ── Panel derecho: notificaciones ────────────────────────────────────────
 function RightPanel() {
-    const { perfil } = useAuth();
+    const { session } = useAuth();
+    const uid = session?.user?.id;
+    const [racha, setRacha] = useState(null); // null = loading
+
+    useEffect(() => {
+        if (!uid) return;
+        const calcularRacha = async () => {
+            const { data } = await supabase
+                .from("resumen_diario")
+                .select("fecha")
+                .eq("perfil_id", uid)
+                .order("fecha", { ascending: false })
+                .limit(60);
+
+            const fechas = new Set((data ?? []).map((r) => r.fecha));
+
+            const pad = (n) => String(n).padStart(2, "0");
+            const toStr = (d) =>
+                `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+            let cursor = new Date();
+            if (!fechas.has(toStr(cursor))) {
+                cursor.setDate(cursor.getDate() - 1);
+            }
+
+            let dias = 0;
+            while (fechas.has(toStr(cursor))) {
+                dias++;
+                cursor.setDate(cursor.getDate() - 1);
+            }
+            setRacha(dias);
+        };
+        calcularRacha();
+    }, [uid]);
 
     return (
         <aside className="hidden xl:flex w-56 border-l border-[#1C2330] flex-col py-6 px-3 flex-shrink-0">
             <p className="text-[9px] text-[#7D8590] font-bold tracking-widest mb-3 px-2">NOTIFICACIONES</p>
-            <div className="flex flex-col gap-2">
-                {[
-                    { icon: "💧", msg: "Recuerda hidratarte — llevas 1.8L de 2.5L", time: "hace 20 min", color: "#58A6FF" },
-                    { icon: "🍽️", msg: "Hora de tu comida según tu plan", time: "hace 1h", color: "#3DDC84" },
-                    { icon: "📖", msg: "Nueva lección disponible en 3 días", time: "hace 2h", color: "#F0A500" },
-                    { icon: "📊", msg: "Formulario de seguimiento en 12 días", time: "ayer", color: "#7D8590" },
-                ].map((n, i) => (
-                    <div
-                        key={i}
-                        className="px-3 py-2.5 rounded-xl cursor-pointer hover:bg-[rgba(255,255,255,.03)] transition-colors"
-                        style={{ borderLeft: `2px solid ${n.color}` }}
-                    >
-                        <div className="flex gap-2 items-start">
-                            <span className="text-sm flex-shrink-0">{n.icon}</span>
-                            <div>
-                                <p className="text-[11px] text-[#E6EDF3] leading-relaxed mb-1">{n.msg}</p>
-                                <p className="text-[10px] text-[#7D8590]">{n.time}</p>
-                            </div>
-                        </div>
-                    </div>
-                ))}
+            <div className="flex flex-col items-center justify-center py-6 px-2 text-center gap-2">
+                <span className="text-2xl">🔔</span>
+                <p className="text-[11px] text-[#7D8590] leading-relaxed">
+                    Sin notificaciones por ahora.
+                </p>
             </div>
 
-            {/* Racha */}
             <div className="mt-4 p-3 bg-[rgba(61,220,132,.06)] border border-[rgba(61,220,132,.18)] rounded-xl">
                 <p className="text-[9px] text-[#3DDC84] font-bold tracking-widest mb-1">RACHA ACTIVA 🔥</p>
-                <p className="font-display font-black text-2xl text-white">14 <span className="text-xs font-normal text-[#7D8590]">días</span></p>
-                <p className="text-[10px] text-[#7D8590] mt-1">¡Sigue así!</p>
+                <p className="font-display font-black text-2xl text-white">
+                    {racha === null ? "—" : racha}{" "}
+                    <span className="text-xs font-normal text-[#7D8590]">días</span>
+                </p>
+                <p className="text-[10px] text-[#7D8590] mt-1">
+                    {racha === null ? "" : racha > 0 ? "¡Sigue así!" : "¡Empieza hoy!"}
+                </p>
             </div>
         </aside>
     );
