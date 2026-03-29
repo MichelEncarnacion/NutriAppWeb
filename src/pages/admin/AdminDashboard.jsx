@@ -134,7 +134,10 @@ function ErrorPlanes() {
                         <p className="text-white text-xs font-semibold">Plan {p.id.slice(0, 8)}…</p>
                         <p className="text-[#7D8590] text-[11px]">{new Date(p.created_at).toLocaleString("es-MX")}</p>
                     </div>
-                    <button className="text-xs bg-[#FF6B6B] text-white px-3 py-1.5 rounded-lg font-bold hover:bg-[#ff8585] transition-all">
+                    <button
+                        onClick={() => alert(`Regenerar plan ${p.id.slice(0, 8)} — funcionalidad pendiente de implementar.`)}
+                        className="text-xs bg-[#FF6B6B] text-white px-3 py-1.5 rounded-lg font-bold hover:bg-[#ff8585] transition-all"
+                    >
                         Regenerar
                     </button>
                 </div>
