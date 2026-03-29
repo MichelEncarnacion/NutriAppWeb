@@ -27,47 +27,56 @@ export function AuthProvider({ children }) {
     const cargandoPerfilRef = useRef(false);
 
     // ── Carga el perfil extendido del usuario desde la tabla `perfiles` ──
-    // Reintenta una vez si el primer intento falla por timeout/AbortError
-    // (el Web Lock de Supabase puede estar contestado al recargar la página).
+    // Usa fetch directamente con el access_token ya obtenido, evitando que
+    // supabase.from() vuelva a adquirir el Web Lock (causa de los timeouts
+    // al recargar la página).
     const cargarPerfil = async (userId, session) => {
         // Los admins no tienen fila en perfiles — no consultamos
         if (session?.user?.app_metadata?.role === "admin") return null;
 
-        const ejecutar = () => withTimeout(
-            Promise.all([
-                supabase.from("perfiles").select("*").eq("id", userId).single(),
-                supabase.from("diagnosticos").select("acepto_terminos").eq("perfil_id", userId).maybeSingle(),
-            ]),
-            5_000,  // 5s — si hay AbortError/timeout, reintentamos
-            null,
-        );
+        const token = session?.access_token;
+        if (!token) return null;
 
-        let result = await ejecutar();
-
-        // Primer intento falló (timeout o AbortError): esperar a que el
-        // Web Lock se estabilice y reintentar una vez más.
-        if (!result) {
-            await sleep(1_500);
-            result = await ejecutar();
-        }
-
-        if (!result) {
-            console.warn("cargarPerfil: sin respuesta tras reintentar");
-            return null;
-        }
-
-        const [{ data: perfilData, error: perfilError }, { data: diagData }] = result;
-
-        if (perfilError) {
-            if (!perfilError.message?.includes("AbortError"))
-                console.error("Error cargando perfil:", perfilError.message);
-            return null;
-        }
-
-        return {
-            ...perfilData,
-            acepto_terminos: diagData?.acepto_terminos ?? false,
+        const base = import.meta.env.VITE_SUPABASE_URL;
+        const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+        const headers = {
+            Authorization: `Bearer ${token}`,
+            apikey: anonKey,
+            "Content-Type": "application/json",
         };
+
+        const controller = new AbortController();
+        const timer = setTimeout(() => controller.abort(), 8_000);
+
+        try {
+            const [perfilRes, diagRes] = await Promise.all([
+                fetch(`${base}/rest/v1/perfiles?id=eq.${userId}&select=*`, { headers, signal: controller.signal }),
+                fetch(`${base}/rest/v1/diagnosticos?perfil_id=eq.${userId}&select=acepto_terminos&limit=1`, { headers, signal: controller.signal }),
+            ]);
+            clearTimeout(timer);
+
+            if (!perfilRes.ok) {
+                console.error("Error cargando perfil:", perfilRes.status);
+                return null;
+            }
+
+            const [perfiles, diagnosticos] = await Promise.all([
+                perfilRes.json(),
+                diagRes.json(),
+            ]);
+
+            const perfilData = perfiles[0];
+            if (!perfilData) return null;
+
+            return {
+                ...perfilData,
+                acepto_terminos: diagnosticos[0]?.acepto_terminos ?? false,
+            };
+        } catch (e) {
+            clearTimeout(timer);
+            if (e?.name !== "AbortError") console.error("Error cargando perfil:", e);
+            return null;
+        }
     };
 
     // Carga el perfil evitando llamadas duplicadas concurrentes.
