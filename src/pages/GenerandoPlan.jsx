@@ -87,7 +87,7 @@ export default function GenerandoPlan() {
         };
 
         generar();
-    }, [session]);
+    }, [session, respuestas, navigate]);
 
     // ── Aviso médico ──────────────────────────────────────────────────────
     if (mostrarAviso) return (
