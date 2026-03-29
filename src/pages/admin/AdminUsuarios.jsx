@@ -28,10 +28,26 @@ export default function AdminUsuarios() {
 
     const regenerarPlan = async (id) => {
         setRegenerando((p) => ({ ...p, [id]: "loading" }));
-        const { error } = await supabase.functions.invoke("generar-plan", {
-            body: { target_perfil_id: id },
-        });
-        setRegenerando((p) => ({ ...p, [id]: error ? "error" : "ok" }));
+        const { data: { session } } = await supabase.auth.getSession();
+        let hasError = true;
+        try {
+            const res = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generar-plan`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session?.access_token}`,
+                        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    },
+                    body: JSON.stringify({ target_perfil_id: id }),
+                }
+            );
+            hasError = !res.ok;
+        } catch {
+            hasError = true;
+        }
+        setRegenerando((p) => ({ ...p, [id]: hasError ? "error" : "ok" }));
         setTimeout(() => setRegenerando((p) => { const n = { ...p }; delete n[id]; return n; }), 3000);
     };
 
