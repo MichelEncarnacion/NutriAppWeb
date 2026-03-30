@@ -3,7 +3,6 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
-import { track, Events } from "../lib/analytics";
 
 export default function Registro() {
     const { registrar } = useAuth();
@@ -45,7 +44,6 @@ export default function Registro() {
         // Supabase envía email de confirmación por defecto.
         // Si en tu proyecto tienes "Confirm email" desactivado, el usuario
         // queda logueado de inmediato y puedes redirigir directo.
-        track(Events.REGISTER, { method: "email" });
         if (data.session) {
             // Sesión inmediata (confirm email desactivado en Supabase)
             navigate("/terminos", { replace: true });
