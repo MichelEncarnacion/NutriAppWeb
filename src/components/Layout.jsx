@@ -14,11 +14,34 @@ const NAV = [
 ];
 
 export default function Layout({ children }) {
-    const { perfil, rol, esPremium, cerrarSesion } = useAuth();
+    const { perfil, rol, esPremium, cerrarSesion, session } = useAuth();
     const navigate = useNavigate();
     const [params] = useSearchParams();
     const showUpgrade = params.get("upgrade") === "true";
     const [menuOpen, setMenuOpen] = useState(false);
+    const [racha, setRacha] = useState(null);
+
+    useEffect(() => {
+        const uid = session?.user?.id;
+        if (!uid) return;
+        const calcularRacha = async () => {
+            const { data } = await supabase
+                .from("resumen_diario")
+                .select("fecha")
+                .eq("perfil_id", uid)
+                .order("fecha", { ascending: false })
+                .limit(60);
+            const fechas = new Set((data ?? []).map((r) => r.fecha));
+            const pad = (n) => String(n).padStart(2, "0");
+            const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            let cursor = new Date();
+            if (!fechas.has(toStr(cursor))) cursor.setDate(cursor.getDate() - 1);
+            let dias = 0;
+            while (fechas.has(toStr(cursor))) { dias++; cursor.setDate(cursor.getDate() - 1); }
+            setRacha(dias);
+        };
+        calcularRacha();
+    }, [session?.user?.id]);
 
     const handleLogout = async () => {
         await cerrarSesion();
@@ -97,9 +120,16 @@ export default function Layout({ children }) {
             {/* ── Topbar mobile ────────────────────────────────────────────── */}
             <header className="md:hidden fixed top-0 left-0 right-0 bg-[#0D1117] border-b border-[#1C2330] z-20 flex items-center justify-between px-4 py-3">
                 <Logo size="sm" />
-                <button onClick={() => setMenuOpen((v) => !v)} className="text-[#7D8590] text-xl">
-                    {menuOpen ? "✕" : "☰"}
-                </button>
+                <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-1.5 bg-[rgba(61,220,132,0.08)] border border-[rgba(61,220,132,0.2)] rounded-full px-3 py-1">
+                        <span className="text-sm">🔥</span>
+                        <span className="font-display font-black text-sm text-white">{racha ?? "—"}</span>
+                        <span className="text-[10px] text-[#7D8590]">días</span>
+                    </div>
+                    <button onClick={() => setMenuOpen((v) => !v)} className="text-[#7D8590] text-xl">
+                        {menuOpen ? "✕" : "☰"}
+                    </button>
+                </div>
             </header>
 
             {/* Mobile menu */}
@@ -148,7 +178,7 @@ export default function Layout({ children }) {
                     </div>
 
                     {/* Panel derecho — notificaciones (solo desktop) */}
-                    <RightPanel />
+                    <RightPanel racha={racha} />
                 </div>
             </main>
 
@@ -159,42 +189,7 @@ export default function Layout({ children }) {
 }
 
 // ── Panel derecho: notificaciones ────────────────────────────────────────
-function RightPanel() {
-    const { session } = useAuth();
-    const uid = session?.user?.id;
-    const [racha, setRacha] = useState(null); // null = loading
-
-    useEffect(() => {
-        if (!uid) return;
-        const calcularRacha = async () => {
-            const { data } = await supabase
-                .from("resumen_diario")
-                .select("fecha")
-                .eq("perfil_id", uid)
-                .order("fecha", { ascending: false })
-                .limit(60);
-
-            const fechas = new Set((data ?? []).map((r) => r.fecha));
-
-            const pad = (n) => String(n).padStart(2, "0");
-            const toStr = (d) =>
-                `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
-            let cursor = new Date();
-            if (!fechas.has(toStr(cursor))) {
-                cursor.setDate(cursor.getDate() - 1);
-            }
-
-            let dias = 0;
-            while (fechas.has(toStr(cursor))) {
-                dias++;
-                cursor.setDate(cursor.getDate() - 1);
-            }
-            setRacha(dias);
-        };
-        calcularRacha();
-    }, [uid]);
-
+function RightPanel({ racha }) {
     return (
         <aside className="hidden xl:flex w-56 border-l border-[#1C2330] flex-col py-6 px-3 flex-shrink-0">
             <p className="text-[9px] text-[#7D8590] font-bold tracking-widest mb-3 px-2">NOTIFICACIONES</p>
