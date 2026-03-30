@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
+import { track, Events } from "../lib/analytics";
 
 export default function Registro() {
     const { registrar } = useAuth();
@@ -11,6 +13,8 @@ export default function Registro() {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const [enviado, setEnviado] = useState(false);
+    const [reenvioMsg, setReenvioMsg] = useState(null);
+    const [reenviando, setReenviando] = useState(false);
 
     const handleChange = (e) =>
         setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
@@ -41,12 +45,25 @@ export default function Registro() {
         // Supabase envía email de confirmación por defecto.
         // Si en tu proyecto tienes "Confirm email" desactivado, el usuario
         // queda logueado de inmediato y puedes redirigir directo.
+        track(Events.REGISTER, { method: "email" });
         if (data.session) {
             // Sesión inmediata (confirm email desactivado en Supabase)
             navigate("/terminos", { replace: true });
         } else {
             // Necesita confirmar email
             setEnviado(true);
+        }
+    };
+
+    const handleReenviar = async () => {
+        setReenviando(true);
+        setReenvioMsg(null);
+        const { error } = await supabase.auth.resend({ type: "signup", email: form.email });
+        setReenviando(false);
+        if (error) {
+            setReenvioMsg({ tipo: "error", texto: "No se pudo reenviar. Intenta en unos minutos." });
+        } else {
+            setReenvioMsg({ tipo: "ok", texto: "Correo reenviado. Revisa tu bandeja de entrada y spam." });
         }
     };
 
@@ -59,10 +76,47 @@ export default function Registro() {
                         Revisa tu correo
                     </h2>
                     <p style={{ color: "#7D8590", fontSize: 14, lineHeight: 1.6 }}>
-                        Te enviamos un enlace de confirmación a <strong style={{ color: "#E6EDF3" }}>{form.email}</strong>.
+                        Te enviamos un enlace de confirmación a{" "}
+                        <strong style={{ color: "#E6EDF3" }}>{form.email}</strong>.
                         Haz clic en el enlace para activar tu cuenta.
                     </p>
-                    <Link to="/login" style={{ ...styles.link, display: "inline-block", marginTop: 20 }}>
+                    <p style={{ color: "#7D8590", fontSize: 12, marginTop: 8, lineHeight: 1.5 }}>
+                        Si no lo ves en unos minutos, revisa tu carpeta de spam.
+                    </p>
+
+                    {reenvioMsg && (
+                        <div style={{
+                            marginTop: 16,
+                            padding: "10px 14px",
+                            borderRadius: 10,
+                            fontSize: 13,
+                            background: reenvioMsg.tipo === "ok" ? "rgba(61,220,132,.1)" : "rgba(255,107,107,.1)",
+                            color: reenvioMsg.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
+                            border: `1px solid ${reenvioMsg.tipo === "ok" ? "rgba(61,220,132,.25)" : "rgba(255,107,107,.25)"}`,
+                        }}>
+                            {reenvioMsg.texto}
+                        </div>
+                    )}
+
+                    <button
+                        onClick={handleReenviar}
+                        disabled={reenviando}
+                        style={{
+                            marginTop: 20,
+                            background: "transparent",
+                            border: "1px solid #2D3748",
+                            borderRadius: 10,
+                            padding: "11px 20px",
+                            color: "#7D8590",
+                            fontSize: 13,
+                            cursor: reenviando ? "not-allowed" : "pointer",
+                            fontFamily: "'DM Sans', sans-serif",
+                            width: "100%",
+                        }}
+                    >
+                        {reenviando ? "Reenviando…" : "Reenviar correo de confirmación"}
+                    </button>
+                    <Link to="/login" style={{ ...styles.link, display: "inline-block", marginTop: 14, fontSize: 13 }}>
                         Volver al login →
                     </Link>
                 </div>
