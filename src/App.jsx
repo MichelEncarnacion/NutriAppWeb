@@ -8,6 +8,8 @@ import Login from "./pages/Login";
 import Registro from "./pages/Registro";
 import AuthCallback from "./pages/AuthCallback";
 import TerminosCondiciones from "./pages/TerminosCondiciones";
+import OlvideContrasena from "./pages/OlvideContrasena";
+import ResetContrasena from "./pages/ResetContrasena";
 
 // ── Páginas de onboarding ────────────────────────────────────────────────
 import Diagnostico from "./pages/Diagnostico";
@@ -46,8 +48,12 @@ export default function App() {
             <PublicOnlyRoute><Registro /></PublicOnlyRoute>
           } />
 
-          {/* Callback de OAuth (Google / Facebook) */}
+          {/* Callback de OAuth (Google / Facebook) y recovery de contraseña */}
           <Route path="/auth/callback" element={<AuthCallback />} />
+          <Route path="/olvide-contrasena" element={
+            <PublicOnlyRoute><OlvideContrasena /></PublicOnlyRoute>
+          } />
+          <Route path="/reset-contrasena" element={<ResetContrasena />} />
 
           {/* ── Onboarding (requiere sesión, NO diagnóstico aún) ── */}
           <Route path="/terminos" element={
