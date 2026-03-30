@@ -43,7 +43,7 @@ export default function LandingFAQ() {
             variant="h2"
             sx={{
               color: C.textPrimary,
-              fontFamily: "Syne, sans-serif",
+              fontFamily: "Plus Jakarta Sans, sans-serif",
               fontWeight: 900,
               fontSize: { xs: "2rem", md: "2.8rem" },
             }}

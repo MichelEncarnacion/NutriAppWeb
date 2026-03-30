@@ -70,7 +70,7 @@ export default function Registro() {
             <div style={styles.card}>
                 <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
-                    <h2 style={{ fontFamily: "'Syne',sans-serif", color: "#E6EDF3", marginBottom: 8 }}>
+                    <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#E6EDF3", marginBottom: 8 }}>
                         Revisa tu correo
                     </h2>
                     <p style={{ color: "#7D8590", fontSize: 14, lineHeight: 1.6 }}>
@@ -108,7 +108,7 @@ export default function Registro() {
                             color: "#7D8590",
                             fontSize: 13,
                             cursor: reenviando ? "not-allowed" : "pointer",
-                            fontFamily: "'DM Sans', sans-serif",
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
                             width: "100%",
                         }}
                     >
@@ -189,7 +189,7 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
     },
     card: {
         background: "#161B22",
@@ -204,7 +204,7 @@ const styles = {
     },
     logo: { textAlign: "center" },
     logoText: {
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 800,
         fontSize: 28,
         color: "#3DDC84",
@@ -230,7 +230,7 @@ const styles = {
         padding: "12px 14px",
         color: "#E6EDF3",
         fontSize: 14,
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         outline: "none",
     },
     btnPrimary: {
@@ -239,7 +239,7 @@ const styles = {
         border: "none",
         borderRadius: 10,
         padding: "13px",
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 700,
         fontSize: 14,
         cursor: "pointer",

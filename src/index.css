@@ -4,7 +4,7 @@
    ============================================================ */
 
 /* ── Google Fonts ────────────────────────────────────────── */
-@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap");
 
 /* ── Tailwind v4 (replaces @tailwind base/components/utilities) ── */
 @import "tailwindcss";
@@ -12,8 +12,8 @@
 /* ── Custom theme tokens (Tailwind v4 CSS-first config) ──── */
 @theme {
   /* Fonts */
-  --font-display: "Syne", sans-serif;
-  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Plus Jakarta Sans", sans-serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
 
   /* Brand colors */
   --color-brand-green: #3ddc84;
@@ -60,17 +60,17 @@
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-family: "DM Sans", sans-serif;
+  font-family: "Plus Jakarta Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0;
 }
 
 /* ── Fuentes ─────────────────────────────────────────────── */
 .font-display {
-  font-family: "Syne", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 .font-sans {
-  font-family: "DM Sans", sans-serif !important;
+  font-family: "Plus Jakarta Sans", sans-serif !important;
 }
 
 /* ── Animaciones ─────────────────────────────────────────── */

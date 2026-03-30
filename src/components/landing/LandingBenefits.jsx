@@ -34,7 +34,7 @@ export default function LandingBenefits() {
             variant="h2"
             sx={{
               color: C.textPrimary,
-              fontFamily: "Syne, sans-serif",
+              fontFamily: "Plus Jakarta Sans, sans-serif",
               fontWeight: 900,
               fontSize: { xs: "2rem", md: "2.8rem" },
             }}
@@ -82,7 +82,7 @@ export default function LandingBenefits() {
                       fontWeight: 700,
                       fontSize: "1rem",
                       mb: 1,
-                      fontFamily: "Syne, sans-serif",
+                      fontFamily: "Plus Jakarta Sans, sans-serif",
                     }}
                   >
                     {b.title}
