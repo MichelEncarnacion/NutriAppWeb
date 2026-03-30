@@ -1,6 +1,7 @@
 // src/context/AuthContext.jsx
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabase";
+import { identifyUser, resetUser } from "../lib/analytics";
 
 const AuthContext = createContext(null);
 
@@ -180,10 +181,12 @@ export function AuthProvider({ children }) {
                         if (mounted && p !== null) {
                             setPerfil(p);
                             perfilCargadoRef.current = true;
+                            identifyUser(session.user.id, { email: session.user.email, rol: p?.tipo_usuario });
                         }
                     } else {
                         setPerfil(null);
                         perfilCargadoRef.current = false;
+                        resetUser();
                     }
                 } catch (e) {
                     console.error("Error en authStateChange:", e);

@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { track, Events } from "../lib/analytics";
 
 const MENSAJES = [
     "Analizando tus respuestas...",
@@ -71,6 +72,7 @@ export default function GenerandoPlan() {
                 }
                 if (!res.ok) throw new Error("Error al generar el plan");
 
+                track(regenerar ? Events.PLAN_REGENERADO : Events.PLAN_GENERADO);
                 if (tieneEnfermedad) {
                     setMostrarAviso(true);
                 } else {
