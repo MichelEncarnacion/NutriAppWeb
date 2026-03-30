@@ -2,7 +2,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute, { AdminRoute, PublicOnlyRoute } from "./components/privateRoute";
-import { usePageTracking } from "./hooks/usePageTracking";
 
 // ── Páginas de auth ──────────────────────────────────────────────────────
 import Login from "./pages/Login";
@@ -35,7 +34,6 @@ import AdminPlanes from "./pages/admin/AdminPlanes";
 import AdminLecciones from "./pages/admin/AdminLecciones";
 
 function AppRoutes() {
-  usePageTracking();
   return (
     <Routes>
 

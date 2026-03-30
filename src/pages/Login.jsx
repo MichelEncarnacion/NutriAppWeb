@@ -2,7 +2,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { track, Events } from "../lib/analytics";
 
 export default function Login() {
     const { loginConEmail, loginConGoogle, loginConFacebook } = useAuth();
@@ -29,13 +28,11 @@ export default function Login() {
             setError(traducirError(error.message));
             return;
         }
-        track(Events.LOGIN, { method: "email" });
         navigate(destino, { replace: true });
     };
 
     const handleGoogle = async () => {
         setError(null);
-        track(Events.LOGIN, { method: "google" });
         const { error } = await loginConGoogle();
         if (error) setError(traducirError(error.message));
         // La redirección la maneja /auth/callback

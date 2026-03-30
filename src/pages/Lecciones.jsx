@@ -3,7 +3,6 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
-import { track, Events } from "../lib/analytics";
 
 // ─── Parsea el markdown en slides individuales ───────────────────────────────
 function parsearSlides(contenido) {
@@ -210,7 +209,6 @@ export default function Lecciones() {
     }, [uid, esSoloPremium, perfil]);
 
     const marcarCompletada = async (leccion) => {
-        track(Events.LECCION_COMPLETADA, { leccion_id: leccion.id, titulo: leccion.titulo });
         const { error: e1 } = await supabase.from("lecciones_usuario").upsert({
             perfil_id: uid,
             leccion_id: leccion.id,
@@ -349,7 +347,7 @@ export default function Lecciones() {
                             return (
                                 <div
                                     key={lec.id}
-                                    onClick={() => { if (disponible) { setActiva(lec); track(Events.LECCION_ABIERTA, { leccion_id: lec.id, titulo: lec.titulo }); } }}
+                                    onClick={() => disponible && setActiva(lec)}
                                     className="relative overflow-hidden rounded-2xl border transition-all duration-200"
                                     style={{
                                         background: completada ? "rgba(22,27,34,0.6)" : disponible ? "#161B22" : "rgba(22,27,34,0.4)",
