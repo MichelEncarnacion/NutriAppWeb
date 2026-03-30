@@ -70,17 +70,21 @@ export default function Layout({ children }) {
 
                 {/* Usuario */}
                 <div className="border-t border-[#1C2330] pt-4 flex flex-col gap-2">
-                    <div className="flex items-center gap-2 px-2">
+                    <button
+                        onClick={() => navigate("/perfil")}
+                        className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-[#161B22] transition-colors w-full text-left"
+                    >
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#3DDC84] to-[#58A6FF] flex items-center justify-center text-black font-black text-xs flex-shrink-0">
                             {iniciales}
                         </div>
-                        <div className="min-w-0">
+                        <div className="min-w-0 flex-1">
                             <div className="text-xs font-semibold truncate">{nombreCorto}</div>
                             <div className="text-[10px] text-[#F0A500]">
                                 {rol === "premium" ? "✦ Premium" : rol === "demo" ? "🔬 Demo" : "Freemium"}
                             </div>
                         </div>
-                    </div>
+                        <span className="text-[#4A5568] text-xs">⚙</span>
+                    </button>
                     <button
                         onClick={handleLogout}
                         className="text-xs text-[#7D8590] hover:text-[#FF6B6B] px-3 py-1.5 rounded-lg hover:bg-[#161B22] transition-all text-left w-full"
@@ -120,6 +124,17 @@ export default function Layout({ children }) {
                             </NavLink>
                         );
                     })}
+                    <NavLink
+                        to="/perfil"
+                        onClick={() => setMenuOpen(false)}
+                        className={({ isActive }) =>
+                            `flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all
+                  ${isActive ? "bg-[rgba(61,220,132,0.12)] text-[#3DDC84]" : "text-[#7D8590]"}`
+                        }
+                    >
+                        <span>⚙</span>
+                        <span>Mi Perfil</span>
+                    </NavLink>
                     <button onClick={handleLogout} className="text-[#FF6B6B] px-4 py-3 text-left text-sm mt-2">
                         Cerrar sesión
                     </button>

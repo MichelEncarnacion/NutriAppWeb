@@ -23,6 +23,7 @@ import Lecciones from "./pages/Lecciones";
 import Progreso from "./pages/Progreso";
 import Seguimiento from "./pages/Seguimiento";
 import ListaCompras from "./pages/ListaCompras";
+import Perfil from "./pages/Perfil";
 
 // ── Panel admin ──────────────────────────────────────────────────────────
 import AdminLogin from "./pages/admin/AdminLogin";
@@ -104,6 +105,11 @@ export default function App() {
           <Route path="/lista-compras" element={
             <PrivateRoute>
               <ListaCompras />
+            </PrivateRoute>
+          } />
+          <Route path="/perfil" element={
+            <PrivateRoute>
+              <Perfil />
             </PrivateRoute>
           } />
 
