@@ -33,7 +33,7 @@ export default function LandingHowItWorks() {
             variant="h2"
             sx={{
               color: C.textPrimary,
-              fontFamily: "Syne, sans-serif",
+              fontFamily: "Plus Jakarta Sans, sans-serif",
               fontWeight: 900,
               fontSize: { xs: "2rem", md: "2.8rem" },
               mb: 2,
@@ -81,7 +81,7 @@ export default function LandingHowItWorks() {
                     opacity: 0.1,
                     fontSize: "5rem",
                     fontWeight: 900,
-                    fontFamily: "Syne, sans-serif",
+                    fontFamily: "Plus Jakarta Sans, sans-serif",
                     lineHeight: 1,
                     userSelect: "none",
                     pointerEvents: "none",
@@ -103,7 +103,7 @@ export default function LandingHowItWorks() {
                     fontWeight: 700,
                     fontSize: "1.05rem",
                     mb: 1.5,
-                    fontFamily: "Syne, sans-serif",
+                    fontFamily: "Plus Jakarta Sans, sans-serif",
                   }}
                 >
                   {step.title}

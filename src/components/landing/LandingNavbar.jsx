@@ -34,7 +34,7 @@ export default function LandingNavbar() {
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 2 }}>
           {/* Logo */}
           <Box
-            sx={{ cursor: "pointer", fontWeight: 900, fontSize: "1.4rem", fontFamily: "Syne, sans-serif" }}
+            sx={{ cursor: "pointer", fontWeight: 900, fontSize: "1.4rem", fontFamily: "Plus Jakarta Sans, sans-serif" }}
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
           >
             <Box component="span" sx={{ color: C.green }}>Nutrii</Box>

@@ -63,7 +63,7 @@ export default function LandingHero() {
                 variant="h1"
                 sx={{
                   color: C.textPrimary,
-                  fontFamily: "Syne, sans-serif",
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
                   fontWeight: 900,
                   fontSize: { xs: "2.2rem", md: "3.4rem" },
                   lineHeight: 1.15,

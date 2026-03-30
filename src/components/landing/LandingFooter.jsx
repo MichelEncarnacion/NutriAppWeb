@@ -31,7 +31,7 @@ export default function LandingFooter() {
         >
           {/* Col 1 — Brand */}
           <Box>
-            <Typography sx={{ fontFamily: "Syne, sans-serif", fontWeight: 900, fontSize: "1.6rem", mb: 1.5 }}>
+            <Typography sx={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: "1.6rem", mb: 1.5 }}>
               <Box component="span" sx={{ color: C.green }}>Nutrii</Box>
               <Box component="span" sx={{ color: C.textPrimary }}>App</Box>
             </Typography>
@@ -94,7 +94,7 @@ export default function LandingFooter() {
             <Typography
               sx={{
                 color: C.textPrimary, fontWeight: 800,
-                fontSize: "1.2rem", fontFamily: "Syne, sans-serif", mb: 1,
+                fontSize: "1.2rem", fontFamily: "Plus Jakarta Sans, sans-serif", mb: 1,
               }}
             >
               ¿Listo para empezar?

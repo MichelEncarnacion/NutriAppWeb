@@ -34,7 +34,7 @@ export default function LandingCredBand() {
                   color: C.textPrimary,
                   fontWeight: 800,
                   fontSize: "1.1rem",
-                  fontFamily: "Syne, sans-serif",
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
                 }}
               >
                 {s.value}

@@ -109,7 +109,7 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
     },
     card: {
         background: "#161B22",
@@ -124,7 +124,7 @@ const styles = {
     },
     logo: { textAlign: "center" },
     logoText: {
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 800,
         fontSize: 28,
         color: "#3DDC84",
@@ -150,7 +150,7 @@ const styles = {
         padding: "12px 14px",
         color: "#E6EDF3",
         fontSize: 14,
-        fontFamily: "'DM Sans', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         outline: "none",
     },
     btnPrimary: {
@@ -159,7 +159,7 @@ const styles = {
         border: "none",
         borderRadius: 10,
         padding: "13px",
-        fontFamily: "'Syne', sans-serif",
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 700,
         fontSize: 14,
         cursor: "pointer",
