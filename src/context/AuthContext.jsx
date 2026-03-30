@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
     const [perfil, setPerfil] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isRecoverySession, setIsRecoverySession] = useState(false);
     // true  → ya tenemos perfil válido
     const perfilCargadoRef = useRef(false);
     // true  → hay una carga de perfil en curso (evita llamadas duplicadas)
@@ -164,6 +165,15 @@ export function AuthProvider({ children }) {
                     setSession(session);
                     return;
                 }
+                // PASSWORD_RECOVERY: sesión de recuperación de contraseña.
+                // Solo establecemos la sesión y marcamos el flag — no cargamos perfil
+                // ni dejamos que el flujo normal redirija al usuario.
+                if (event === 'PASSWORD_RECOVERY') {
+                    setSession(session);
+                    setIsRecoverySession(true);
+                    if (mounted) setLoading(false);
+                    return;
+                }
                 // INITIAL_SESSION: initSession lo maneja. Solo actuamos aquí
                 // si initSession falló y el perfil todavía no está cargado.
                 if (event === 'INITIAL_SESSION' && perfilCargadoRef.current) {
@@ -250,6 +260,7 @@ export function AuthProvider({ children }) {
         session,
         perfil,
         loading,
+        isRecoverySession,
         rol,
         esPremium,
         esAdmin,
