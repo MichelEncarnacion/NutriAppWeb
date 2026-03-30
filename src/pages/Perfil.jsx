@@ -12,7 +12,7 @@ const ROL_LABEL = {
 };
 
 export default function Perfil() {
-    const { perfil, session, actualizarPerfil, rol } = useAuth();
+    const { perfil, session, actualizarPerfil, rol, esPremium } = useAuth();
     const navigate = useNavigate();
 
     const [nombre, setNombre] = useState(perfil?.nombre ?? "");
@@ -151,17 +151,36 @@ export default function Perfil() {
                 <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5 flex flex-col gap-2">
                     <p className="text-white font-bold text-sm font-display mb-1">Acciones</p>
 
-                    <button
-                        onClick={() => navigate("/diagnostico")}
-                        className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm text-left transition-all hover:bg-[rgba(61,220,132,0.05)]"
-                        style={{ border: "1px solid rgba(61,220,132,0.15)" }}
-                    >
-                        <div>
-                            <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
-                            <p className="text-[#7D8590] text-xs mt-0.5">Re-hacer el cuestionario y generar un nuevo plan</p>
+                    {esPremium ? (
+                        <button
+                            onClick={() => navigate("/diagnostico")}
+                            className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm text-left transition-all hover:bg-[rgba(61,220,132,0.05)]"
+                            style={{ border: "1px solid rgba(61,220,132,0.15)" }}
+                        >
+                            <div>
+                                <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
+                                <p className="text-[#7D8590] text-xs mt-0.5">Re-hacer el cuestionario y generar un nuevo plan</p>
+                            </div>
+                            <span className="text-[#3DDC84] text-lg ml-3">→</span>
+                        </button>
+                    ) : (
+                        <div
+                            className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm"
+                            style={{ border: "1px solid rgba(240,165,0,0.15)", opacity: 0.7 }}
+                        >
+                            <div>
+                                <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
+                                <p className="text-[#7D8590] text-xs mt-0.5">🔒 Disponible solo en Premium</p>
+                            </div>
+                            <button
+                                onClick={() => navigate("/panel?upgrade=true")}
+                                className="text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0 ml-3"
+                                style={{ background: "rgba(240,165,0,0.12)", color: "#F0A500", border: "1px solid rgba(240,165,0,0.25)" }}
+                            >
+                                ✦ Premium
+                            </button>
                         </div>
-                        <span className="text-[#3DDC84] text-lg ml-3">→</span>
-                    </button>
+                    )}
 
                     {/* Cambiar contraseña inline */}
                     <div className="flex flex-col gap-3 px-4 py-3 rounded-xl" style={{ border: "1px solid rgba(88,166,255,0.15)" }}>
