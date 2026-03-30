@@ -2,29 +2,25 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
-import { supabase } from "../lib/supabase";
 
 /**
  * Maneja el redirect de OAuth (Google/Facebook) y recuperación de contraseña.
- * Supabase v2 borra el hash con history.replaceState antes de que React renderice,
- * por lo que detectamos PASSWORD_RECOVERY via onAuthStateChange en lugar del hash.
+ *
+ * El evento PASSWORD_RECOVERY se captura en AuthContext (onAuthStateChange)
+ * que setea isRecoverySession=true y detiene el flujo normal. Aquí solo
+ * leemos ese flag y redirigimos antes de que el flujo OAuth normal se ejecute.
  */
 export default function AuthCallback() {
-    const { session, aceptoTerminos, completoDiagnostico, loading } = useAuth();
+    const { session, aceptoTerminos, completoDiagnostico, loading, isRecoverySession } = useAuth();
     const navigate = useNavigate();
 
-    // Detectar evento PASSWORD_RECOVERY (recuperación de contraseña por email)
     useEffect(() => {
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-            if (event === "PASSWORD_RECOVERY") {
-                navigate("/reset-contrasena", { replace: true });
-            }
-        });
-        return () => subscription.unsubscribe();
-    }, [navigate]);
+        // Sesión de recuperación de contraseña → siempre ir a reset
+        if (isRecoverySession) {
+            navigate("/reset-contrasena", { replace: true });
+            return;
+        }
 
-    // Flujo normal: OAuth login o confirmación de email
-    useEffect(() => {
         if (loading) return;
 
         if (session) {
@@ -38,7 +34,7 @@ export default function AuthCallback() {
         } else {
             navigate("/login", { replace: true });
         }
-    }, [session, aceptoTerminos, completoDiagnostico, loading, navigate]);
+    }, [isRecoverySession, session, aceptoTerminos, completoDiagnostico, loading, navigate]);
 
     return (
         <div
