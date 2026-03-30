@@ -12,7 +12,19 @@ export default function AuthCallback() {
     const { session, aceptoTerminos, completoDiagnostico, loading } = useAuth();
     const navigate = useNavigate();
 
+    // Detectar si es un redirect de recuperación de contraseña
+    const isRecovery = (() => {
+        const hash = window.location.hash;
+        const hashParams = new URLSearchParams(hash.replace("#", ""));
+        const searchParams = new URLSearchParams(window.location.search);
+        return hashParams.get("type") === "recovery" || searchParams.get("type") === "recovery";
+    })();
+
     useEffect(() => {
+        if (isRecovery) {
+            navigate("/reset-contrasena", { replace: true });
+            return;
+        }
         if (loading) return;
 
         if (session) {
@@ -26,7 +38,7 @@ export default function AuthCallback() {
         } else {
             navigate("/login", { replace: true });
         }
-    }, [session, aceptoTerminos, completoDiagnostico, loading, navigate]);
+    }, [isRecovery, session, aceptoTerminos, completoDiagnostico, loading, navigate]);
 
     return (
         <div

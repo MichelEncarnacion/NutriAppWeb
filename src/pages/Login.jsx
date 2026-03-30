@@ -127,6 +127,11 @@ export default function Login() {
                 </div>
 
                 {/* Links */}
+                <p style={{ ...styles.footerText, marginBottom: -8 }}>
+                    <Link to="/olvide-contrasena" style={{ ...styles.link, color: "#7D8590", fontWeight: 400 }}>
+                        ¿Olvidaste tu contraseña?
+                    </Link>
+                </p>
                 <p style={styles.footerText}>
                     ¿No tienes cuenta?{" "}
                     <Link to="/registro" style={styles.link}>Regístrate gratis</Link>
