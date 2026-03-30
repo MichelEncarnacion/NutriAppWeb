@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import Logo from "../components/Logo";
 
 export default function OlvideContrasena() {
     const [email, setEmail] = useState("");
@@ -30,7 +31,9 @@ export default function OlvideContrasena() {
 
                 {/* Logo */}
                 <div style={styles.logo}>
-                    <span style={styles.logoText}>NutriiApp</span>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
+                        <Logo size="md" />
+                    </div>
                     <p style={styles.logoSub}>Recupera tu contraseña</p>
                 </div>
 

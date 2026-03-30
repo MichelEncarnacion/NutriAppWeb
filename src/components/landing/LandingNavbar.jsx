@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Button, Container } from "@mui/material";
 import { C } from "./landingTokens";
 import { useAuth } from "../../hooks/useAuth";
+import Logo from "../Logo";
 
 export default function LandingNavbar() {
   const navigate = useNavigate();
@@ -33,12 +34,8 @@ export default function LandingNavbar() {
       <Container maxWidth="lg">
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 2 }}>
           {/* Logo */}
-          <Box
-            sx={{ cursor: "pointer", fontWeight: 900, fontSize: "1.4rem", fontFamily: "Plus Jakarta Sans, sans-serif" }}
-            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          >
-            <Box component="span" sx={{ color: C.green }}>Nutrii</Box>
-            <Box component="span" sx={{ color: C.textPrimary }}>App</Box>
+          <Box sx={{ cursor: "pointer" }} onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+            <Logo size="sm" />
           </Box>
 
           {/* CTAs */}

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
+import Logo from "../components/Logo";
 
 export default function TerminosCondiciones() {
     const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function TerminosCondiciones() {
 
                 {/* Header */}
                 <div className="bg-[#1C2330] px-8 py-6 border-b border-[#2D3748]">
-                    <span className="text-[#3DDC84] font-black text-2xl font-display block mb-1">NutriiApp</span>
+                    <div className="mb-3"><Logo size="sm" /></div>
                     <h1 className="text-white text-xl font-bold">Términos y Condiciones de Uso</h1>
                     <p className="text-[#7D8590] text-sm mt-1">Última actualización: Marzo 2026 · Versión 1.0</p>
                 </div>
