@@ -2,29 +2,29 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
 
 /**
- * Maneja el redirect de OAuth (Google / Facebook).
- * Supabase actualiza la sesión automáticamente;
- * este componente solo redirige según el estado del usuario.
+ * Maneja el redirect de OAuth (Google/Facebook) y recuperación de contraseña.
+ * Supabase v2 borra el hash con history.replaceState antes de que React renderice,
+ * por lo que detectamos PASSWORD_RECOVERY via onAuthStateChange en lugar del hash.
  */
 export default function AuthCallback() {
     const { session, aceptoTerminos, completoDiagnostico, loading } = useAuth();
     const navigate = useNavigate();
 
-    // Detectar si es un redirect de recuperación de contraseña
-    const isRecovery = (() => {
-        const hash = window.location.hash;
-        const hashParams = new URLSearchParams(hash.replace("#", ""));
-        const searchParams = new URLSearchParams(window.location.search);
-        return hashParams.get("type") === "recovery" || searchParams.get("type") === "recovery";
-    })();
-
+    // Detectar evento PASSWORD_RECOVERY (recuperación de contraseña por email)
     useEffect(() => {
-        if (isRecovery) {
-            navigate("/reset-contrasena", { replace: true });
-            return;
-        }
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            if (event === "PASSWORD_RECOVERY") {
+                navigate("/reset-contrasena", { replace: true });
+            }
+        });
+        return () => subscription.unsubscribe();
+    }, [navigate]);
+
+    // Flujo normal: OAuth login o confirmación de email
+    useEffect(() => {
         if (loading) return;
 
         if (session) {
@@ -38,7 +38,7 @@ export default function AuthCallback() {
         } else {
             navigate("/login", { replace: true });
         }
-    }, [isRecovery, session, aceptoTerminos, completoDiagnostico, loading, navigate]);
+    }, [session, aceptoTerminos, completoDiagnostico, loading, navigate]);
 
     return (
         <div

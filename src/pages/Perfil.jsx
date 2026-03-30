@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 
 const ROL_LABEL = {
@@ -17,6 +18,10 @@ export default function Perfil() {
     const [nombre, setNombre] = useState(perfil?.nombre ?? "");
     const [guardando, setGuardando] = useState(false);
     const [feedback, setFeedback] = useState(null); // { tipo: 'ok' | 'error', msg }
+
+    const [passForm, setPassForm] = useState({ nueva: "", confirmar: "" });
+    const [guardandoPass, setGuardandoPass] = useState(false);
+    const [feedbackPass, setFeedbackPass] = useState(null);
 
     const iniciales = (perfil?.nombre ?? perfil?.email ?? "U").slice(0, 1).toUpperCase();
     const email = session?.user?.email ?? "";
@@ -34,6 +39,29 @@ export default function Perfil() {
         } else {
             setFeedback({ tipo: "ok", msg: "Nombre actualizado correctamente." });
             setTimeout(() => setFeedback(null), 3000);
+        }
+    };
+
+    const handleCambiarPass = async (e) => {
+        e.preventDefault();
+        setFeedbackPass(null);
+        if (passForm.nueva.length < 6) {
+            setFeedbackPass({ tipo: "error", msg: "La contraseña debe tener al menos 6 caracteres." });
+            return;
+        }
+        if (passForm.nueva !== passForm.confirmar) {
+            setFeedbackPass({ tipo: "error", msg: "Las contraseñas no coinciden." });
+            return;
+        }
+        setGuardandoPass(true);
+        const { error } = await supabase.auth.updateUser({ password: passForm.nueva });
+        setGuardandoPass(false);
+        if (error) {
+            setFeedbackPass({ tipo: "error", msg: "No se pudo actualizar. Intenta de nuevo." });
+        } else {
+            setPassForm({ nueva: "", confirmar: "" });
+            setFeedbackPass({ tipo: "ok", msg: "Contraseña actualizada correctamente." });
+            setTimeout(() => setFeedbackPass(null), 3000);
         }
     };
 
@@ -135,17 +163,49 @@ export default function Perfil() {
                         <span className="text-[#3DDC84] text-lg ml-3">→</span>
                     </button>
 
-                    <button
-                        onClick={() => navigate("/olvide-contrasena")}
-                        className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm text-left transition-all hover:bg-[rgba(88,166,255,0.05)]"
-                        style={{ border: "1px solid rgba(88,166,255,0.15)" }}
-                    >
-                        <div>
-                            <p className="text-white font-medium text-sm">Cambiar contraseña</p>
-                            <p className="text-[#7D8590] text-xs mt-0.5">Te enviaremos un enlace a tu correo</p>
-                        </div>
-                        <span className="text-[#58A6FF] text-lg ml-3">→</span>
-                    </button>
+                    {/* Cambiar contraseña inline */}
+                    <div className="flex flex-col gap-3 px-4 py-3 rounded-xl" style={{ border: "1px solid rgba(88,166,255,0.15)" }}>
+                        <p className="text-white font-medium text-sm">Cambiar contraseña</p>
+
+                        {feedbackPass && (
+                            <div className="text-xs px-3 py-2 rounded-lg font-medium"
+                                style={{
+                                    background: feedbackPass.tipo === "ok" ? "rgba(61,220,132,0.1)" : "rgba(255,107,107,0.1)",
+                                    color: feedbackPass.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
+                                    border: `1px solid ${feedbackPass.tipo === "ok" ? "rgba(61,220,132,0.2)" : "rgba(255,107,107,0.2)"}`,
+                                }}>
+                                {feedbackPass.tipo === "ok" ? "✓ " : "⚠️ "}{feedbackPass.msg}
+                            </div>
+                        )}
+
+                        <form onSubmit={handleCambiarPass} className="flex flex-col gap-2">
+                            <input
+                                type="password"
+                                placeholder="Nueva contraseña"
+                                value={passForm.nueva}
+                                onChange={(e) => setPassForm(f => ({ ...f, nueva: e.target.value }))}
+                                required
+                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#58A6FF] transition-colors"
+                            />
+                            <input
+                                type="password"
+                                placeholder="Confirmar contraseña"
+                                value={passForm.confirmar}
+                                onChange={(e) => setPassForm(f => ({ ...f, confirmar: e.target.value }))}
+                                required
+                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#58A6FF] transition-colors"
+                                style={{ borderColor: passForm.confirmar && passForm.confirmar !== passForm.nueva ? "#FF6B6B" : undefined }}
+                            />
+                            <button
+                                type="submit"
+                                disabled={guardandoPass || !passForm.nueva || !passForm.confirmar}
+                                className="py-2.5 text-sm font-bold font-display rounded-xl transition-all disabled:opacity-50"
+                                style={{ background: "rgba(88,166,255,0.15)", color: "#58A6FF", border: "1px solid rgba(88,166,255,0.3)" }}
+                            >
+                                {guardandoPass ? "Actualizando…" : "Actualizar contraseña"}
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
             </div>
