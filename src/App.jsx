@@ -10,6 +10,7 @@ import AuthCallback from "./pages/AuthCallback";
 import TerminosCondiciones from "./pages/TerminosCondiciones";
 import OlvideContrasena from "./pages/OlvideContrasena";
 import ResetContrasena from "./pages/ResetContrasena";
+import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 
 // ── Páginas de onboarding ────────────────────────────────────────────────
 import Diagnostico from "./pages/Diagnostico";
@@ -48,6 +49,9 @@ export default function App() {
           <Route path="/registro" element={
             <PublicOnlyRoute><Registro /></PublicOnlyRoute>
           } />
+
+          {/* Documentos legales (acceso público) */}
+          <Route path="/privacidad" element={<PoliticaPrivacidad />} />
 
           {/* Callback de OAuth (Google / Facebook) y recovery de contraseña */}
           <Route path="/auth/callback" element={<AuthCallback />} />
