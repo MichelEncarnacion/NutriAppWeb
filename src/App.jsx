@@ -2,6 +2,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import PrivateRoute, { AdminRoute, PublicOnlyRoute } from "./components/privateRoute";
+import { usePageTracking } from "./hooks/usePageTracking";
 
 // ── Páginas de auth ──────────────────────────────────────────────────────
 import Login from "./pages/Login";
@@ -33,11 +34,10 @@ import AdminUsuarios from "./pages/admin/AdminUsuarios";
 import AdminPlanes from "./pages/admin/AdminPlanes";
 import AdminLecciones from "./pages/admin/AdminLecciones";
 
-export default function App() {
+function AppRoutes() {
+  usePageTracking();
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
+    <Routes>
 
           {/* ── Raíz ─────────────────────────────────────── */}
           <Route path="/" element={<Landing />} />
@@ -135,7 +135,15 @@ export default function App() {
           {/* ── 404 ──────────────────────────────────────── */}
           <Route path="*" element={<Navigate to="/panel" replace />} />
 
-        </Routes>
+    </Routes>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <AppRoutes />
       </AuthProvider>
     </BrowserRouter>
   );
