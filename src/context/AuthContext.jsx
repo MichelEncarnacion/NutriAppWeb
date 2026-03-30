@@ -21,6 +21,7 @@ export function AuthProvider({ children }) {
     const [session, setSession] = useState(undefined); // undefined = cargando
     const [perfil, setPerfil] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [perfilCargado, setPerfilCargado] = useState(false); // true = perfil obtenido de DB
     const [isRecoverySession, setIsRecoverySession] = useState(false);
     // true  → ya tenemos perfil válido
     const perfilCargadoRef = useRef(false);
@@ -140,10 +141,16 @@ export function AuthProvider({ children }) {
                 const { data: { session } } = result;
                 setSession(session);
                 if (session?.user) {
-                    const p = await cargarPerfilGuardado(session.user.id, session);
+                    let p = await cargarPerfilGuardado(session.user.id, session);
+                    // En mobile el primer intento puede fallar — reintentamos una vez
+                    if (p === null && mounted) {
+                        await sleep(1200);
+                        if (mounted) p = await cargarPerfil(session.user.id, session);
+                    }
                     if (mounted && p !== null) {
                         setPerfil(p);
                         perfilCargadoRef.current = true;
+                        setPerfilCargado(true);
                     }
                 }
             } catch (e) {
@@ -190,6 +197,7 @@ export function AuthProvider({ children }) {
                         if (mounted && p !== null) {
                             setPerfil(p);
                             perfilCargadoRef.current = true;
+                            setPerfilCargado(true);
                         }
                     } else {
                         setPerfil(null);
@@ -260,6 +268,7 @@ export function AuthProvider({ children }) {
         session,
         perfil,
         loading,
+        perfilCargado,
         isRecoverySession,
         rol,
         esPremium,

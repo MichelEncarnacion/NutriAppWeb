@@ -32,17 +32,22 @@ export default function PrivateRoute({
         aceptoTerminos,
         completoDiagnostico,
         loading,
+        perfilCargado,
     } = useAuth();
 
     const location = useLocation();
 
-    // Mientras resuelve auth, no redirigir
+    // Mientras resuelve auth o carga el perfil, no redirigir
     if (loading) return null;
 
     // 1. Sin sesión → Login
     if (!session) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
+
+    // Si hay sesión pero el perfil aún no cargó (fallo de red en mobile),
+    // no tomamos decisiones de redirección — mostramos nada hasta que resuelva
+    if (!perfilCargado) return null;
 
     // 2. Sin T&C aceptados → Términos
     //    (excepto si ya estamos en /terminos para evitar loop)
