@@ -2,6 +2,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useActivePlan } from "../hooks/useActivePlan"
+import { useAuth } from "../hooks/useAuth"
 import Layout from "../components/Layout"
 
 const TIPO_COLOR = {
@@ -14,6 +15,7 @@ const TIPO_COLOR = {
 
 export default function MiPlan() {
   const { plan, fechaInicio, fechaFin, diaActual, isLoading, error, refetch } = useActivePlan()
+  const { esPremium } = useAuth()
   const [diaOffset, setDiaOffset] = useState(null) // null = use diaActual from hook
   const navigate = useNavigate()
 
@@ -77,13 +79,22 @@ export default function MiPlan() {
             </p>
           </div>
           {plan && !planVencido && (
-            <button
-              onClick={irARegenerar}
-              className="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl transition-all"
-              style={{ background: "rgba(88,166,255,0.1)", color: "#58A6FF", border: "1px solid rgba(88,166,255,0.2)" }}
-            >
-              Actualizar plan
-            </button>
+            esPremium ? (
+              <button
+                onClick={irARegenerar}
+                className="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl transition-all"
+                style={{ background: "rgba(88,166,255,0.1)", color: "#58A6FF", border: "1px solid rgba(88,166,255,0.2)" }}
+              >
+                Actualizar plan
+              </button>
+            ) : (
+              <span
+                className="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl"
+                style={{ background: "rgba(240,165,0,0.08)", color: "#F0A500", border: "1px solid rgba(240,165,0,0.2)" }}
+              >
+                🔒 Solo Premium
+              </span>
+            )
           )}
         </div>
 
@@ -111,15 +122,30 @@ export default function MiPlan() {
               <p className="text-[#7D8590] text-sm leading-relaxed">
                 Tu plan de 15 días venció el{" "}
                 <strong className="text-[#F0A500]">{new Date(fechaFin).toLocaleDateString("es-MX", { day: "numeric", month: "long" })}</strong>.
-                Genera uno nuevo para continuar con tu alimentación.
+                {esPremium
+                  ? " Genera uno nuevo para continuar con tu alimentación."
+                  : " Actualiza a Premium para generar planes ilimitados."}
               </p>
             </div>
-            <button
-              onClick={irARegenerar}
-              className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
-            >
-              Generar nuevo plan →
-            </button>
+            {esPremium ? (
+              <button
+                onClick={irARegenerar}
+                className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
+              >
+                Generar nuevo plan →
+              </button>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-xs text-[#7D8590]">🔒 Función exclusiva Premium</span>
+                <button
+                  onClick={() => navigate("/panel?upgrade=true")}
+                  className="px-6 py-2.5 font-bold font-display rounded-xl transition-all text-sm"
+                  style={{ background: "rgba(240,165,0,0.12)", color: "#F0A500", border: "1px solid rgba(240,165,0,0.25)" }}
+                >
+                  Ver planes Premium →
+                </button>
+              </div>
+            )}
           </div>
         ) : (
           <>
