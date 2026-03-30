@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import Logo from "../components/Logo";
 
 export default function Login() {
     const { loginConEmail, loginConGoogle, loginConFacebook } = useAuth();
@@ -50,7 +51,9 @@ export default function Login() {
 
                 {/* Logo */}
                 <div style={styles.logo}>
-                    <span style={styles.logoText}>NutriiApp</span>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
+                        <Logo size="md" />
+                    </div>
                     <p style={styles.logoSub}>Inicia sesión en tu cuenta</p>
                 </div>
 

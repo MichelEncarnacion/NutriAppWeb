@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
+import Logo from "../components/Logo";
 
 export default function Registro() {
     const { registrar } = useAuth();
@@ -127,7 +128,9 @@ export default function Registro() {
             <div style={styles.card}>
 
                 <div style={styles.logo}>
-                    <span style={styles.logoText}>NutriiApp</span>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 10 }}>
+                        <Logo size="md" />
+                    </div>
                     <p style={styles.logoSub}>Crea tu cuenta gratis</p>
                 </div>
 

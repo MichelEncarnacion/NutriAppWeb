@@ -3,6 +3,7 @@ import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
+import Logo from "./Logo";
 
 const NAV = [
     { to: "/panel", label: "Panel General", icon: "⊞" },
@@ -38,9 +39,8 @@ export default function Layout({ children }) {
 
                 {/* Logo */}
                 <div className="px-2 mb-8">
-                    <span className="font-display font-black text-xl text-[#3DDC84]">Nutrii</span>
-                    <span className="font-display font-black text-xl text-white">App</span>
-                    <div className="text-[9px] text-[#7D8590] font-bold tracking-widest mt-0.5">v1.0 DEMO</div>
+                    <Logo size="sm" />
+                    <div className="text-[9px] text-[#7D8590] font-bold tracking-widest mt-1.5 pl-0.5">v1.0 DEMO</div>
                 </div>
 
                 {/* Nav links */}
@@ -96,9 +96,7 @@ export default function Layout({ children }) {
 
             {/* ── Topbar mobile ────────────────────────────────────────────── */}
             <header className="md:hidden fixed top-0 left-0 right-0 bg-[#0D1117] border-b border-[#1C2330] z-20 flex items-center justify-between px-4 py-3">
-                <span className="font-display font-black text-lg">
-                    <span className="text-[#3DDC84]">Nutrii</span>App
-                </span>
+                <Logo size="sm" />
                 <button onClick={() => setMenuOpen((v) => !v)} className="text-[#7D8590] text-xl">
                     {menuOpen ? "✕" : "☰"}
                 </button>
