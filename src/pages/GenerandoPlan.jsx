@@ -19,7 +19,7 @@ export default function GenerandoPlan() {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { respuestas, tieneEnfermedad } = location.state ?? {};
+    const { respuestas, tieneEnfermedad, regenerar } = location.state ?? {};
 
     const [msgIdx, setMsgIdx] = useState(0);
     const [error, setError] = useState(null);
@@ -36,13 +36,12 @@ export default function GenerandoPlan() {
 
     // Llamar al backend para generar el plan
     useEffect(() => {
-        if (!respuestas) { navigate("/diagnostico", { replace: true }); return; }
+        if (!regenerar && !respuestas) { navigate("/diagnostico", { replace: true }); return; }
         if (!session) return; // Esperar a que AuthContext cargue la sesión
         if (generandoRef.current) return;
         generandoRef.current = true;
 
         const generar = async () => {
-            // Usa el token JWT del contexto de auth (ya verificado y fresco)
             const token = session?.access_token;
 
             const controller = new AbortController();
@@ -58,23 +57,24 @@ export default function GenerandoPlan() {
                             "Authorization": `Bearer ${token}`,
                             "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
                         },
-                        body: JSON.stringify({ respuestas, usuario_id: session.user.id }),
+                        body: regenerar
+                            ? JSON.stringify({})
+                            : JSON.stringify({ respuestas, usuario_id: session.user.id }),
                         signal: controller.signal,
                     }
                 );
                 clearTimeout(timeoutId);
 
                 if (res.status === 409) {
-                    setError("Ya tienes un plan activo este mes. Los usuarios Freemium pueden generar 1 plan por mes.");
+                    setError("Ya generaste un plan recientemente. Los usuarios Freemium pueden generar 1 plan por mes.");
                     return;
                 }
                 if (!res.ok) throw new Error("Error al generar el plan");
 
-                // Si el usuario tiene condición médica, mostrar aviso antes de redirigir
                 if (tieneEnfermedad) {
                     setMostrarAviso(true);
                 } else {
-                    navigate("/panel", { replace: true });
+                    navigate(regenerar ? "/mi-plan" : "/panel", { replace: true });
                 }
             } catch (err) {
                 clearTimeout(timeoutId);
@@ -87,7 +87,7 @@ export default function GenerandoPlan() {
         };
 
         generar();
-    }, [session, respuestas, navigate]);
+    }, [session, respuestas, regenerar, navigate]);
 
     // ── Aviso médico ──────────────────────────────────────────────────────
     if (mostrarAviso) return (
@@ -121,16 +121,19 @@ export default function GenerandoPlan() {
                 <h2 className="text-white text-xl font-bold font-display">Algo salió mal</h2>
                 <p className="text-[#7D8590] text-sm">{error}</p>
                 <button
-                    onClick={() => navigate("/diagnostico", { replace: true })}
+                    onClick={() => regenerar
+                        ? navigate("/mi-plan", { state: { regenerar: true }, replace: true })
+                        : navigate("/diagnostico", { replace: true })
+                    }
                     className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
                 >
                     Reintentar
                 </button>
                 <button
-                    onClick={() => navigate("/panel", { replace: true })}
+                    onClick={() => navigate(regenerar ? "/mi-plan" : "/panel", { replace: true })}
                     className="w-full py-3 bg-transparent border border-[#2D3748] text-[#7D8590] font-display rounded-xl hover:border-[#7D8590] transition-all text-sm"
                 >
-                    Ir al panel de todas formas
+                    {regenerar ? "Volver a mi plan" : "Ir al panel de todas formas"}
                 </button>
             </div>
         </div>

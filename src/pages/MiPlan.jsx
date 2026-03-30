@@ -21,6 +21,13 @@ export default function MiPlan() {
   const comidasDelDia = plan?.dias?.[dia - 1]?.comidas ?? []
   const kcalTotal = plan?.dias?.[dia - 1]?.kcal_total ?? 0
 
+  // Detectar plan vencido: fecha_fin ya pasó
+  const planVencido = fechaFin
+    ? new Date(fechaFin + "T23:59:59") < new Date()
+    : false
+
+  const irARegenerar = () => navigate("/generando-plan", { state: { regenerar: true } })
+
   const fechaDia = (() => {
     if (!fechaInicio) return "";
     const [y, m, d] = fechaInicio.split("-").map(Number);
@@ -58,13 +65,26 @@ export default function MiPlan() {
       <div className="flex flex-col gap-5 max-w-2xl">
 
         {/* Page header */}
-        <div>
-          <h1 className="text-white text-2xl font-black font-display mb-1">Mi Plan Nutricional</h1>
-          <p className="text-[#7D8590] text-xs">
-            {plan && fechaFin
-              ? `Vigente hasta ${new Date(fechaFin).toLocaleDateString("es-MX")} · ${plan.dias?.length ?? 15} días`
-              : isLoading ? "Cargando plan..." : "Sin plan activo"}
-          </p>
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h1 className="text-white text-2xl font-black font-display mb-1">Mi Plan Nutricional</h1>
+            <p className="text-[#7D8590] text-xs">
+              {plan && fechaFin
+                ? planVencido
+                  ? `Venció el ${new Date(fechaFin).toLocaleDateString("es-MX")}`
+                  : `Vigente hasta ${new Date(fechaFin).toLocaleDateString("es-MX")} · ${plan.dias?.length ?? 15} días`
+                : isLoading ? "Cargando plan..." : "Sin plan activo"}
+            </p>
+          </div>
+          {plan && !planVencido && (
+            <button
+              onClick={irARegenerar}
+              className="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl transition-all"
+              style={{ background: "rgba(88,166,255,0.1)", color: "#58A6FF", border: "1px solid rgba(88,166,255,0.2)" }}
+            >
+              Actualizar plan
+            </button>
+          )}
         </div>
 
         {!plan ? (
@@ -80,6 +100,25 @@ export default function MiPlan() {
               className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
             >
               Generar mi plan
+            </button>
+          </div>
+        ) : planVencido ? (
+          /* ── Plan vencido ── */
+          <div className="bg-[#161B22] border border-[rgba(240,165,0,0.25)] rounded-2xl p-8 text-center flex flex-col items-center gap-4">
+            <span className="text-4xl">📅</span>
+            <div>
+              <p className="text-white font-bold font-display mb-1">Tu plan nutricional ha concluido</p>
+              <p className="text-[#7D8590] text-sm leading-relaxed">
+                Tu plan de 15 días venció el{" "}
+                <strong className="text-[#F0A500]">{new Date(fechaFin).toLocaleDateString("es-MX", { day: "numeric", month: "long" })}</strong>.
+                Genera uno nuevo para continuar con tu alimentación.
+              </p>
+            </div>
+            <button
+              onClick={irARegenerar}
+              className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
+            >
+              Generar nuevo plan →
             </button>
           </div>
         ) : (
