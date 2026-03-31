@@ -188,8 +188,11 @@ export default function Lecciones() {
                 const map = {};
                 (prog ?? []).forEach((p) => { map[p.leccion_id] = p; });
 
-                if ((prog ?? []).length === 0 && (lecs ?? []).length > 0) {
-                    await seedLecciones(lecs, esSoloPremium, uid);
+                // Seed las lecciones que aún no tienen entrada (usuarios nuevos o
+                // usuarios que tenían solo la primera lección con el sistema anterior)
+                const faltantes = (lecs ?? []).filter((l) => !map[l.id]);
+                if (faltantes.length > 0) {
+                    await seedLecciones(faltantes, esSoloPremium, uid, perfil.fecha_registro);
                     const { data: progAfter } = await supabase
                         .from("lecciones_usuario")
                         .select("leccion_id, estado, fecha_disponible, fecha_completada")
@@ -209,42 +212,21 @@ export default function Lecciones() {
     }, [uid, esSoloPremium, perfil]);
 
     const marcarCompletada = async (leccion) => {
-        const { error: e1 } = await supabase.from("lecciones_usuario").upsert({
+        const { error } = await supabase.from("lecciones_usuario").upsert({
             perfil_id: uid,
             leccion_id: leccion.id,
             estado: "completada",
             fecha_completada: new Date().toISOString(),
         }, { onConflict: "perfil_id,leccion_id" });
 
-        if (e1) { console.error("Error al marcar lección:", e1); return; }
+        if (error) { console.error("Error al marcar lección:", error); return; }
 
-        const idx = lecciones.findIndex((l) => l.id === leccion.id);
-        const siguiente = lecciones[idx + 1];
-        if (siguiente) {
-            const disponibleEn = esSoloPremium
-                ? new Date().toISOString()
-                : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-
-            const { error: e2 } = await supabase.from("lecciones_usuario").upsert({
-                perfil_id: uid,
-                leccion_id: siguiente.id,
-                estado: "disponible",
-                fecha_disponible: disponibleEn,
-            }, { onConflict: "perfil_id,leccion_id" });
-
-            if (e2) console.error("Error al desbloquear siguiente:", e2);
-
-            setProgreso((p) => ({
-                ...p,
-                [leccion.id]: { ...p[leccion.id], estado: "completada" },
-                [siguiente.id]: { estado: "disponible", fecha_disponible: disponibleEn },
-            }));
-        } else {
-            setProgreso((p) => ({
-                ...p,
-                [leccion.id]: { ...p[leccion.id], estado: "completada" },
-            }));
-        }
+        // El desbloqueo de las siguientes lecciones ya está fijado desde el seed
+        // según la fecha de registro — no hay que modificar nada más.
+        setProgreso((p) => ({
+            ...p,
+            [leccion.id]: { ...p[leccion.id], estado: "completada" },
+        }));
         setActiva(null);
     };
 
@@ -548,17 +530,28 @@ export default function Lecciones() {
     );
 }
 
-async function seedLecciones(lecciones, esSoloPremium, uid) {
+async function seedLecciones(lecciones, esSoloPremium, uid, fechaRegistro) {
     if (esSoloPremium) {
+        // Premium: todas disponibles de inmediato
         const rows = lecciones.map((l) => ({
             perfil_id: uid, leccion_id: l.id,
             estado: "disponible", fecha_disponible: new Date().toISOString(),
         }));
         await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
     } else {
-        await supabase.from("lecciones_usuario").upsert({
-            perfil_id: uid, leccion_id: lecciones[0].id,
-            estado: "disponible", fecha_disponible: new Date().toISOString(),
-        }, { onConflict: "perfil_id,leccion_id" });
+        // Freemium/demo: una lección cada 7 días desde la fecha de registro
+        // Lección orden=1 → disponible el día 0, orden=2 → día 7, orden=3 → día 14, etc.
+        const base = fechaRegistro ? new Date(fechaRegistro) : new Date();
+        const rows = lecciones.map((l) => {
+            const fecha = new Date(base);
+            fecha.setDate(fecha.getDate() + (l.orden - 1) * 7);
+            return {
+                perfil_id: uid,
+                leccion_id: l.id,
+                estado: "disponible",
+                fecha_disponible: fecha.toISOString(),
+            };
+        });
+        await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
     }
 }
