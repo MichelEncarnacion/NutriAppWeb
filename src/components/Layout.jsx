@@ -25,6 +25,15 @@ export default function Layout({ children }) {
         const uid = session?.user?.id;
         if (!uid) return;
         const calcularRacha = async () => {
+            // Registrar visita de hoy para que la racha funcione
+            const pad = (n) => String(n).padStart(2, "0");
+            const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+            const hoy = toStr(new Date());
+            await supabase.from("resumen_diario").upsert(
+                { perfil_id: uid, fecha: hoy },
+                { onConflict: "perfil_id,fecha", ignoreDuplicates: true }
+            );
+
             const { data } = await supabase
                 .from("resumen_diario")
                 .select("fecha")
@@ -32,8 +41,6 @@ export default function Layout({ children }) {
                 .order("fecha", { ascending: false })
                 .limit(60);
             const fechas = new Set((data ?? []).map((r) => r.fecha));
-            const pad = (n) => String(n).padStart(2, "0");
-            const toStr = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
             let cursor = new Date();
             if (!fechas.has(toStr(cursor))) cursor.setDate(cursor.getDate() - 1);
             let dias = 0;
