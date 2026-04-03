@@ -309,31 +309,30 @@ export default function AdminUsuarios() {
                                     />
                                 </div>
 
+                                <div>
+                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Nombre</label>
+                                    <input
+                                        type="text"
+                                        placeholder="Nombre completo"
+                                        value={formNuevo.nombre}
+                                        onChange={(e) => setFormNuevo((f) => ({ ...f, nombre: e.target.value }))}
+                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
+                                    />
+                                </div>
+
                                 {!formNuevo.es_admin && (
-                                    <>
-                                        <div>
-                                            <label className="text-xs text-[#7D8590] mb-1.5 block">Nombre</label>
-                                            <input
-                                                type="text"
-                                                placeholder="Nombre del usuario"
-                                                value={formNuevo.nombre}
-                                                onChange={(e) => setFormNuevo((f) => ({ ...f, nombre: e.target.value }))}
-                                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
-                                            />
-                                        </div>
-                                        <div>
-                                            <label className="text-xs text-[#7D8590] mb-1.5 block">Tipo de usuario</label>
-                                            <select
-                                                value={formNuevo.tipo_usuario}
-                                                onChange={(e) => setFormNuevo((f) => ({ ...f, tipo_usuario: e.target.value }))}
-                                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
-                                            >
-                                                {["freemium", "demo", "premium"].map((t) => (
-                                                    <option key={t} value={t}>{t}</option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </>
+                                    <div>
+                                        <label className="text-xs text-[#7D8590] mb-1.5 block">Tipo de usuario</label>
+                                        <select
+                                            value={formNuevo.tipo_usuario}
+                                            onChange={(e) => setFormNuevo((f) => ({ ...f, tipo_usuario: e.target.value }))}
+                                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
+                                        >
+                                            {["freemium", "demo", "premium"].map((t) => (
+                                                <option key={t} value={t}>{t}</option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 )}
 
                                 {errorCrear && (
