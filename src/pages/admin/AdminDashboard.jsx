@@ -112,7 +112,7 @@ function RecentUsers() {
 
     return (
         <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full text-sm min-w-[480px]">
                 <thead>
                     <tr className="text-[#7D8590] text-left border-b border-[#2D3748]">
                         {["Nombre", "Email", "Tipo", "Registro"].map((h) => (
