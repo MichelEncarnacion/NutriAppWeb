@@ -26,6 +26,8 @@ import Seguimiento from "./pages/Seguimiento";
 import ListaCompras from "./pages/ListaCompras";
 import Perfil from "./pages/Perfil";
 
+import NotFound from "./pages/NotFound";
+
 // ── Panel admin ──────────────────────────────────────────────────────────
 import AdminLogin from "./pages/admin/AdminLogin";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -131,7 +133,7 @@ function AppRoutes() {
           } />
 
           {/* ── 404 ──────────────────────────────────────── */}
-          <Route path="*" element={<Navigate to="/panel" replace />} />
+          <Route path="*" element={<NotFound />} />
 
     </Routes>
   );
