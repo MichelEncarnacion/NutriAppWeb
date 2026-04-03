@@ -192,7 +192,7 @@ export default function Lecciones() {
                 // usuarios que tenían solo la primera lección con el sistema anterior)
                 const faltantes = (lecs ?? []).filter((l) => !map[l.id]);
                 if (faltantes.length > 0) {
-                    await seedLecciones(faltantes, esSoloPremium, uid, perfil.fecha_registro);
+                    await seedLecciones(faltantes, esSoloPremium, uid, perfil.fecha_registro, map);
                     const { data: progAfter } = await supabase
                         .from("lecciones_usuario")
                         .select("leccion_id, estado, fecha_disponible, fecha_completada")
@@ -530,7 +530,7 @@ export default function Lecciones() {
     );
 }
 
-async function seedLecciones(lecciones, esSoloPremium, uid, fechaRegistro) {
+async function seedLecciones(lecciones, esSoloPremium, uid, fechaRegistro, existingProgMap = {}) {
     if (esSoloPremium) {
         // Premium: todas disponibles de inmediato
         const rows = lecciones.map((l) => ({
@@ -538,20 +538,46 @@ async function seedLecciones(lecciones, esSoloPremium, uid, fechaRegistro) {
             estado: "disponible", fecha_disponible: new Date().toISOString(),
         }));
         await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
-    } else {
-        // Freemium/demo: una lección cada 7 días desde la fecha de registro
-        // Lección orden=1 → disponible el día 0, orden=2 → día 7, orden=3 → día 14, etc.
-        const base = fechaRegistro ? new Date(fechaRegistro) : new Date();
-        const rows = lecciones.map((l) => {
-            const fecha = new Date(base);
-            fecha.setDate(fecha.getDate() + (l.orden - 1) * 7);
-            return {
-                perfil_id: uid,
-                leccion_id: l.id,
-                estado: "disponible",
-                fecha_disponible: fecha.toISOString(),
-            };
-        });
-        await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
+        return;
     }
+
+    // Freemium/demo: una lección cada 7 días desde la fecha de registro.
+    // Si la fecha natural ya pasó (usuario antiguo + lección nueva del admin),
+    // se ancla desde max(última fecha_disponible existente, hoy) para que la
+    // lección no aparezca desbloqueada de inmediato.
+    const base = fechaRegistro ? new Date(fechaRegistro) : new Date();
+    const now = new Date();
+
+    const existingDates = Object.values(existingProgMap)
+        .map((p) => (p.fecha_disponible ? new Date(p.fecha_disponible) : null))
+        .filter(Boolean);
+    const maxExisting = existingDates.length > 0
+        ? new Date(Math.max(...existingDates.map((d) => d.getTime())))
+        : null;
+    // Ancla para lecciones cuya fecha natural ya pasó
+    const ancla = maxExisting && maxExisting > now ? maxExisting : now;
+
+    const sorted = [...lecciones].sort((a, b) => a.orden - b.orden);
+
+    const rows = sorted.map((l, i) => {
+        const naturalDate = new Date(base);
+        naturalDate.setDate(naturalDate.getDate() + (l.orden - 1) * 7);
+
+        // Si la fecha natural aún es futura, se respeta; si ya pasó se agenda
+        // desde el ancla para que el usuario tenga que esperar.
+        const fecha = naturalDate > now ? naturalDate : (() => {
+            const d = new Date(ancla);
+            d.setDate(d.getDate() + 7 * (i + 1));
+            return d;
+        })();
+
+        return {
+            perfil_id: uid,
+            leccion_id: l.id,
+            estado: "disponible",
+            fecha_disponible: fecha.toISOString(),
+        };
+    });
+
+    await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
 }
