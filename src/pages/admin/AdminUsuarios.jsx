@@ -13,7 +13,14 @@ export default function AdminUsuarios() {
     const [loading, setLoading] = useState(true);
     const [regenerando, setRegenerando] = useState({});
     const [eliminando, setEliminando] = useState({});
-    const [confirmarEliminar, setConfirmarEliminar] = useState(null); // id del usuario a eliminar
+    const [confirmarEliminar, setConfirmarEliminar] = useState(null);
+
+    // Modal crear usuario
+    const FORM_NUEVO = { email: "", password: "", nombre: "", tipo_usuario: "freemium", es_admin: false };
+    const [modalCrear, setModalCrear] = useState(false);
+    const [formNuevo, setFormNuevo] = useState(FORM_NUEVO);
+    const [creando, setCreando] = useState(false);
+    const [errorCrear, setErrorCrear] = useState(null);
 
     const cargar = async () => {
         let q = supabase.from("perfiles").select("*").order("fecha_registro", { ascending: false });
@@ -57,6 +64,34 @@ export default function AdminUsuarios() {
         } finally {
             setEliminando((p) => { const n = { ...p }; delete n[id]; return n; });
             setConfirmarEliminar(null);
+        }
+    };
+
+    const crearUsuario = async () => {
+        setCreando(true);
+        setErrorCrear(null);
+        try {
+            const res = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-crear-usuario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session?.access_token}`,
+                        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    },
+                    body: JSON.stringify(formNuevo),
+                }
+            );
+            const data = await res.json();
+            if (!res.ok) { setErrorCrear(data.error ?? "Error desconocido"); return; }
+            setModalCrear(false);
+            setFormNuevo(FORM_NUEVO);
+            cargar();
+        } catch (e) {
+            setErrorCrear(String(e));
+        } finally {
+            setCreando(false);
         }
     };
 
@@ -113,6 +148,12 @@ export default function AdminUsuarios() {
                         </button>
                     ))}
                     <span className="text-xs text-[#7D8590] ml-auto">{filtrados.length} usuarios</span>
+                    <button
+                        onClick={() => { setFormNuevo(FORM_NUEVO); setErrorCrear(null); setModalCrear(true); }}
+                        className="px-4 py-2 bg-[#A855F7] text-white font-bold font-display text-sm rounded-xl hover:bg-[#C084FC] transition-all"
+                    >
+                        + Nuevo usuario
+                    </button>
                 </div>
 
                 {/* Tabla */}
@@ -204,6 +245,125 @@ export default function AdminUsuarios() {
                     </div>
                 </div>
             </div>
+            {/* ── Modal crear usuario ───────────────────────────────────── */}
+            {modalCrear && (
+                <>
+                    <div
+                        className="fixed inset-0 z-40"
+                        style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+                        onClick={() => setModalCrear(false)}
+                    />
+                    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+                        <div className="w-full max-w-md rounded-2xl border border-[#2D3748] flex flex-col" style={{ background: "#161B22" }}>
+
+                            {/* Header */}
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-[#2D3748]">
+                                <h3 className="text-white font-bold font-display text-sm">Nuevo usuario</h3>
+                                <button
+                                    onClick={() => setModalCrear(false)}
+                                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-[#7D8590] hover:text-white transition-colors"
+                                    style={{ background: "rgba(255,255,255,0.05)" }}
+                                >✕</button>
+                            </div>
+
+                            {/* Body */}
+                            <div className="flex flex-col gap-4 px-5 py-5">
+
+                                {/* Toggle admin/usuario */}
+                                <div className="flex gap-2 p-1 rounded-xl" style={{ background: "#1C2330" }}>
+                                    {[{ label: "Usuario normal", val: false }, { label: "Administrador", val: true }].map(({ label, val }) => (
+                                        <button
+                                            key={String(val)}
+                                            onClick={() => setFormNuevo((f) => ({ ...f, es_admin: val }))}
+                                            className="flex-1 py-2 rounded-lg text-xs font-bold transition-all"
+                                            style={{
+                                                background: formNuevo.es_admin === val ? (val ? "rgba(240,165,0,0.15)" : "rgba(168,85,247,0.15)") : "transparent",
+                                                color: formNuevo.es_admin === val ? (val ? "#F0A500" : "#A855F7") : "#7D8590",
+                                                border: formNuevo.es_admin === val ? `1px solid ${val ? "rgba(240,165,0,0.3)" : "rgba(168,85,247,0.3)"}` : "1px solid transparent",
+                                            }}
+                                        >
+                                            {label}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div>
+                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Email</label>
+                                    <input
+                                        type="email"
+                                        placeholder="usuario@ejemplo.com"
+                                        value={formNuevo.email}
+                                        onChange={(e) => setFormNuevo((f) => ({ ...f, email: e.target.value }))}
+                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Contraseña temporal</label>
+                                    <input
+                                        type="password"
+                                        placeholder="Mínimo 6 caracteres"
+                                        value={formNuevo.password}
+                                        onChange={(e) => setFormNuevo((f) => ({ ...f, password: e.target.value }))}
+                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
+                                    />
+                                </div>
+
+                                {!formNuevo.es_admin && (
+                                    <>
+                                        <div>
+                                            <label className="text-xs text-[#7D8590] mb-1.5 block">Nombre</label>
+                                            <input
+                                                type="text"
+                                                placeholder="Nombre del usuario"
+                                                value={formNuevo.nombre}
+                                                onChange={(e) => setFormNuevo((f) => ({ ...f, nombre: e.target.value }))}
+                                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="text-xs text-[#7D8590] mb-1.5 block">Tipo de usuario</label>
+                                            <select
+                                                value={formNuevo.tipo_usuario}
+                                                onChange={(e) => setFormNuevo((f) => ({ ...f, tipo_usuario: e.target.value }))}
+                                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
+                                            >
+                                                {["freemium", "demo", "premium"].map((t) => (
+                                                    <option key={t} value={t}>{t}</option>
+                                                ))}
+                                            </select>
+                                        </div>
+                                    </>
+                                )}
+
+                                {errorCrear && (
+                                    <div className="bg-[rgba(255,107,107,.1)] border border-[rgba(255,107,107,.3)] text-[#FF6B6B] rounded-xl px-3 py-2.5 text-xs">
+                                        {errorCrear}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Footer */}
+                            <div className="flex gap-3 px-5 py-4 border-t border-[#2D3748]">
+                                <button
+                                    onClick={() => setModalCrear(false)}
+                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#7D8590] hover:text-white border border-[#2D3748] hover:border-[#4A5568] transition-all"
+                                >
+                                    Cancelar
+                                </button>
+                                <button
+                                    onClick={crearUsuario}
+                                    disabled={creando || !formNuevo.email || !formNuevo.password}
+                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
+                                    style={{ background: formNuevo.es_admin ? "#F0A500" : "#A855F7" }}
+                                >
+                                    {creando ? "Creando…" : formNuevo.es_admin ? "Crear admin" : "Crear usuario"}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </>
+            )}
         </AdminLayout>
     );
 }
