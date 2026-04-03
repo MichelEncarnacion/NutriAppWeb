@@ -119,9 +119,15 @@ export default function LandingFooter() {
         </Box>
 
         {/* Bottom bar */}
-        <Box sx={{ borderTop: `1px solid ${C.border}`, pt: 3, textAlign: "center" }}>
+        <Box sx={{ borderTop: `1px solid ${C.border}`, pt: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: "center", justifyContent: "space-between", gap: 1 }}>
           <Typography sx={{ color: C.textMuted, fontSize: "0.75rem" }}>
-            © 2026 NutriiApp · Todos los derechos reservados
+            © {new Date().getFullYear()} NutriiApp · Todos los derechos reservados
+          </Typography>
+          <Typography sx={{ color: C.textMuted, fontSize: "0.75rem" }}>
+            Desarrollado por{" "}
+            <Box component="span" sx={{ color: C.green, fontWeight: 700 }}>
+              Michel Encarnación
+            </Box>
           </Typography>
         </Box>
       </Container>
