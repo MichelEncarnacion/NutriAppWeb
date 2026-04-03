@@ -12,6 +12,8 @@ export default function AdminUsuarios() {
     const [search, setSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [regenerando, setRegenerando] = useState({});
+    const [eliminando, setEliminando] = useState({});
+    const [confirmarEliminar, setConfirmarEliminar] = useState(null); // id del usuario a eliminar
 
     const cargar = async () => {
         let q = supabase.from("perfiles").select("*").order("fecha_registro", { ascending: false });
@@ -24,8 +26,38 @@ export default function AdminUsuarios() {
     useEffect(() => { cargar(); }, [filtro]);
 
     const cambiarTipo = async (id, tipo) => {
-        await supabase.from("perfiles").update({ tipo_usuario: tipo }).eq("id", id);
+        const { error } = await supabase.from("perfiles").update({ tipo_usuario: tipo }).eq("id", id);
+        if (error) console.error("Error cambiando tipo:", error.message);
         cargar();
+    };
+
+    const eliminarUsuario = async (id) => {
+        setEliminando((p) => ({ ...p, [id]: true }));
+        try {
+            const res = await fetch(
+                `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-eliminar-usuario`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${session?.access_token}`,
+                        "apikey": import.meta.env.VITE_SUPABASE_ANON_KEY,
+                    },
+                    body: JSON.stringify({ user_id: id }),
+                }
+            );
+            if (res.ok) {
+                setUsers((prev) => prev.filter((u) => u.id !== id));
+            } else {
+                const data = await res.json();
+                console.error("Error eliminando usuario:", data.error);
+            }
+        } catch (e) {
+            console.error("Error eliminando usuario:", e);
+        } finally {
+            setEliminando((p) => { const n = { ...p }; delete n[id]; return n; });
+            setConfirmarEliminar(null);
+        }
     };
 
     const regenerarPlan = async (id) => {
@@ -121,22 +153,48 @@ export default function AdminUsuarios() {
                                             <span className="text-xs font-bold text-[#3DDC84]">● Activo</span>
                                         </td>
                                         <td className="px-4 py-3">
-                                            <button
-                                                onClick={() => regenerarPlan(u.id)}
-                                                disabled={!!regenerando[u.id]}
-                                                className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all disabled:opacity-60
-                                                    ${regenerando[u.id] === "ok"
-                                                        ? "bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
-                                                        : regenerando[u.id] === "error"
-                                                            ? "bg-[rgba(255,107,107,.12)] text-[#FF6B6B]"
-                                                            : "bg-[rgba(88,166,255,.12)] text-[#58A6FF] hover:bg-[rgba(88,166,255,.2)]"
-                                                    }`}
-                                            >
-                                                {regenerando[u.id] === "loading" ? "Generando…"
-                                                    : regenerando[u.id] === "ok" ? "✓ Listo"
-                                                    : regenerando[u.id] === "error" ? "✗ Error"
-                                                    : "Regenerar Plan"}
-                                            </button>
+                                            <div className="flex gap-2 items-center">
+                                                <button
+                                                    onClick={() => regenerarPlan(u.id)}
+                                                    disabled={!!regenerando[u.id]}
+                                                    className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all disabled:opacity-60
+                                                        ${regenerando[u.id] === "ok"
+                                                            ? "bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
+                                                            : regenerando[u.id] === "error"
+                                                                ? "bg-[rgba(255,107,107,.12)] text-[#FF6B6B]"
+                                                                : "bg-[rgba(88,166,255,.12)] text-[#58A6FF] hover:bg-[rgba(88,166,255,.2)]"
+                                                        }`}
+                                                >
+                                                    {regenerando[u.id] === "loading" ? "Generando…"
+                                                        : regenerando[u.id] === "ok" ? "✓ Listo"
+                                                        : regenerando[u.id] === "error" ? "✗ Error"
+                                                        : "Regenerar Plan"}
+                                                </button>
+                                                {confirmarEliminar === u.id ? (
+                                                    <>
+                                                        <button
+                                                            onClick={() => eliminarUsuario(u.id)}
+                                                            disabled={eliminando[u.id]}
+                                                            className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[rgba(255,107,107,.2)] text-[#FF6B6B] hover:bg-[rgba(255,107,107,.35)] transition-all disabled:opacity-60"
+                                                        >
+                                                            {eliminando[u.id] ? "Eliminando…" : "Confirmar"}
+                                                        </button>
+                                                        <button
+                                                            onClick={() => setConfirmarEliminar(null)}
+                                                            className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#1C2330] text-[#7D8590] hover:text-white transition-all"
+                                                        >
+                                                            Cancelar
+                                                        </button>
+                                                    </>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => setConfirmarEliminar(u.id)}
+                                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[rgba(255,107,107,.08)] text-[#FF6B6B] hover:bg-[rgba(255,107,107,.2)] transition-all"
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                )}
+                                            </div>
                                         </td>
                                     </tr>
                                 ))
