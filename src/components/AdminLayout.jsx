@@ -92,11 +92,11 @@ export default function AdminLayout({ titulo, children }) {
 
             {/* ── Topbar (mobile) ───────────────────────────────────── */}
             <header className="md:hidden fixed top-0 left-0 right-0 bg-[#0D1117] border-b border-[#1C2330] z-30 flex items-center justify-between px-4 py-3">
-                <span className="font-display font-black text-lg">
-                    <span className="text-[#A855F7]">Admin</span>
-                    <span className="text-white">Panel</span>
-                </span>
-                <button onClick={() => setMenuOpen((v) => !v)} className="text-[#7D8590] text-xl w-8 h-8 flex items-center justify-center">
+                <div className="flex flex-col">
+                    <span className="text-[9px] font-bold tracking-widest text-[#A855F7] font-display">ADMINPANEL</span>
+                    <span className="text-white font-black font-display text-sm leading-tight">{titulo}</span>
+                </div>
+                <button onClick={() => setMenuOpen((v) => !v)} className="text-[#7D8590] text-xl w-8 h-8 flex items-center justify-center flex-shrink-0">
                     {menuOpen ? "✕" : "☰"}
                 </button>
             </header>

@@ -129,31 +129,35 @@ export default function AdminUsuarios() {
             <div className="flex flex-col gap-4">
 
                 {/* Filtros */}
-                <div className="flex gap-3 items-center flex-wrap">
-                    <input
-                        placeholder="Buscar por nombre o email…"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="bg-[#161B22] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#A855F7] w-64 transition-colors"
-                    />
-                    {["todos", "demo", "freemium", "premium"].map((f) => (
-                        <button key={f} onClick={() => setFiltro(f)}
-                            className={`px-3 py-2 rounded-xl text-xs font-bold transition-all border
-                ${filtro === f
-                                    ? "border-[#A855F7] bg-[rgba(168,85,247,.12)] text-[#A855F7]"
-                                    : "border-[#2D3748] text-[#7D8590] hover:border-[#A855F7]"
-                                }`}
+                <div className="flex flex-col gap-3">
+                    <div className="flex gap-3 items-center">
+                        <input
+                            placeholder="Buscar por nombre o email…"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="bg-[#161B22] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#A855F7] flex-1 min-w-0 transition-colors"
+                        />
+                        <button
+                            onClick={() => { setFormNuevo(FORM_NUEVO); setErrorCrear(null); setModalCrear(true); }}
+                            className="px-4 py-2.5 bg-[#A855F7] text-white font-bold font-display text-sm rounded-xl hover:bg-[#C084FC] transition-all whitespace-nowrap flex-shrink-0"
                         >
-                            {f.charAt(0).toUpperCase() + f.slice(1)}
+                            + Nuevo
                         </button>
-                    ))}
-                    <span className="text-xs text-[#7D8590] ml-auto">{filtrados.length} usuarios</span>
-                    <button
-                        onClick={() => { setFormNuevo(FORM_NUEVO); setErrorCrear(null); setModalCrear(true); }}
-                        className="px-4 py-2 bg-[#A855F7] text-white font-bold font-display text-sm rounded-xl hover:bg-[#C084FC] transition-all"
-                    >
-                        + Nuevo usuario
-                    </button>
+                    </div>
+                    <div className="flex gap-2 items-center flex-wrap">
+                        {["todos", "demo", "freemium", "premium"].map((f) => (
+                            <button key={f} onClick={() => setFiltro(f)}
+                                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border
+                    ${filtro === f
+                                        ? "border-[#A855F7] bg-[rgba(168,85,247,.12)] text-[#A855F7]"
+                                        : "border-[#2D3748] text-[#7D8590] hover:border-[#A855F7]"
+                                    }`}
+                            >
+                                {f.charAt(0).toUpperCase() + f.slice(1)}
+                            </button>
+                        ))}
+                        <span className="text-xs text-[#7D8590] ml-auto">{filtrados.length} usuarios</span>
+                    </div>
                 </div>
 
                 {/* Tabla */}
