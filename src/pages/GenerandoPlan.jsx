@@ -123,7 +123,7 @@ export default function GenerandoPlan() {
                 <button
                     onClick={() => regenerar
                         ? navigate("/mi-plan", { state: { regenerar: true }, replace: true })
-                        : navigate("/diagnostico", { replace: true })
+                        : navigate("/generando-plan", { state: { respuestas, tieneEnfermedad }, replace: true })
                     }
                     className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
                 >
