@@ -3,15 +3,12 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-const MENSAJES = [
-    "Analizando tus respuestas...",
-    "Calculando tus necesidades calóricas...",
-    "Eligiendo los mejores alimentos para tu objetivo...",
-    "Optimizando ingredientes para reducir desperdicio...",
-    "Ajustando el plan a tu presupuesto...",
-    "Estructurando tus 4 días base...",
-    "Revisando restricciones médicas y alergias...",
-    "Finalizando tu plan nutricional...",
+const PASOS = [
+    { label: "Analizando tus respuestas",         hasta: 15 },
+    { label: "Calculando necesidades calóricas",   hasta: 35 },
+    { label: "Eligiendo alimentos para tu objetivo", hasta: 55 },
+    { label: "Ajustando al presupuesto y alergias", hasta: 75 },
+    { label: "Finalizando tu plan nutricional",    hasta: 95 },
 ];
 
 export default function GenerandoPlan() {
@@ -21,16 +18,20 @@ export default function GenerandoPlan() {
 
     const { respuestas, tieneEnfermedad, regenerar } = location.state ?? {};
 
-    const [msgIdx, setMsgIdx] = useState(0);
+    const [progreso, setProgreso] = useState(0);
     const [error, setError] = useState(null);
     const [mostrarAviso, setMostrarAviso] = useState(false);
     const generandoRef = useRef(false);
 
-    // Rotar mensajes de carga
+    // Barra de progreso basada en tiempo (~25s para llegar a 95%)
     useEffect(() => {
+        const DURACION_MS = 25_000;
+        const start = Date.now();
         const interval = setInterval(() => {
-            setMsgIdx((i) => (i + 1) % MENSAJES.length);
-        }, 2800);
+            const elapsed = Date.now() - start;
+            const pct = Math.min(95, Math.round((elapsed / DURACION_MS) * 95));
+            setProgreso(pct);
+        }, 200);
         return () => clearInterval(interval);
     }, []);
 
@@ -140,52 +141,70 @@ export default function GenerandoPlan() {
     );
 
     // ── Pantalla de carga ─────────────────────────────────────────────────
-    return (
-        <div className="min-h-screen bg-[#0D1117] flex flex-col items-center justify-center px-4 gap-10">
+    const pasoActual = PASOS.findIndex(p => progreso < p.hasta);
+    const idxActivo = pasoActual === -1 ? PASOS.length - 1 : pasoActual;
 
-            {/* Spinner animado */}
-            <div className="relative w-28 h-28">
-                <svg className="absolute inset-0 animate-spin" viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="#1C2330" strokeWidth="8" />
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="#3DDC84" strokeWidth="8"
+    return (
+        <div className="min-h-screen bg-[#0D1117] flex flex-col items-center justify-center px-4 gap-8">
+
+            {/* Icono */}
+            <div className="relative w-24 h-24">
+                <svg className="absolute inset-0 animate-spin" style={{ animationDuration: "3s" }} viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#1C2330" strokeWidth="6" />
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#3DDC84" strokeWidth="6"
                         strokeLinecap="round" strokeDasharray="276" strokeDashoffset="207"
                     />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center text-4xl">🥗</div>
             </div>
 
-            {/* Texto */}
+            {/* Título + mensaje activo */}
             <div className="text-center">
-                <h2 className="text-white text-2xl font-bold font-display mb-3">
+                <h2 className="text-white text-2xl font-bold font-display mb-2">
                     Generando tu plan nutricional
                 </h2>
-                <p
-                    key={msgIdx}
-                    className="text-[#3DDC84] text-sm font-medium transition-opacity duration-500"
-                >
-                    {MENSAJES[msgIdx]}
+                <p className="text-[#3DDC84] text-sm font-medium h-5">
+                    {PASOS[idxActivo].label}...
                 </p>
             </div>
 
-            {/* Pasos visuales */}
-            <div className="flex flex-col gap-2 w-full max-w-xs">
-                {MENSAJES.slice(0, 4).map((m, i) => (
-                    <div key={i} className="flex items-center gap-3">
-                        <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0
-              ${i <= msgIdx
-                                ? "bg-[#3DDC84] text-black font-bold"
-                                : "bg-[#1C2330] border border-[#2D3748] text-[#7D8590]"
-                            }`}>
-                            {i < msgIdx ? "✓" : i + 1}
-                        </div>
-                        <span className={`text-xs ${i <= msgIdx ? "text-[#E6EDF3]" : "text-[#7D8590]"}`}>
-                            {m}
-                        </span>
-                    </div>
-                ))}
+            {/* Barra de progreso */}
+            <div className="w-full max-w-sm">
+                <div className="flex justify-between text-xs text-[#7D8590] mb-2">
+                    <span>Progreso</span>
+                    <span>{progreso}%</span>
+                </div>
+                <div className="w-full h-2 bg-[#1C2330] rounded-full overflow-hidden">
+                    <div
+                        className="h-full bg-[#3DDC84] rounded-full transition-all duration-300"
+                        style={{ width: `${progreso}%` }}
+                    />
+                </div>
             </div>
 
-            <p className="text-[#7D8590] text-xs">Esto puede tomar hasta 60 segundos</p>
+            {/* Pasos */}
+            <div className="flex flex-col gap-2 w-full max-w-sm">
+                {PASOS.map((p, i) => {
+                    const completado = progreso >= p.hasta;
+                    const activo = i === idxActivo;
+                    return (
+                        <div key={i} className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 transition-all duration-300 ${
+                                completado ? "bg-[#3DDC84] text-black font-bold"
+                                : activo    ? "bg-[rgba(61,220,132,0.2)] border border-[#3DDC84] text-[#3DDC84]"
+                                :             "bg-[#1C2330] border border-[#2D3748] text-[#7D8590]"
+                            }`}>
+                                {completado ? "✓" : i + 1}
+                            </div>
+                            <span className={`text-xs transition-colors duration-300 ${completado || activo ? "text-[#E6EDF3]" : "text-[#7D8590]"}`}>
+                                {p.label}
+                            </span>
+                        </div>
+                    );
+                })}
+            </div>
+
+            <p className="text-[#7D8590] text-xs">Esto toma aproximadamente 30 segundos</p>
         </div>
     );
 }
