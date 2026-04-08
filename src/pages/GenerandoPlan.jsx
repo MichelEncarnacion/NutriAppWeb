@@ -45,7 +45,7 @@ export default function GenerandoPlan() {
             const token = session?.access_token;
 
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 60_000);
+            const timeoutId = setTimeout(() => controller.abort(), 90_000);
 
             try {
                 const res = await fetch(
