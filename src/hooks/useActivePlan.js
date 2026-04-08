@@ -15,6 +15,8 @@ import { useAuth } from './useAuth'
  *   error       — Error or null
  *   refetch     — function to manually re-fetch
  */
+const STALE_GENERATING_MS = 10 * 60 * 1000 // 10 minutos
+
 export function useActivePlan() {
   const { session } = useAuth()
   const uid = session?.user?.id
@@ -22,7 +24,8 @@ export function useActivePlan() {
   const { data, isLoading, error, refetch } = useQuery({
     queryKey: ['activePlan', uid],
     queryFn: async () => {
-      const { data, error } = await supabase
+      // Buscar plan listo activo
+      const { data: listo, error } = await supabase
         .from('planes')
         .select('contenido_json, fecha_inicio, fecha_fin')
         .eq('perfil_id', uid)
@@ -31,13 +34,26 @@ export function useActivePlan() {
         .limit(1)
         .maybeSingle()
       if (error) throw error
-      return data ?? null
+      if (listo) return { plan: listo, stuckGenerating: false }
+
+      // Detectar plan atascado en "generando" por más de 10 minutos
+      const cutoff = new Date(Date.now() - STALE_GENERATING_MS).toISOString()
+      const { data: atascado } = await supabase
+        .from('planes')
+        .select('id, created_at')
+        .eq('perfil_id', uid)
+        .eq('estado', 'generando')
+        .lt('created_at', cutoff)
+        .limit(1)
+        .maybeSingle()
+
+      return { plan: null, stuckGenerating: Boolean(atascado) }
     },
     enabled: Boolean(uid),
-    staleTime: 5 * 60 * 1000, // 5 minutes — plan rarely changes mid-session
+    staleTime: 5 * 60 * 1000,
   })
 
-  const diaActual = data?.fecha_inicio
+  const diaActual = data?.plan?.fecha_inicio
     ? Math.min(
         Math.max(
           Math.floor(
@@ -51,9 +67,10 @@ export function useActivePlan() {
     : 1
 
   return {
-    plan: data?.contenido_json ?? null,
-    fechaInicio: data?.fecha_inicio ?? null,
-    fechaFin: data?.fecha_fin ?? null,
+    plan: data?.plan?.contenido_json ?? null,
+    fechaInicio: data?.plan?.fecha_inicio ?? null,
+    fechaFin: data?.plan?.fecha_fin ?? null,
+    stuckGenerating: data?.stuckGenerating ?? false,
     diaActual,
     isLoading,
     error: error ?? null,

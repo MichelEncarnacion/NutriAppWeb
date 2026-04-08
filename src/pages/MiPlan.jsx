@@ -14,7 +14,7 @@ const TIPO_COLOR = {
 }
 
 export default function MiPlan() {
-  const { plan, fechaInicio, fechaFin, diaActual, isLoading, error, refetch } = useActivePlan()
+  const { plan, fechaInicio, fechaFin, diaActual, stuckGenerating, isLoading, error, refetch } = useActivePlan()
   const { esPremium } = useAuth()
   const [diaOffset, setDiaOffset] = useState(null) // null = use diaActual from hook
   const navigate = useNavigate()
@@ -100,17 +100,25 @@ export default function MiPlan() {
 
         {!plan ? (
           /* ── No-plan state ── */
-          <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-8 text-center flex flex-col items-center gap-4">
-            <span className="text-4xl">🥗</span>
+          <div className={`bg-[#161B22] rounded-2xl p-8 text-center flex flex-col items-center gap-4 border ${stuckGenerating ? "border-[rgba(240,165,0,0.3)]" : "border-[#2D3748]"}`}>
+            <span className="text-4xl">{stuckGenerating ? "⏳" : "🥗"}</span>
             <div>
-              <p className="text-white font-bold font-display mb-1">Aún no tienes un plan activo</p>
-              <p className="text-[#7D8590] text-sm">Completa tu diagnóstico para generar tu plan nutricional</p>
+              <p className="text-white font-bold font-display mb-1">
+                {stuckGenerating ? "Tu plan tardó demasiado en generarse" : "Aún no tienes un plan activo"}
+              </p>
+              <p className="text-[#7D8590] text-sm">
+                {stuckGenerating
+                  ? "Hubo un problema durante la generación. Puedes intentarlo de nuevo sin perder tu diagnóstico."
+                  : "Completa tu diagnóstico para generar tu plan nutricional"}
+              </p>
             </div>
             <button
-              onClick={() => navigate("/diagnostico")}
+              onClick={() => navigate(stuckGenerating ? "/generando-plan" : "/diagnostico", {
+                state: stuckGenerating ? { regenerar: true } : undefined,
+              })}
               className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
             >
-              Generar mi plan
+              {stuckGenerating ? "Reintentar generación →" : "Generar mi plan"}
             </button>
           </div>
         ) : planVencido ? (
