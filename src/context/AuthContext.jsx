@@ -235,7 +235,13 @@ export function AuthProvider({ children }) {
         });
 
     const registrar = (email, password) =>
-        supabase.auth.signUp({ email, password });
+        supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                emailRedirectTo: `${window.location.origin}/auth/callback`,
+            },
+        });
 
     const cerrarSesion = () => supabase.auth.signOut();
 
