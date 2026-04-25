@@ -384,7 +384,7 @@ export default function MiPlan() {
                 <div>
                   <p className="text-white font-bold text-sm font-display">¡Gracias por tu feedback!</p>
                   <p className="text-[#7D8590] text-xs mt-0.5">
-                    {"⭐".repeat(feedback.estrellas)} — Nos ayuda a mejorar tu próximo plan.
+                    {"⭐".repeat(feedback?.estrellas ?? 0)} — Nos ayuda a mejorar tu próximo plan.
                   </p>
                 </div>
               </div>
