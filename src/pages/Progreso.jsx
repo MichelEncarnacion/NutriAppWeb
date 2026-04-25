@@ -274,6 +274,48 @@ export default function Progreso() {
         return { data, tendencia };
     })();
 
+    const radarData = (() => {
+        const dims = [
+            {
+                dim: "IMC",
+                val: imc !== null
+                    ? Math.round(Math.max(0, Math.min(100, (1 - Math.abs(imc - 22) / 15) * 100)))
+                    : 0,
+            },
+            {
+                dim: "Músculo",
+                val: ultima?.porcentaje_musculo != null
+                    ? Math.round(Math.min(100, (ultima.porcentaje_musculo / 50) * 100))
+                    : 0,
+            },
+            {
+                dim: "Grasa",
+                val: ultima?.porcentaje_grasa != null
+                    ? Math.round(Math.max(0, 100 - (ultima.porcentaje_grasa / 35) * 100))
+                    : 0,
+            },
+            {
+                dim: "Meta",
+                val: pesoProgreso?.pct != null ? Math.round(pesoProgreso.pct) : 0,
+            },
+        ];
+        return dims.some((d) => d.val > 0) ? dims : null;
+    })();
+
+    const composicionData = (() => {
+        const puntos = [...metricas].reverse().filter(
+            (m) => m.porcentaje_grasa != null || m.porcentaje_musculo != null
+        );
+        if (puntos.length < 2) return null;
+        return puntos.map((m) => ({
+            fecha: new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
+                day: "numeric", month: "short",
+            }),
+            porcentaje_grasa: m.porcentaje_grasa ?? 0,
+            porcentaje_musculo: m.porcentaje_musculo ?? 0,
+        }));
+    })();
+
     return (
         <Layout>
             <div className="flex flex-col gap-5 max-w-3xl relative">
