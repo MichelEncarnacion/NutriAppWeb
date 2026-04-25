@@ -1,18 +1,34 @@
 // src/pages/Panel.jsx
 import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
 import { useAuth } from "../hooks/useAuth"
 import { useActivePlan } from "../hooks/useActivePlan"
+import { supabase } from "../lib/supabase"
 import Layout from "../components/Layout"
 
 export default function Panel() {
-  const { perfil } = useAuth()
-  const { plan, fechaInicio, fechaFin, diaActual, isLoading, error, refetch } = useActivePlan()
+  const { perfil, session, esPremium } = useAuth()
+  const { plan, planId, fechaInicio, fechaFin, diaActual, isLoading, error, refetch } = useActivePlan()
   const navigate = useNavigate()
 
   const nombre = perfil?.nombre?.split(" ")[0] ?? "Usuario"
   const meta = plan?.meta_diaria ?? null
   const comidasHoy = plan?.dias?.[diaActual - 1]?.comidas ?? []
   const primeraComida = comidasHoy[0] ?? null
+
+  const [seguimientoHecho, setSeguimientoHecho] = useState(false)
+
+  useEffect(() => {
+    if (!planId || !session?.user?.id) return
+    supabase
+      .from('seguimientos')
+      .select('id')
+      .eq('plan_id', planId)
+      .eq('perfil_id', session.user.id)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => setSeguimientoHecho(Boolean(data)))
+  }, [planId, session?.user?.id])
 
   const fechaLabel = new Date().toLocaleDateString("es-MX", {
     weekday: "long", day: "numeric", month: "long",
