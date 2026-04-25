@@ -1,5 +1,5 @@
 // src/pages/MiPlan.jsx
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useActivePlan } from "../hooks/useActivePlan"
 import { useAuth } from "../hooks/useAuth"
@@ -23,6 +23,35 @@ export default function MiPlan() {
   const dia = diaOffset ?? diaActual
   const comidasDelDia = plan?.dias?.[dia - 1]?.comidas ?? []
   const kcalTotal = plan?.dias?.[dia - 1]?.kcal_total ?? 0
+
+  const [feedback, setFeedback] = useState(null)  // null=cargando, false=no existe, object=ya enviado
+  const [feedbackForm, setFeedbackForm] = useState({ estrellas: 0, comentario: "" })
+  const [enviandoFeedback, setEnviandoFeedback] = useState(false)
+
+  useEffect(() => {
+    if (!planId || !session?.user?.id) return
+    supabase
+      .from('plan_feedback')
+      .select('id, estrellas')
+      .eq('plan_id', planId)
+      .eq('perfil_id', session.user.id)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => setFeedback(data ?? false))
+  }, [planId, session?.user?.id])
+
+  const enviarFeedback = async () => {
+    if (feedbackForm.estrellas === 0 || !planId) return
+    setEnviandoFeedback(true)
+    const { error } = await supabase.from('plan_feedback').insert({
+      plan_id: planId,
+      perfil_id: session.user.id,
+      estrellas: feedbackForm.estrellas,
+      comentario: feedbackForm.comentario.trim() || null,
+    })
+    if (!error) setFeedback({ estrellas: feedbackForm.estrellas })
+    setEnviandoFeedback(false)
+  }
 
   // Detectar plan vencido: fecha_fin ya pasó
   const planVencido = fechaFin
@@ -302,6 +331,65 @@ export default function MiPlan() {
               );
             })()}
           </>
+        )}
+
+        {/* ── Card de Feedback ── */}
+        {plan && feedback !== null && (
+          <div
+            className="rounded-2xl p-5 flex flex-col gap-4"
+            style={{ background: "#161B22", border: "1px solid #2D3748" }}
+          >
+            {feedback === false ? (
+              <>
+                <div>
+                  <p className="text-white font-bold font-display text-sm">¿Qué tal tu plan nutricional?</p>
+                  <p className="text-[#7D8590] text-xs mt-0.5">Tu opinión nos ayuda a mejorar la IA.</p>
+                </div>
+
+                <div className="flex gap-2">
+                  {[1, 2, 3, 4, 5].map((n) => (
+                    <button
+                      key={n}
+                      onClick={() => setFeedbackForm(f => ({ ...f, estrellas: n }))}
+                      className="text-2xl transition-transform hover:scale-110"
+                      style={{ opacity: feedbackForm.estrellas >= n ? 1 : 0.3 }}
+                    >
+                      ⭐
+                    </button>
+                  ))}
+                </div>
+
+                {feedbackForm.estrellas > 0 && (
+                  <textarea
+                    placeholder="¿Qué mejorarías? (opcional)"
+                    value={feedbackForm.comentario}
+                    onChange={(e) => setFeedbackForm(f => ({ ...f, comentario: e.target.value }))}
+                    rows={2}
+                    className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors resize-none"
+                  />
+                )}
+
+                <button
+                  onClick={enviarFeedback}
+                  disabled={feedbackForm.estrellas === 0 || enviandoFeedback}
+                  className="py-2.5 rounded-xl font-bold font-display text-sm transition-all disabled:opacity-40"
+                  style={{ background: "#3DDC84", color: "#0D1117" }}
+                >
+                  {enviandoFeedback ? "Enviando..." : "Enviar feedback"}
+                </button>
+              </>
+            ) : (
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">✅</span>
+                <div>
+                  <p className="text-white font-bold text-sm font-display">¡Gracias por tu feedback!</p>
+                  <p className="text-[#7D8590] text-xs mt-0.5">
+                    {"⭐".repeat(feedback.estrellas)} — Nos ayuda a mejorar tu próximo plan.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
         )}
       </div>
     </Layout>
