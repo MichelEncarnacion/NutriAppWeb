@@ -123,6 +123,25 @@ export default function Progreso() {
         return              { label: "Obesidad",   color: "#FF6B6B" };
     })();
 
+    const pesoProgreso = (() => {
+        const pesoInicial = diag?.peso;
+        const pesoMeta    = diag?.peso_meta;
+        const pesoActual  = ultima?.peso;
+        if (!pesoMeta || pesoInicial == null || pesoActual == null) return null;
+
+        const subiendo = pesoMeta > pesoInicial;
+        const deltaTotal  = subiendo ? pesoMeta - pesoInicial : pesoInicial - pesoMeta;
+        const deltaActual = subiendo ? pesoActual - pesoInicial : pesoInicial - pesoActual;
+        const pct = deltaTotal === 0 ? 0 : Math.min(Math.max((deltaActual / deltaTotal) * 100, 0), 100);
+
+        return {
+            pesoInicial,
+            pesoMeta,
+            pesoActual,
+            pct: parseFloat(pct.toFixed(1)),
+        };
+    })();
+
     return (
         <Layout>
             <div className="flex flex-col gap-5 max-w-3xl relative">
@@ -256,6 +275,38 @@ export default function Progreso() {
                                 </ResponsiveContainer>
                             </div>
                         )}
+
+                        {/* Progress towards weight goal */}
+                        {pesoProgreso !== null ? (
+                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
+                                <div className="flex justify-between text-xs text-[#7D8590] mb-1">
+                                    <span>Inicio: <strong className="text-white">{pesoProgreso.pesoInicial} kg</strong></span>
+                                    <span className="font-bold text-[#3DDC84]">{pesoProgreso.pct}% completado</span>
+                                    <span>Meta: <strong className="text-white">{pesoProgreso.pesoMeta} kg</strong></span>
+                                </div>
+                                <div className="relative h-3 bg-[#0D1117] rounded-full overflow-hidden">
+                                    <div
+                                        className="absolute left-0 top-0 h-full rounded-full transition-all"
+                                        style={{ width: `${pesoProgreso.pct}%`, background: "#3DDC84" }}
+                                    />
+                                </div>
+                                <p className="text-center text-xs text-[#7D8590] mt-2">
+                                    Peso actual: <strong className="text-white">{pesoProgreso.pesoActual} kg</strong>
+                                </p>
+                            </div>
+                        ) : diag && !diag.peso_meta ? (
+                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 text-center">
+                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
+                                <p className="text-[#7D8590] text-sm mb-3">Actualiza tu diagnóstico para ver tu progreso hacia tu meta</p>
+                                <button
+                                    onClick={() => navigate("/diagnostico")}
+                                    className="px-4 py-2 bg-[rgba(61,220,132,.1)] border border-[rgba(61,220,132,.3)] text-[#3DDC84] text-sm font-bold rounded-xl hover:bg-[rgba(61,220,132,.2)] transition-all"
+                                >
+                                    Actualizar diagnóstico →
+                                </button>
+                            </div>
+                        ) : null}
                     </>
                 )}
 
