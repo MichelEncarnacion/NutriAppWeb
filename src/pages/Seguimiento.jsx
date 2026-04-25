@@ -42,9 +42,9 @@ export default function Seguimiento() {
             await supabase.from("metricas").upsert({
                 perfil_id: session.user.id,
                 fecha: new Date().toISOString().split("T")[0],
-                peso_kg: form.peso_kg ? Number(form.peso_kg) : null,
-                pct_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
-                pct_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
+                peso: form.peso_kg ? Number(form.peso_kg) : null,
+                porcentaje_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
+                porcentaje_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
                 fuente: "manual",
             }, { onConflict: "perfil_id,fecha" });
 
