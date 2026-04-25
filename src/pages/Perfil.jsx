@@ -75,13 +75,17 @@ export default function Perfil() {
         setGuardandoMetr(true);
         setFeedbackMetr(null);
         const hoy = new Date().toISOString().split("T")[0];
-        const { error } = await supabase.from("metricas").upsert({
+        await supabase.from("metricas")
+            .delete()
+            .eq("perfil_id", session.user.id)
+            .eq("fecha", hoy);
+        const { error } = await supabase.from("metricas").insert({
             perfil_id: session.user.id,
             fecha: hoy,
             peso: metrForm.peso ? Number(metrForm.peso) : null,
             porcentaje_grasa: metrForm.porcentaje_grasa ? Number(metrForm.porcentaje_grasa) : null,
             porcentaje_musculo: metrForm.porcentaje_musculo ? Number(metrForm.porcentaje_musculo) : null,
-        }, { onConflict: "perfil_id,fecha" });
+        });
         setGuardandoMetr(false);
         if (error) {
             setFeedbackMetr({ tipo: "error", msg: "No se pudo guardar. Intenta de nuevo." });
