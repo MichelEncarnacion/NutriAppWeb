@@ -56,8 +56,8 @@ function ImcGauge({ imc, clasificacion }) {
                 />
             ))}
             <circle cx={needle.x} cy={needle.y} r={4} fill="white" />
-            <text x={cx} y={cy - 2} textAnchor="middle" fill="white" fontSize={16} fontWeight="900">{imc}</text>
-            <text x={cx} y={cy + 12} textAnchor="middle" fill={clasificacion.color} fontSize={8} fontWeight="bold">{clasificacion.label}</text>
+            <text x={cx} y={cy - 2} textAnchor="middle" fill="white" fontSize={16} fontWeight="900">{Number.isFinite(imc) ? imc : "—"}</text>
+            <text x={cx} y={cy + 12} textAnchor="middle" fill={clasificacion?.color ?? "#7D8590"} fontSize={8} fontWeight="bold">{clasificacion?.label ?? ""}</text>
         </svg>
     );
 }
@@ -106,11 +106,14 @@ function ComposicionTooltip({ active, payload, label }) {
     return (
         <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
             <p className="text-[#7D8590] mb-1">{label}</p>
-            {payload.map((p) => (
-                <p key={p.dataKey} style={{ color: p.fill }}>
-                    {p.dataKey === "porcentaje_grasa" ? "Grasa" : "Músculo"}: {p.value}%
-                </p>
-            ))}
+            {payload.map((p) => {
+                const labels = { porcentaje_grasa: "Grasa", porcentaje_musculo: "Músculo" };
+                return (
+                    <p key={p.dataKey} style={{ color: p.fill ?? p.color }}>
+                        {labels[p.dataKey] ?? p.dataKey}: {p.value}%
+                    </p>
+                );
+            })}
         </div>
     );
 }
