@@ -99,6 +99,40 @@ export default function Panel() {
               )}
             </div>
 
+            {/* ── CTA Seguimiento ── */}
+            {diaActual >= 13 && !seguimientoHecho && (
+              <div
+                className="rounded-2xl p-4 flex items-start gap-3"
+                style={{
+                  background: "rgba(240,165,0,0.08)",
+                  border: "1px solid rgba(240,165,0,0.25)",
+                }}
+              >
+                <span className="text-xl flex-shrink-0">📋</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-sm font-display">
+                    {15 - diaActual === 0
+                      ? "Último día"
+                      : `Quedan ${15 - diaActual} día${15 - diaActual === 1 ? "" : "s"}`}
+                  </p>
+                  <p className="text-[#7D8590] text-xs mt-0.5 leading-relaxed">
+                    Completa tu seguimiento para que generemos tu próximo plan personalizado.
+                  </p>
+                  <button
+                    onClick={() => navigate("/seguimiento")}
+                    className="mt-3 px-4 py-2 rounded-xl text-xs font-bold font-display transition-all"
+                    style={{
+                      background: "rgba(240,165,0,0.15)",
+                      color: "#F0A500",
+                      border: "1px solid rgba(240,165,0,0.3)",
+                    }}
+                  >
+                    Completar seguimiento →
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* ── Primera comida del día ── */}
             {primeraComida && (
               <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5">
