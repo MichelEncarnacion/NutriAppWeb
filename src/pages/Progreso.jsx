@@ -12,6 +12,20 @@ import {
     Tooltip,
 } from "recharts";
 
+function PesoTooltip({ active, payload, label }) {
+    if (!active || !payload?.length) return null;
+    return (
+        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
+            <p className="text-[#7D8590] mb-1">{label}</p>
+            {payload.map((p) => p.value != null && (
+                <p key={p.dataKey} style={{ color: p.color }}>
+                    {p.dataKey === "peso" ? "Peso real" : "Proyección"}: {p.value} kg
+                </p>
+            ))}
+        </div>
+    );
+}
+
 const STAT_PILLS = [
     { key: "peso",              label: "Peso",      unit: "kg", color: "#3DDC84", bueno: false },
     { key: "porcentaje_grasa",  label: "% Grasa",   unit: "%",  color: "#FF6B6B", bueno: false },
@@ -140,6 +154,57 @@ export default function Progreso() {
             pesoActual,
             pct: parseFloat(pct.toFixed(1)),
         };
+    })();
+
+    const pesoChartData = (() => {
+        const puntos = [...metricas].reverse().filter((m) => m.peso != null);
+        if (puntos.length < 3) return null;
+
+        const fechaBase = new Date(puntos[0].fecha + "T00:00:00");
+        const xs = puntos.map((m) =>
+            Math.round((new Date(m.fecha + "T00:00:00") - fechaBase) / 86400000)
+        );
+        const ys = puntos.map((m) => m.peso);
+
+        const n = puntos.length;
+        const sumX  = xs.reduce((a, b) => a + b, 0);
+        const sumY  = ys.reduce((a, b) => a + b, 0);
+        const sumXY = xs.reduce((s, x, i) => s + x * ys[i], 0);
+        const sumX2 = xs.reduce((s, x) => s + x * x, 0);
+        const denom = n * sumX2 - sumX * sumX;
+        const slope     = denom === 0 ? 0 : (n * sumXY - sumX * sumY) / denom;
+        const intercept = (sumY - slope * sumX) / n;
+
+        const lastX = xs[xs.length - 1];
+        const kgPorSemana = parseFloat((slope * 7).toFixed(2));
+        const tendencia =
+            Math.abs(kgPorSemana) < 0.1
+                ? { label: "→ Estable",                                color: "#7D8590" }
+                : kgPorSemana < 0
+                ? { label: `↓ Bajando ${Math.abs(kgPorSemana)} kg/semana`, color: "#3DDC84" }
+                : { label: `↑ Subiendo ${kgPorSemana} kg/semana`,      color: "#F0A500" };
+
+        const data = puntos.map((m, i) => ({
+            fecha: new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
+                day: "numeric", month: "short",
+            }),
+            peso: m.peso,
+            proyeccion: i === puntos.length - 1
+                ? parseFloat((intercept + slope * lastX).toFixed(1))
+                : null,
+        }));
+
+        const fechaFutura = new Date(
+            new Date(puntos[puntos.length - 1].fecha + "T00:00:00").getTime() +
+            15 * 86400000
+        );
+        data.push({
+            fecha: fechaFutura.toLocaleDateString("es-MX", { day: "numeric", month: "short" }),
+            peso: null,
+            proyeccion: parseFloat((intercept + slope * (lastX + 15)).toFixed(1)),
+        });
+
+        return { data, tendencia };
     })();
 
     return (
@@ -307,6 +372,61 @@ export default function Progreso() {
                                 </button>
                             </div>
                         ) : null}
+
+                        {pesoChartData && (
+                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-[#7D8590] text-xs font-bold tracking-widest">TENDENCIA DE PESO</p>
+                                    <span
+                                        className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#0D1117]"
+                                        style={{ color: pesoChartData.tendencia.color }}
+                                    >
+                                        {pesoChartData.tendencia.label}
+                                    </span>
+                                </div>
+                                <ResponsiveContainer width="100%" height={160}>
+                                    <LineChart
+                                        data={pesoChartData.data}
+                                        margin={{ top: 4, right: 4, left: -24, bottom: 0 }}
+                                    >
+                                        <XAxis
+                                            dataKey="fecha"
+                                            tick={{ fontSize: 10, fill: "#7D8590" }}
+                                            axisLine={false}
+                                            tickLine={false}
+                                        />
+                                        <Tooltip content={PesoTooltip} />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="peso"
+                                            stroke="#3DDC84"
+                                            strokeWidth={2}
+                                            dot={false}
+                                            connectNulls
+                                        />
+                                        <Line
+                                            type="monotone"
+                                            dataKey="proyeccion"
+                                            stroke="#3DDC84"
+                                            strokeWidth={1.5}
+                                            strokeDasharray="5 5"
+                                            dot={false}
+                                            connectNulls
+                                        />
+                                    </LineChart>
+                                </ResponsiveContainer>
+                                <div className="flex gap-4 mt-2">
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-4 h-0.5 rounded-full" style={{ background: "#3DDC84" }} />
+                                        <span className="text-[10px] text-[#7D8590]">Peso real</span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                        <div className="w-4 h-0.5" style={{ background: "repeating-linear-gradient(90deg,#3DDC84 0,#3DDC84 4px,transparent 4px,transparent 8px)" }} />
+                                        <span className="text-[10px] text-[#7D8590]">Proyección</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </>
                 )}
 
