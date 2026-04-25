@@ -6,11 +6,61 @@ import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
 import {
     ResponsiveContainer,
-    LineChart,
-    Line,
+    AreaChart, Area,
+    BarChart, Bar,
+    RadarChart, Radar, PolarGrid, PolarAngleAxis,
     XAxis,
     Tooltip,
+    Line,
+    Cell,
 } from "recharts";
+
+function ImcGauge({ imc, clasificacion }) {
+    const r = 36, cx = 50, cy = 50;
+    const startAngle = 225, totalAngle = 270;
+    const minImc = 15, maxImc = 40;
+
+    const pt = (deg) => {
+        const d = ((deg % 360) + 360) % 360;
+        const rad = (d - 90) * Math.PI / 180;
+        return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+    };
+    const arc = (a1, a2) => {
+        const s = pt(a1), e = pt(a2);
+        const large = ((a2 - a1 + 360) % 360) > 180 ? 1 : 0;
+        return `M ${s.x.toFixed(2)} ${s.y.toFixed(2)} A ${r} ${r} 0 ${large} 1 ${e.x.toFixed(2)} ${e.y.toFixed(2)}`;
+    };
+    const toDeg = (v) => startAngle + ((v - minImc) / (maxImc - minImc)) * totalAngle;
+
+    const zones = [
+        { from: minImc, to: 18.5, color: "#58A6FF" },
+        { from: 18.5,   to: 25,   color: "#3DDC84" },
+        { from: 25,     to: 30,   color: "#F0A500" },
+        { from: 30,     to: maxImc, color: "#FF6B6B" },
+    ];
+
+    const needleDeg = toDeg(Math.min(Math.max(imc, minImc), maxImc));
+    const needle = pt(needleDeg);
+
+    return (
+        <svg viewBox="0 0 100 100" width={120} height={120}>
+            <path
+                d={arc(startAngle, startAngle + totalAngle)}
+                fill="none" stroke="#1C2330" strokeWidth={10} strokeLinecap="butt"
+            />
+            {zones.map((z, i) => (
+                <path
+                    key={i}
+                    d={arc(toDeg(z.from), toDeg(z.to))}
+                    fill="none" stroke={z.color} strokeWidth={10} strokeLinecap="butt" opacity={0.85}
+                />
+            ))}
+            <circle cx={needle.x} cy={needle.y} r={4} fill="white" />
+            <text x={cx} y={cy - 2} textAnchor="middle" fill="white" fontSize={16} fontWeight="900">{imc}</text>
+            <text x={cx} y={cy + 12} textAnchor="middle" fill={clasificacion.color} fontSize={8} fontWeight="bold">{clasificacion.label}</text>
+        </svg>
+    );
+}
 
 function PesoTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
@@ -47,6 +97,20 @@ function ChartTooltip({ active, payload, label }) {
             {d?.porcentaje_musculo != null && (
                 <p className="text-[#58A6FF]">Músculo: {d.porcentaje_musculo}%</p>
             )}
+        </div>
+    );
+}
+
+function ComposicionTooltip({ active, payload, label }) {
+    if (!active || !payload?.length) return null;
+    return (
+        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
+            <p className="text-[#7D8590] mb-1">{label}</p>
+            {payload.map((p) => (
+                <p key={p.dataKey} style={{ color: p.fill }}>
+                    {p.dataKey === "porcentaje_grasa" ? "Grasa" : "Músculo"}: {p.value}%
+                </p>
+            ))}
         </div>
     );
 }
