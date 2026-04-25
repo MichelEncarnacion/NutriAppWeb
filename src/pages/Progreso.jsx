@@ -109,6 +109,20 @@ export default function Progreso() {
         }));
     })();
 
+    const imc = (() => {
+        if (!diag?.estatura || !ultima?.peso) return null;
+        const estatura_m = diag.estatura / 100;
+        return parseFloat((ultima.peso / (estatura_m * estatura_m)).toFixed(1));
+    })();
+
+    const imcClasificacion = (() => {
+        if (imc === null) return null;
+        if (imc < 18.5) return { label: "Bajo peso", color: "#58A6FF" };
+        if (imc < 25)   return { label: "Normal",    color: "#3DDC84" };
+        if (imc < 30)   return { label: "Sobrepeso", color: "#F0A500" };
+        return              { label: "Obesidad",   color: "#FF6B6B" };
+    })();
+
     return (
         <Layout>
             <div className="flex flex-col gap-5 max-w-3xl relative">
@@ -170,6 +184,25 @@ export default function Progreso() {
                                 );
                             })}
                         </div>
+
+                        {/* IMC Card */}
+                        {imc !== null && (
+                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">ÍNDICE DE MASA CORPORAL</p>
+                                <div className="flex items-center justify-between">
+                                    <p className="font-display font-black text-4xl text-white">
+                                        {imc}
+                                        <span className="text-sm font-normal text-[#7D8590] ml-1">kg/m²</span>
+                                    </p>
+                                    <span
+                                        className="px-3 py-1 rounded-full text-xs font-bold"
+                                        style={{ background: `${imcClasificacion.color}22`, color: imcClasificacion.color }}
+                                    >
+                                        {imcClasificacion.label}
+                                    </span>
+                                </div>
+                            </div>
+                        )}
 
                         {/* Combined LineChart — only when ≥2 data points */}
                         {chartData.length >= 2 && (
