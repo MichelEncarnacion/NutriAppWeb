@@ -1,5 +1,6 @@
 // src/pages/Progreso.jsx
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
@@ -39,9 +40,11 @@ function ChartTooltip({ active, payload, label }) {
 export default function Progreso() {
     const { session } = useAuth();
     const uid = session?.user?.id;
+    const navigate = useNavigate();
 
     const [metricas, setMetricas] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [diag, setDiag] = useState(null);
 
     useEffect(() => {
         if (!uid) return;
@@ -56,6 +59,15 @@ export default function Progreso() {
                     .limit(10);
                 if (error) console.error("Progreso fetch error:", error);
                 setMetricas(data ?? []);
+
+                const { data: diagData } = await supabase
+                    .from("diagnosticos")
+                    .select("peso, estatura, peso_meta")
+                    .eq("perfil_id", uid)
+                    .order("created_at", { ascending: false })
+                    .limit(1)
+                    .maybeSingle();
+                setDiag(diagData ?? null);
             } catch (err) {
                 console.error("Progreso load error:", err);
             } finally {
