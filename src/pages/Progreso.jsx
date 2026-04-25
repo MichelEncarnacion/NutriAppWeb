@@ -82,24 +82,6 @@ const STAT_PILLS = [
     { key: "porcentaje_musculo",label: "% Músculo", unit: "%",  color: "#58A6FF", bueno: true  },
 ];
 
-function ChartTooltip({ active, payload, label }) {
-    if (!active || !payload?.length) return null;
-    const d = payload[0]?.payload;
-    return (
-        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
-            <p className="text-[#7D8590] mb-1">{label}</p>
-            {d?.peso != null && (
-                <p className="text-[#3DDC84]">Peso: {d.peso} kg</p>
-            )}
-            {d?.porcentaje_grasa != null && (
-                <p className="text-[#FF6B6B]">Grasa: {d.porcentaje_grasa}%</p>
-            )}
-            {d?.porcentaje_musculo != null && (
-                <p className="text-[#58A6FF]">Músculo: {d.porcentaje_musculo}%</p>
-            )}
-        </div>
-    );
-}
 
 function ComposicionTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
