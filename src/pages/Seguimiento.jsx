@@ -45,7 +45,6 @@ export default function Seguimiento() {
                 peso: form.peso_kg ? Number(form.peso_kg) : null,
                 porcentaje_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
                 porcentaje_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
-                fuente: "manual",
             }, { onConflict: "perfil_id,fecha" });
 
             navigate("/panel");

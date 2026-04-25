@@ -81,7 +81,6 @@ export default function Perfil() {
             peso: metrForm.peso ? Number(metrForm.peso) : null,
             porcentaje_grasa: metrForm.porcentaje_grasa ? Number(metrForm.porcentaje_grasa) : null,
             porcentaje_musculo: metrForm.porcentaje_musculo ? Number(metrForm.porcentaje_musculo) : null,
-            fuente: "manual",
         }, { onConflict: "perfil_id,fecha" });
         setGuardandoMetr(false);
         if (error) {
