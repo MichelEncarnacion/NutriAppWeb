@@ -25,6 +25,8 @@ import Progreso from "./pages/Progreso";
 import Seguimiento from "./pages/Seguimiento";
 import ListaCompras from "./pages/ListaCompras";
 import Perfil from "./pages/Perfil";
+import Ejercicios from "./pages/Ejercicios";
+import Wearables from "./pages/Wearables";
 
 import NotFound from "./pages/NotFound";
 
@@ -114,6 +116,16 @@ function AppRoutes() {
           <Route path="/perfil" element={
             <PrivateRoute>
               <Perfil />
+            </PrivateRoute>
+          } />
+          <Route path="/ejercicios" element={
+            <PrivateRoute>
+              <Ejercicios />
+            </PrivateRoute>
+          } />
+          <Route path="/wearables" element={
+            <PrivateRoute>
+              <Wearables />
             </PrivateRoute>
           } />
 

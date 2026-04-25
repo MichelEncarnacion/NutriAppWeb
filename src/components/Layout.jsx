@@ -11,6 +11,8 @@ const NAV = [
     { to: "/lista-compras", label: "Lista de Compras", icon: "🛒" },
     { to: "/lecciones", label: "Lecciones", icon: "📖" },
     { to: "/progreso", label: "Progreso", icon: "📈", soloPremiun: true },
+    { to: "/ejercicios", label: "Ejercicios", icon: "💪", proximamente: true },
+    { to: "/wearables", label: "Wearables", icon: "⌚", proximamente: true },
 ];
 
 export default function Layout({ children }) {
@@ -75,7 +77,7 @@ export default function Layout({ children }) {
 
                 {/* Nav links */}
                 <nav className="flex flex-col gap-1 flex-1">
-                    {NAV.map(({ to, label, icon, soloPremiun }) => {
+                    {NAV.map(({ to, label, icon, soloPremiun, proximamente }) => {
                         const bloqueado = soloPremiun && !esPremium;
                         return (
                             <NavLink
@@ -93,6 +95,7 @@ export default function Layout({ children }) {
                                 <span className="text-base">{icon}</span>
                                 <span>{label}</span>
                                 {bloqueado && <span className="ml-auto text-[9px] bg-[#F0A500]/20 text-[#F0A500] font-bold px-1.5 py-0.5 rounded-full">PRO</span>}
+                                {proximamente && !bloqueado && <span className="ml-auto text-[9px] bg-[#58A6FF]/20 text-[#58A6FF] font-bold px-1.5 py-0.5 rounded-full">PRONTO</span>}
                             </NavLink>
                         );
                     })}
@@ -142,7 +145,7 @@ export default function Layout({ children }) {
             {/* Mobile menu */}
             {menuOpen && (
                 <div className="md:hidden fixed inset-0 z-10 bg-[#0D1117] pt-16 px-4 flex flex-col gap-2">
-                    {NAV.map(({ to, label, icon, soloPremiun }) => {
+                    {NAV.map(({ to, label, icon, soloPremiun, proximamente }) => {
                         const bloqueado = soloPremiun && !esPremium;
                         return (
                             <NavLink
@@ -156,6 +159,7 @@ export default function Layout({ children }) {
                             >
                                 <span>{icon}</span>
                                 <span>{label}</span>
+                                {proximamente && !bloqueado && <span className="ml-auto text-[9px] bg-[#58A6FF]/20 text-[#58A6FF] font-bold px-1.5 py-0.5 rounded-full">PRONTO</span>}
                             </NavLink>
                         );
                     })}
