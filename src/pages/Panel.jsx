@@ -89,6 +89,36 @@ export default function Panel() {
           </div>
         ) : (
           <>
+            {/* ── Banner Día 15 ── */}
+            {diaActual === 15 && (
+              <div
+                className="rounded-2xl p-6 flex flex-col items-center text-center gap-3"
+                style={{
+                  background: "linear-gradient(135deg, rgba(61,220,132,0.1), rgba(88,166,255,0.07))",
+                  border: "1px solid rgba(61,220,132,0.3)",
+                }}
+              >
+                <span className="text-4xl">🎉</span>
+                <div>
+                  <p className="text-white font-black font-display text-lg leading-tight">
+                    ¡Completaste tu plan de 15 días!
+                  </p>
+                  <p className="text-[#7D8590] text-sm mt-1">
+                    {esPremium
+                      ? "Estás listo para comenzar un nuevo plan."
+                      : "Completa tu seguimiento para generar el próximo plan."}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate(esPremium ? "/diagnostico" : "/seguimiento")}
+                  className="px-6 py-2.5 rounded-xl font-bold font-display text-sm transition-all"
+                  style={{ background: "#3DDC84", color: "#0D1117" }}
+                >
+                  {esPremium ? "Generar nuevo plan →" : "Completar seguimiento →"}
+                </button>
+              </div>
+            )}
+
             {/* ── Día actual ── */}
             <div className="flex items-center gap-3">
               <span className="bg-[rgba(61,220,132,.12)] text-[#3DDC84] text-xs font-bold font-display px-3 py-1.5 rounded-full border border-[rgba(61,220,132,.2)]">

@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { useActivePlan } from "../hooks/useActivePlan"
 import { useAuth } from "../hooks/useAuth"
+import { supabase } from "../lib/supabase"
 import Layout from "../components/Layout"
 
 const TIPO_COLOR = {
@@ -14,8 +15,8 @@ const TIPO_COLOR = {
 }
 
 export default function MiPlan() {
-  const { plan, fechaInicio, fechaFin, diaActual, stuckGenerating, isLoading, error, refetch } = useActivePlan()
-  const { esPremium } = useAuth()
+  const { plan, planId, fechaInicio, fechaFin, diaActual, stuckGenerating, isLoading, error, refetch } = useActivePlan()
+  const { esPremium, session } = useAuth()
   const [diaOffset, setDiaOffset] = useState(null) // null = use diaActual from hook
   const navigate = useNavigate()
 
@@ -174,6 +175,36 @@ export default function MiPlan() {
                 />
               ))}
             </div>
+
+            {/* ── Banner Día 15 ── */}
+            {diaActual === 15 && (
+              <div
+                className="rounded-2xl p-5 flex flex-col items-center text-center gap-3"
+                style={{
+                  background: "linear-gradient(135deg, rgba(61,220,132,0.1), rgba(88,166,255,0.07))",
+                  border: "1px solid rgba(61,220,132,0.3)",
+                }}
+              >
+                <span className="text-3xl">🎉</span>
+                <div>
+                  <p className="text-white font-black font-display text-base leading-tight">
+                    ¡Plan de 15 días completado!
+                  </p>
+                  <p className="text-[#7D8590] text-xs mt-1">
+                    {esPremium
+                      ? "Genera un nuevo plan cuando estés listo."
+                      : "Completa tu seguimiento para continuar."}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate(esPremium ? "/diagnostico" : "/seguimiento")}
+                  className="px-5 py-2 rounded-xl font-bold font-display text-sm transition-all"
+                  style={{ background: "#3DDC84", color: "#0D1117" }}
+                >
+                  {esPremium ? "Nuevo plan →" : "Completar seguimiento →"}
+                </button>
+              </div>
+            )}
 
             {/* ── Day navigator ── */}
             <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-4 flex items-center justify-between">
