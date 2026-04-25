@@ -57,7 +57,7 @@ export function useActivePlan() {
     ? Math.min(
         Math.max(
           Math.floor(
-            (Date.now() - new Date(data.fecha_inicio + "T00:00:00").getTime()) /
+            (Date.now() - new Date(data.plan.fecha_inicio + "T00:00:00").getTime()) /
               86_400_000
           ) + 1,
           1
