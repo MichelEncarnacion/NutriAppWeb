@@ -27,7 +27,7 @@ export function useActivePlan() {
       // Buscar plan listo activo
       const { data: listo, error } = await supabase
         .from('planes')
-        .select('contenido_json, fecha_inicio, fecha_fin')
+        .select('id, contenido_json, fecha_inicio, fecha_fin')
         .eq('perfil_id', uid)
         .eq('es_activo', true)
         .eq('estado', 'listo')
@@ -67,6 +67,7 @@ export function useActivePlan() {
     : 1
 
   return {
+    planId: data?.plan?.id ?? null,
     plan: data?.plan?.contenido_json ?? null,
     fechaInicio: data?.plan?.fecha_inicio ?? null,
     fechaFin: data?.plan?.fecha_fin ?? null,

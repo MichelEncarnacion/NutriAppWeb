@@ -1,18 +1,34 @@
 // src/pages/Panel.jsx
 import { useNavigate } from "react-router-dom"
+import { useState, useEffect } from "react"
 import { useAuth } from "../hooks/useAuth"
 import { useActivePlan } from "../hooks/useActivePlan"
+import { supabase } from "../lib/supabase"
 import Layout from "../components/Layout"
 
 export default function Panel() {
-  const { perfil } = useAuth()
-  const { plan, fechaInicio, fechaFin, diaActual, isLoading, error, refetch } = useActivePlan()
+  const { perfil, session, esPremium } = useAuth()
+  const { plan, planId, fechaInicio, fechaFin, diaActual, isLoading, error, refetch } = useActivePlan()
   const navigate = useNavigate()
 
   const nombre = perfil?.nombre?.split(" ")[0] ?? "Usuario"
   const meta = plan?.meta_diaria ?? null
   const comidasHoy = plan?.dias?.[diaActual - 1]?.comidas ?? []
   const primeraComida = comidasHoy[0] ?? null
+
+  const [seguimientoHecho, setSeguimientoHecho] = useState(false)
+
+  useEffect(() => {
+    if (!planId || !session?.user?.id) return
+    supabase
+      .from('seguimientos')
+      .select('id')
+      .eq('plan_id', planId)
+      .eq('perfil_id', session.user.id)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => setSeguimientoHecho(Boolean(data)))
+  }, [planId, session?.user?.id])
 
   const fechaLabel = new Date().toLocaleDateString("es-MX", {
     weekday: "long", day: "numeric", month: "long",
@@ -73,6 +89,36 @@ export default function Panel() {
           </div>
         ) : (
           <>
+            {/* ── Banner Día 15 ── */}
+            {diaActual === 15 && (
+              <div
+                className="rounded-2xl p-6 flex flex-col items-center text-center gap-3"
+                style={{
+                  background: "linear-gradient(135deg, rgba(61,220,132,0.1), rgba(88,166,255,0.07))",
+                  border: "1px solid rgba(61,220,132,0.3)",
+                }}
+              >
+                <span className="text-4xl">🎉</span>
+                <div>
+                  <p className="text-white font-black font-display text-lg leading-tight">
+                    ¡Completaste tu plan de 15 días!
+                  </p>
+                  <p className="text-[#7D8590] text-sm mt-1">
+                    {esPremium
+                      ? "Estás listo para comenzar un nuevo plan."
+                      : "Completa tu seguimiento para generar el próximo plan."}
+                  </p>
+                </div>
+                <button
+                  onClick={() => navigate(esPremium ? "/diagnostico" : "/seguimiento")}
+                  className="px-6 py-2.5 rounded-xl font-bold font-display text-sm transition-all"
+                  style={{ background: "#3DDC84", color: "#0D1117" }}
+                >
+                  {esPremium ? "Generar nuevo plan →" : "Completar seguimiento →"}
+                </button>
+              </div>
+            )}
+
             {/* ── Día actual ── */}
             <div className="flex items-center gap-3">
               <span className="bg-[rgba(61,220,132,.12)] text-[#3DDC84] text-xs font-bold font-display px-3 py-1.5 rounded-full border border-[rgba(61,220,132,.2)]">
@@ -82,6 +128,40 @@ export default function Panel() {
                 <span className="text-[#7D8590] text-xs">{rangoFechas}</span>
               )}
             </div>
+
+            {/* ── CTA Seguimiento ── */}
+            {diaActual >= 13 && !seguimientoHecho && (
+              <div
+                className="rounded-2xl p-4 flex items-start gap-3"
+                style={{
+                  background: "rgba(240,165,0,0.08)",
+                  border: "1px solid rgba(240,165,0,0.25)",
+                }}
+              >
+                <span className="text-xl flex-shrink-0">📋</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-white font-bold text-sm font-display">
+                    {15 - diaActual === 0
+                      ? "Último día"
+                      : `Quedan ${15 - diaActual} día${15 - diaActual === 1 ? "" : "s"}`}
+                  </p>
+                  <p className="text-[#7D8590] text-xs mt-0.5 leading-relaxed">
+                    Completa tu seguimiento para que generemos tu próximo plan personalizado.
+                  </p>
+                  <button
+                    onClick={() => navigate("/seguimiento")}
+                    className="mt-3 px-4 py-2 rounded-xl text-xs font-bold font-display transition-all"
+                    style={{
+                      background: "rgba(240,165,0,0.15)",
+                      color: "#F0A500",
+                      border: "1px solid rgba(240,165,0,0.3)",
+                    }}
+                  >
+                    Completar seguimiento →
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* ── Primera comida del día ── */}
             {primeraComida && (
