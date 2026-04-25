@@ -428,21 +428,21 @@ export default function Progreso() {
                                             dataKey="porcentaje_grasa"
                                             stackId="composicion"
                                             fill="#FF6B6B"
-                                            opacity={0.8}
+                                            fillOpacity={0.8}
                                             radius={[0, 0, 4, 4]}
                                         />
                                         <Bar
                                             dataKey="porcentaje_musculo"
                                             stackId="composicion"
                                             fill="#58A6FF"
-                                            opacity={0.8}
+                                            fillOpacity={0.8}
                                             radius={[4, 4, 0, 0]}
                                         >
                                             {composicionData.map((_, i) => (
                                                 <Cell
                                                     key={i}
                                                     fill="#58A6FF"
-                                                    opacity={i === composicionData.length - 1 ? 1 : 0.7}
+                                                    fillOpacity={i === composicionData.length - 1 ? 1 : 0.7}
                                                 />
                                             ))}
                                         </Bar>
