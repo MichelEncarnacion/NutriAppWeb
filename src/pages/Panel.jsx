@@ -19,16 +19,16 @@ export default function Panel() {
   const [seguimientoHecho, setSeguimientoHecho] = useState(false)
 
   useEffect(() => {
-    if (!planId || !session?.user?.id) return
+    if (!fechaInicio || !session?.user?.id) return
     supabase
       .from('seguimientos')
       .select('id')
-      .eq('plan_id', planId)
       .eq('perfil_id', session.user.id)
+      .gte('created_at', fechaInicio + 'T00:00:00')
       .limit(1)
       .maybeSingle()
       .then(({ data }) => setSeguimientoHecho(Boolean(data)))
-  }, [planId, session?.user?.id])
+  }, [fechaInicio, session?.user?.id])
 
   const fechaLabel = new Date().toLocaleDateString("es-MX", {
     weekday: "long", day: "numeric", month: "long",
