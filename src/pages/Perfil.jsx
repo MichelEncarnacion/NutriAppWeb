@@ -23,6 +23,10 @@ export default function Perfil() {
     const [guardandoPass, setGuardandoPass] = useState(false);
     const [feedbackPass, setFeedbackPass] = useState(null);
 
+    const [metrForm, setMetrForm] = useState({ peso: "", porcentaje_grasa: "", porcentaje_musculo: "" });
+    const [guardandoMetr, setGuardandoMetr] = useState(false);
+    const [feedbackMetr, setFeedbackMetr] = useState(null);
+
     const iniciales = (perfil?.nombre ?? perfil?.email ?? "U").slice(0, 1).toUpperCase();
     const email = session?.user?.email ?? "";
     const rolMeta = ROL_LABEL[rol] ?? ROL_LABEL.freemium;
@@ -62,6 +66,30 @@ export default function Perfil() {
             setPassForm({ nueva: "", confirmar: "" });
             setFeedbackPass({ tipo: "ok", msg: "Contraseña actualizada correctamente." });
             setTimeout(() => setFeedbackPass(null), 3000);
+        }
+    };
+
+    const handleGuardarMetricas = async (e) => {
+        e.preventDefault();
+        if (!metrForm.peso && !metrForm.porcentaje_grasa && !metrForm.porcentaje_musculo) return;
+        setGuardandoMetr(true);
+        setFeedbackMetr(null);
+        const hoy = new Date().toISOString().split("T")[0];
+        const { error } = await supabase.from("metricas").upsert({
+            perfil_id: session.user.id,
+            fecha: hoy,
+            peso: metrForm.peso ? Number(metrForm.peso) : null,
+            porcentaje_grasa: metrForm.porcentaje_grasa ? Number(metrForm.porcentaje_grasa) : null,
+            porcentaje_musculo: metrForm.porcentaje_musculo ? Number(metrForm.porcentaje_musculo) : null,
+            fuente: "manual",
+        }, { onConflict: "perfil_id,fecha" });
+        setGuardandoMetr(false);
+        if (error) {
+            setFeedbackMetr({ tipo: "error", msg: "No se pudo guardar. Intenta de nuevo." });
+        } else {
+            setFeedbackMetr({ tipo: "ok", msg: "Métricas guardadas correctamente." });
+            setMetrForm({ peso: "", porcentaje_grasa: "", porcentaje_musculo: "" });
+            setTimeout(() => setFeedbackMetr(null), 3000);
         }
     };
 
@@ -145,6 +173,56 @@ export default function Perfil() {
                             <span className="text-white text-xs font-medium">{value}</span>
                         </div>
                     ))}
+                </div>
+
+                {/* Registrar métricas */}
+                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5 flex flex-col gap-4">
+                    <div>
+                        <p className="text-white font-bold text-sm font-display">Registrar métricas corporales</p>
+                        <p className="text-[#7D8590] text-xs mt-0.5">Se guarda con la fecha de hoy. Puedes actualizar una vez por día.</p>
+                    </div>
+
+                    {feedbackMetr && (
+                        <div className="text-xs px-3 py-2.5 rounded-xl font-medium"
+                            style={{
+                                background: feedbackMetr.tipo === "ok" ? "rgba(61,220,132,0.1)" : "rgba(255,107,107,0.1)",
+                                color: feedbackMetr.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
+                                border: `1px solid ${feedbackMetr.tipo === "ok" ? "rgba(61,220,132,0.2)" : "rgba(255,107,107,0.2)"}`,
+                            }}>
+                            {feedbackMetr.tipo === "ok" ? "✓ " : "⚠️ "}{feedbackMetr.msg}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleGuardarMetricas} className="flex flex-col gap-3">
+                        {[
+                            { key: "peso", label: "Peso", unit: "kg", placeholder: "74.2" },
+                            { key: "porcentaje_grasa", label: "% Grasa corporal", unit: "%", placeholder: "18.4" },
+                            { key: "porcentaje_musculo", label: "% Músculo", unit: "%", placeholder: "42.1" },
+                        ].map((f) => (
+                            <div key={f.key} className="flex items-center gap-3">
+                                <label className="text-xs text-[#7D8590] w-36 flex-shrink-0">{f.label}</label>
+                                <div className="flex items-center gap-2 flex-1">
+                                    <input
+                                        type="number"
+                                        step="0.1"
+                                        placeholder={f.placeholder}
+                                        value={metrForm[f.key]}
+                                        onChange={(e) => setMetrForm(fm => ({ ...fm, [f.key]: e.target.value }))}
+                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-28 outline-none focus:border-[#3DDC84] transition-colors"
+                                    />
+                                    <span className="text-[#7D8590] text-xs">{f.unit}</span>
+                                </div>
+                            </div>
+                        ))}
+                        <button
+                            type="submit"
+                            disabled={guardandoMetr || (!metrForm.peso && !metrForm.porcentaje_grasa && !metrForm.porcentaje_musculo)}
+                            className="py-2.5 text-sm font-bold font-display rounded-xl transition-all disabled:opacity-40 mt-1"
+                            style={{ background: "rgba(61,220,132,0.15)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.3)" }}
+                        >
+                            {guardandoMetr ? "Guardando…" : "Guardar métricas →"}
+                        </button>
+                    </form>
                 </div>
 
                 {/* Acciones */}
