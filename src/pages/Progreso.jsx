@@ -378,22 +378,46 @@ export default function Progreso() {
                             })}
                         </div>
 
-                        {/* IMC Card */}
-                        {imc !== null && (
-                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
-                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">ÍNDICE DE MASA CORPORAL</p>
-                                <div className="flex items-center justify-between">
-                                    <p className="font-display font-black text-4xl text-white">
-                                        {imc}
-                                        <span className="text-sm font-normal text-[#7D8590] ml-1">kg/m²</span>
-                                    </p>
-                                    <span
-                                        className="px-3 py-1 rounded-full text-xs font-bold"
-                                        style={{ background: `${imcClasificacion.color}22`, color: imcClasificacion.color }}
-                                    >
-                                        {imcClasificacion.label}
-                                    </span>
-                                </div>
+                        {/* IMC Gauge + Radar — fila lado a lado */}
+                        {(imc !== null || radarData) && (
+                            <div className="flex gap-3">
+                                {imc !== null && (
+                                    <div className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl p-5 flex flex-col items-center">
+                                        <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3 self-start">IMC</p>
+                                        <ImcGauge imc={imc} clasificacion={imcClasificacion} />
+                                        <div className="flex gap-3 mt-2 flex-wrap justify-center">
+                                            {[
+                                                { label: "Bajo", color: "#58A6FF" },
+                                                { label: "Normal", color: "#3DDC84" },
+                                                { label: "Sobre", color: "#F0A500" },
+                                                { label: "Obeso", color: "#FF6B6B" },
+                                            ].map((z) => (
+                                                <div key={z.label} className="flex items-center gap-1">
+                                                    <div className="w-2 h-2 rounded-full" style={{ background: z.color }} />
+                                                    <span className="text-[9px] text-[#7D8590]">{z.label}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                                {radarData && (
+                                    <div className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl p-5 flex flex-col">
+                                        <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-1">SALUD GLOBAL</p>
+                                        <ResponsiveContainer width="100%" height={160}>
+                                            <RadarChart data={radarData} margin={{ top: 8, right: 16, bottom: 8, left: 16 }}>
+                                                <PolarGrid stroke="#2D3748" />
+                                                <PolarAngleAxis dataKey="dim" tick={{ fill: "#7D8590", fontSize: 9 }} />
+                                                <Radar
+                                                    dataKey="val"
+                                                    stroke="#3DDC84"
+                                                    fill="#3DDC84"
+                                                    fillOpacity={0.2}
+                                                    strokeWidth={2}
+                                                />
+                                            </RadarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                )}
                             </div>
                         )}
 
