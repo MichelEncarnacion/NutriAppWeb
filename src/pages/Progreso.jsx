@@ -168,28 +168,6 @@ export default function Progreso() {
         return { valor: d, positivo: d > 0 };
     };
 
-    // Normalize to % change from baseline so all 3 series share one Y axis
-    const chartData = (() => {
-        if (metricas.length < 2) return [];
-        const cronologico = [...metricas].reverse(); // oldest first
-        const base = cronologico[0];
-        return cronologico.map((m) => ({
-            fecha: new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
-                day: "numeric", month: "short",
-            }),
-            peso_norm: base.peso != null && m.peso != null
-                ? ((m.peso - base.peso) / base.peso) * 100 : null,
-            grasa_norm: base.porcentaje_grasa != null && m.porcentaje_grasa != null
-                ? ((m.porcentaje_grasa - base.porcentaje_grasa) / base.porcentaje_grasa) * 100 : null,
-            musculo_norm: base.porcentaje_musculo != null && m.porcentaje_musculo != null
-                ? ((m.porcentaje_musculo - base.porcentaje_musculo) / base.porcentaje_musculo) * 100 : null,
-            // actual values for tooltip
-            peso: m.peso,
-            porcentaje_grasa: m.porcentaje_grasa,
-            porcentaje_musculo: m.porcentaje_musculo,
-        }));
-    })();
-
     const imc = (() => {
         if (!diag?.estatura || !ultima?.peso) return null;
         const estatura_m = diag.estatura / 100;
@@ -421,55 +399,54 @@ export default function Progreso() {
                             </div>
                         )}
 
-                        {/* Combined LineChart — only when ≥2 data points */}
-                        {chartData.length >= 2 && (
+                        {/* BarChart apilado — composición corporal */}
+                        {composicionData && (
                             <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
-                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">EVOLUCIÓN</p>
-                                <div className="flex gap-4 mb-3">
-                                    {STAT_PILLS.map((s) => (
-                                        <div key={s.key} className="flex items-center gap-1.5">
-                                            <div className="w-4 h-0.5 rounded-full" style={{ background: s.color }} />
-                                            <span className="text-[10px] text-[#7D8590]">{s.label}</span>
+                                <div className="flex items-center justify-between mb-3">
+                                    <p className="text-[#7D8590] text-xs font-bold tracking-widest">COMPOSICIÓN CORPORAL</p>
+                                    <div className="flex gap-4">
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-3 h-3 rounded-sm" style={{ background: "#FF6B6B" }} />
+                                            <span className="text-[10px] text-[#7D8590]">Grasa %</span>
                                         </div>
-                                    ))}
+                                        <div className="flex items-center gap-1.5">
+                                            <div className="w-3 h-3 rounded-sm" style={{ background: "#58A6FF" }} />
+                                            <span className="text-[10px] text-[#7D8590]">Músculo %</span>
+                                        </div>
+                                    </div>
                                 </div>
                                 <ResponsiveContainer width="100%" height={160}>
-                                    <LineChart
-                                        data={chartData}
-                                        margin={{ top: 4, right: 4, left: -24, bottom: 0 }}
-                                    >
+                                    <BarChart data={composicionData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
                                         <XAxis
                                             dataKey="fecha"
                                             tick={{ fontSize: 10, fill: "#7D8590" }}
                                             axisLine={false}
                                             tickLine={false}
                                         />
-                                        <Tooltip content={ChartTooltip} />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="peso_norm"
-                                            stroke="#3DDC84"
-                                            strokeWidth={2}
-                                            dot={false}
-                                            connectNulls
+                                        <Tooltip content={ComposicionTooltip} />
+                                        <Bar
+                                            dataKey="porcentaje_grasa"
+                                            stackId="composicion"
+                                            fill="#FF6B6B"
+                                            opacity={0.8}
+                                            radius={[0, 0, 4, 4]}
                                         />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="grasa_norm"
-                                            stroke="#FF6B6B"
-                                            strokeWidth={2}
-                                            dot={false}
-                                            connectNulls
-                                        />
-                                        <Line
-                                            type="monotone"
-                                            dataKey="musculo_norm"
-                                            stroke="#58A6FF"
-                                            strokeWidth={2}
-                                            dot={false}
-                                            connectNulls
-                                        />
-                                    </LineChart>
+                                        <Bar
+                                            dataKey="porcentaje_musculo"
+                                            stackId="composicion"
+                                            fill="#58A6FF"
+                                            opacity={0.8}
+                                            radius={[4, 4, 0, 0]}
+                                        >
+                                            {composicionData.map((_, i) => (
+                                                <Cell
+                                                    key={i}
+                                                    fill="#58A6FF"
+                                                    opacity={i === composicionData.length - 1 ? 1 : 0.7}
+                                                />
+                                            ))}
+                                        </Bar>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         )}
