@@ -276,6 +276,7 @@ Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura 
 }
 
 El array "dias" debe tener exactamente 15 elementos (dia 1 al 15). Cada día debe tener al menos 3 comidas.
+El campo "ingredientes" de cada comida es OBLIGATORIO y debe listar TODOS y CADA UNO de los ingredientes necesarios para prepararla, sin excepción. Incluye condimentos, aceite, sal y cualquier ingrediente menor. Usa cantidades exactas en gramos (g), mililitros (ml), piezas, tazas o cucharadas según corresponda. Ejemplo: {"nombre": "pechuga de pollo", "cantidad": "150g"}, {"nombre": "tortilla de maíz", "cantidad": "2 piezas"}, {"nombre": "aceite vegetal", "cantidad": "1 cdita"}. Nunca dejes el array ingredientes vacío.
 El campo "lista_compras" debe contener TODOS los ingredientes necesarios para los 15 días, consolidados y sin repetir, con cantidades totales para toda la quincena y precios aproximados en MXN según el mercado local de Puebla, México. El costo_total_estimado debe estar dentro del presupuesto quincenal del usuario.
 
 Respuestas del cuestionario del usuario:
