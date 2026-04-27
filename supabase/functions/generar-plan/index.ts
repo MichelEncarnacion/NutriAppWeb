@@ -269,7 +269,7 @@ Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura 
       "dia": number,
       "kcal_total": number,
       "comidas": [
-        { "tipo": "desayuno|colacion_am|comida|colacion_pm|cena", "nombre": string, "descripcion": string, "hora_sugerida": "HH:MM", "kcal": number, "proteina_g": number, "carbos_g": number, "grasas_g": number }
+        { "tipo": "desayuno|colacion_am|comida|colacion_pm|cena", "nombre": string, "descripcion": string, "ingredientes": [{"nombre": string, "cantidad": string}], "hora_sugerida": "HH:MM", "kcal": number, "proteina_g": number, "carbos_g": number, "grasas_g": number }
       ]
     }
   ]

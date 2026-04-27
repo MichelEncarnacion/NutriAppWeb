@@ -285,6 +285,19 @@ export default function MiPlan() {
                         {c.descripcion && (
                           <p className="text-[#7D8590] text-xs mt-1 leading-relaxed">{c.descripcion}</p>
                         )}
+                        {c.ingredientes?.length > 0 && (
+                          <ul className="mt-2 flex flex-col gap-0.5">
+                            {c.ingredientes.map((ing, i) => (
+                              <li key={i} className="text-xs flex items-baseline gap-1.5">
+                                <span className="text-[#3DDC84] flex-shrink-0">·</span>
+                                <span>
+                                  <span className="text-white font-medium">{ing.cantidad}</span>
+                                  {" "}<span className="text-[#7D8590]">{ing.nombre}</span>
+                                </span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
                         <p className="text-[#7D8590] text-xs mt-2">
                           {c.proteina_g}g prot · {c.carbos_g}g carbs · {c.grasas_g}g grasas
                         </p>
