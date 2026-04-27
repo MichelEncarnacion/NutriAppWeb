@@ -38,17 +38,17 @@ export default function Seguimiento() {
         });
 
         if (!error) {
-            // También guarda en métricas para el dashboard
             const hoy = new Date().toISOString().split("T")[0];
-            await supabase.from("metricas").delete()
-                .eq("perfil_id", session.user.id).eq("fecha", hoy);
-            await supabase.from("metricas").insert({
-                perfil_id: session.user.id,
-                fecha: hoy,
-                peso: form.peso_kg ? Number(form.peso_kg) : null,
-                porcentaje_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
-                porcentaje_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
-            });
+            await supabase.from("metricas").upsert(
+                {
+                    perfil_id: session.user.id,
+                    fecha: hoy,
+                    peso: form.peso_kg ? Number(form.peso_kg) : null,
+                    porcentaje_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
+                    porcentaje_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
+                },
+                { onConflict: "perfil_id,fecha" }
+            );
 
             navigate("/panel");
         }

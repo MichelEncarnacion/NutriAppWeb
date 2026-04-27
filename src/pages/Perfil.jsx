@@ -74,11 +74,22 @@ export default function Perfil() {
         if (!metrForm.peso && !metrForm.porcentaje_grasa && !metrForm.porcentaje_musculo) return;
         setGuardandoMetr(true);
         setFeedbackMetr(null);
+
         const hoy = new Date().toISOString().split("T")[0];
-        await supabase.from("metricas")
-            .delete()
+
+        const { data: existente } = await supabase
+            .from("metricas")
+            .select("fecha")
             .eq("perfil_id", session.user.id)
-            .eq("fecha", hoy);
+            .eq("fecha", hoy)
+            .maybeSingle();
+
+        if (existente) {
+            setGuardandoMetr(false);
+            setFeedbackMetr({ tipo: "error", msg: "Ya registraste tus métricas hoy. Solo puedes hacerlo una vez al día." });
+            return;
+        }
+
         const { error } = await supabase.from("metricas").insert({
             perfil_id: session.user.id,
             fecha: hoy,
@@ -86,6 +97,7 @@ export default function Perfil() {
             porcentaje_grasa: metrForm.porcentaje_grasa ? Number(metrForm.porcentaje_grasa) : null,
             porcentaje_musculo: metrForm.porcentaje_musculo ? Number(metrForm.porcentaje_musculo) : null,
         });
+
         setGuardandoMetr(false);
         if (error) {
             setFeedbackMetr({ tipo: "error", msg: "No se pudo guardar. Intenta de nuevo." });
