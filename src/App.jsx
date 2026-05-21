@@ -41,6 +41,7 @@ import AdminLecciones from "./pages/admin/AdminLecciones";
 import AdminNoticias   from "./pages/admin/AdminNoticias";
 import AdminArticulos        from "./pages/admin/AdminArticulos";
 import AdminReconocimientos  from "./pages/admin/AdminReconocimientos";
+import AdminFundadores       from "./pages/admin/AdminFundadores";
 
 function AppRoutes() {
   return (
@@ -158,6 +159,9 @@ function AppRoutes() {
           } />
           <Route path="/admin/reconocimientos" element={
             <AdminRoute><AdminReconocimientos /></AdminRoute>
+          } />
+          <Route path="/admin/nosotros" element={
+            <AdminRoute><AdminFundadores /></AdminRoute>
           } />
 
           {/* ── 404 ──────────────────────────────────────── */}

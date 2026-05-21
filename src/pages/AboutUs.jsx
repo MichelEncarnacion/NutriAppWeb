@@ -10,29 +10,6 @@ import LandingFooter from "../components/landing/LandingFooter";
 import { C, fadeInUp, stagger } from "../components/landing/landingTokens";
 import { supabase } from "../lib/supabase";
 
-/* ── Founders ──────────────────────────────────────────────── */
-const FOUNDERS = [
-  {
-    name:  "Emanuel Basilio Vergara",
-    role:  "CEO y Fundador · Economista",
-    desc:  "Diseña la estrategia de negocio y el modelo go-to-market. Responsable del crecimiento, alianzas y relaciones con empresas en México.",
-    initials: "E",
-  },
-  {
-    name:  "Georgiana Estefania Mota Arias",
-    role:  "COO y Co-fundadora · Nutrióloga",
-    desc:  "Diseña los protocolos clínicos que garantizan la precisión médica de cada plan generado por NutriiApp.",
-    initials: "G",
-  },
-  {
-    name:  "Michel Encarnación Dionicio",
-    role:  "CTO y Co-fundador · Ing. de Software",
-    desc:  "Arquitectura tecnológica y motor de IA. Construye la infraestructura que conecta el NutriiPoint con el dashboard empresarial.",
-    initials: "M",
-  },
-];
-
-
 const CATEGORY_COLORS = {
   "Empresa":           { bg: "#E8F5E9", color: C.primary },
   "Investigación":     { bg: "#FFF8E1", color: C.gold    },
@@ -41,8 +18,10 @@ const CATEGORY_COLORS = {
 
 export default function AboutUs() {
   const navigate = useNavigate();
-  const [news,    setNews]    = useState([]);
-  const [awards,  setAwards]  = useState([]);
+  const [news,       setNews]       = useState([]);
+  const [awards,     setAwards]     = useState([]);
+  const [founders,   setFounders]   = useState([]);
+  const [fotoEquipo, setFotoEquipo] = useState(null);
 
   useEffect(() => {
     supabase
@@ -59,6 +38,19 @@ export default function AboutUs() {
       .eq("publicado", true)
       .order("orden", { ascending: true })
       .then(({ data }) => setAwards(data ?? []));
+
+    supabase
+      .from("fundadores")
+      .select("id, nombre, rol, descripcion, initials, imagen_url, orden")
+      .order("orden", { ascending: true })
+      .then(({ data }) => setFounders(data ?? []));
+
+    supabase
+      .from("site_config")
+      .select("value")
+      .eq("key", "foto_equipo")
+      .single()
+      .then(({ data }) => setFotoEquipo(data?.value ?? null));
   }, []);
 
   return (
@@ -246,6 +238,48 @@ export default function AboutUs() {
             </Typography>
           </Box>
 
+          {/* Foto grupal */}
+          {fotoEquipo && (
+            <Box
+              sx={{
+                mb:           { xs: 5, md: 6 },
+                borderRadius: "20px",
+                overflow:     "hidden",
+                border:       `1px solid ${C.border}`,
+                boxShadow:    C.shadowMd,
+                cursor:       "pointer",
+                position:     "relative",
+                "&:hover .foto-overlay": { opacity: 1 },
+                "&:hover img":           { transform: "scale(1.02)" },
+              }}
+              onClick={() => window.open(fotoEquipo, "_blank")}
+            >
+              <Box
+                component="img"
+                src={fotoEquipo}
+                alt="El equipo NutriiApp"
+                sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.4s ease" }}
+              />
+              <Box
+                className="foto-overlay"
+                sx={{
+                  position:       "absolute",
+                  inset:          0,
+                  bgcolor:        "rgba(0,0,0,0.35)",
+                  opacity:        0,
+                  transition:     "opacity 0.25s ease",
+                  display:        "flex",
+                  alignItems:     "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Typography sx={{ color: "#fff", fontSize: "0.85rem", fontWeight: 700 }}>
+                  Ver foto completa
+                </Typography>
+              </Box>
+            </Box>
+          )}
+
           <motion.div
             variants={stagger}
             initial="hidden"
@@ -253,49 +287,86 @@ export default function AboutUs() {
             viewport={{ once: true, amount: 0.1 }}
             style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}
           >
-            {FOUNDERS.map((f) => (
-              <motion.div key={f.name} variants={fadeInUp}>
+            {founders.map((f) => (
+              <motion.div key={f.id} variants={fadeInUp}>
                 <Box
                   sx={{
                     bgcolor:      C.bgCard,
                     borderRadius: "16px",
                     border:       `1px solid ${C.border}`,
-                    p:            3.5,
+                    overflow:     "hidden",
                     textAlign:    "center",
                     boxShadow:    C.shadow,
                     transition:   "transform 0.25s, box-shadow 0.25s",
                     "&:hover":    { transform: "translateY(-4px)", boxShadow: C.shadowMd },
                   }}
                 >
-                  {/* Avatar placeholder */}
-                  <Box
-                    sx={{
-                      width:          80,
-                      height:         80,
-                      borderRadius:   "50%",
-                      background:     C.heroGrad,
-                      display:        "flex",
-                      alignItems:     "center",
-                      justifyContent: "center",
-                      mx:             "auto",
-                      mb:             2.5,
-                      fontSize:       "1.8rem",
-                      fontWeight:     900,
-                      color:          C.white,
-                      fontFamily:     "Plus Jakarta Sans, sans-serif",
-                    }}
-                  >
-                    {f.initials}
+                  {/* Foto o avatar */}
+                  {f.imagen_url ? (
+                    <Box
+                      sx={{
+                        position: "relative",
+                        overflow: "hidden",
+                        cursor:   "pointer",
+                        "&:hover .fo": { opacity: 1 },
+                        "&:hover img": { transform: "scale(1.04)" },
+                      }}
+                      onClick={() => window.open(f.imagen_url, "_blank")}
+                    >
+                      <Box
+                        component="img"
+                        src={f.imagen_url}
+                        alt={f.nombre}
+                        sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.35s ease" }}
+                        onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                      />
+                      <Box
+                        className="fo"
+                        sx={{
+                          position:       "absolute",
+                          inset:          0,
+                          bgcolor:        "rgba(0,0,0,0.38)",
+                          opacity:        0,
+                          transition:     "opacity 0.25s ease",
+                          display:        "flex",
+                          alignItems:     "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Typography sx={{ color: "#fff", fontSize: "0.78rem", fontWeight: 700 }}>Ver foto completa</Typography>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        height:         140,
+                        background:     C.heroGrad,
+                        display:        "flex",
+                        alignItems:     "center",
+                        justifyContent: "center",
+                        fontSize:       "2.2rem",
+                        fontWeight:     900,
+                        color:          C.white,
+                        fontFamily:     "Plus Jakarta Sans, sans-serif",
+                      }}
+                    >
+                      {f.initials}
+                    </Box>
+                  )}
+
+                  <Box sx={{ p: 3 }}>
+                    <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "1.05rem", mb: 0.5 }}>
+                      {f.nombre}
+                    </Typography>
+                    <Typography sx={{ color: C.primary, fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", mb: 1.5 }}>
+                      {f.rol}
+                    </Typography>
+                    {f.descripcion && (
+                      <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.72 }}>
+                        {f.descripcion}
+                      </Typography>
+                    )}
                   </Box>
-                  <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "1.1rem", mb: 0.5 }}>
-                    {f.name}
-                  </Typography>
-                  <Typography sx={{ color: C.primary, fontSize: "0.78rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", mb: 1.5 }}>
-                    {f.role}
-                  </Typography>
-                  <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.72 }}>
-                    {f.desc}
-                  </Typography>
                 </Box>
               </motion.div>
             ))}

@@ -12,6 +12,7 @@ const ADMIN_NAV = [
     { to: "/admin/noticias",   label: "Noticias",  icon: "📰" },
     { to: "/admin/articulos",        label: "Artículos",        icon: "✍️" },
     { to: "/admin/reconocimientos",  label: "Reconocimientos",  icon: "🏆" },
+    { to: "/admin/nosotros",         label: "Quiénes somos",    icon: "👤" },
 ];
 
 export default function AdminLayout({ titulo, children }) {
