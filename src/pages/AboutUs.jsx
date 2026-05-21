@@ -33,13 +33,6 @@ const FOUNDERS = [
 ];
 
 
-/* ── Award ─────────────────────────────────────────────────── */
-const AWARD = {
-  name:   "Premio COPARMEX Puebla: Innovación Empresarial",
-  date:   "Mayo 2025",
-  desc:   "NutriiApp fue reconocida por COPARMEX Puebla como proyecto de innovación empresarial destacado, valorando su impacto en la salud preventiva corporativa y su modelo financiero con margen bruto del 86.9% y TIR del 54.6%.",
-};
-
 const CATEGORY_COLORS = {
   "Empresa":           { bg: "#E8F5E9", color: C.primary },
   "Investigación":     { bg: "#FFF8E1", color: C.gold    },
@@ -48,7 +41,8 @@ const CATEGORY_COLORS = {
 
 export default function AboutUs() {
   const navigate = useNavigate();
-  const [news, setNews] = useState([]);
+  const [news,    setNews]    = useState([]);
+  const [awards,  setAwards]  = useState([]);
 
   useEffect(() => {
     supabase
@@ -58,6 +52,13 @@ export default function AboutUs() {
       .order("orden", { ascending: true })
       .limit(6)
       .then(({ data }) => setNews(data ?? []));
+
+    supabase
+      .from("reconocimientos")
+      .select("id, nombre, organizacion, fecha_display, descripcion, imagen_url")
+      .eq("publicado", true)
+      .order("orden", { ascending: true })
+      .then(({ data }) => setAwards(data ?? []));
   }, []);
 
   return (
@@ -440,102 +441,122 @@ export default function AboutUs() {
       </Box>
 
       {/* ── Awards ── */}
-      <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: { xs: 6, md: 7 } }}>
-            <Typography
-              component="p"
-              sx={{ color: C.gold, fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5 }}
-            >
-              Reconocimientos
-            </Typography>
-            <Typography
-              component="h2"
-              sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2 }}
-            >
-              Premios y distinciones
-            </Typography>
-          </Box>
+      {awards.length > 0 && (
+        <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
+          <Container maxWidth="lg">
+            <Box sx={{ textAlign: "center", mb: { xs: 6, md: 7 } }}>
+              <Typography
+                component="p"
+                sx={{ color: C.gold, fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5 }}
+              >
+                Reconocimientos
+              </Typography>
+              <Typography
+                component="h2"
+                sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2 }}
+              >
+                Premios y distinciones
+              </Typography>
+            </Box>
 
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.2 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Box
-              sx={{
-                maxWidth:     640,
-                mx:           "auto",
-                bgcolor:      C.bgCard,
-                borderRadius: "20px",
-                border:       `1px solid rgba(191,144,0,0.25)`,
-                boxShadow:    `0 4px 24px rgba(191,144,0,0.08)`,
-                overflow:     "hidden",
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              style={{
+                display: "grid",
+                gridTemplateColumns: awards.length === 1 ? "min(640px, 100%)" : "repeat(auto-fit, minmax(300px, 1fr))",
+                gap: 24,
+                justifyContent: "center",
               }}
             >
-              {/* Image placeholder */}
-              <Box
-                sx={{
-                  height:     200,
-                  background: "linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%)",
-                  display:    "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexDirection: "column",
-                  gap: 1.5,
-                }}
-              >
-                <Box
-                  sx={{
-                    width:        72,
-                    height:       72,
-                    borderRadius: "50%",
-                    bgcolor:      C.goldBg,
-                    border:       `2px solid rgba(191,144,0,0.3)`,
-                    display:      "flex",
-                    alignItems:   "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Award size={30} color={C.gold} />
-                </Box>
-                <Typography sx={{ color: C.gold, fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                  Foto del reconocimiento
-                </Typography>
-              </Box>
+              {awards.map((award) => (
+                <motion.div key={award.id} variants={fadeInUp}>
+                  <Box
+                    sx={{
+                      bgcolor:      C.bgCard,
+                      borderRadius: "20px",
+                      border:       "1px solid rgba(191,144,0,0.25)",
+                      boxShadow:    "0 4px 24px rgba(191,144,0,0.08)",
+                      overflow:     "hidden",
+                      mx:           awards.length === 1 ? "auto" : 0,
+                    }}
+                  >
+                    {award.imagen_url ? (
+                      <Box
+                        component="img"
+                        src={award.imagen_url}
+                        alt={award.nombre}
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.style.display = "none"; }}
+                        sx={{ width: "100%", height: 200, objectFit: "cover", display: "block" }}
+                      />
+                    ) : (
+                      <Box
+                        sx={{
+                          height:         160,
+                          background:     "linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%)",
+                          display:        "flex",
+                          alignItems:     "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width:          64,
+                            height:         64,
+                            borderRadius:   "50%",
+                            bgcolor:        C.goldBg,
+                            border:         "2px solid rgba(191,144,0,0.3)",
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Award size={28} color={C.gold} />
+                        </Box>
+                      </Box>
+                    )}
 
-              <Box sx={{ p: { xs: 3, md: 4 } }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                  <Box sx={{ px: 1.5, py: 0.4, bgcolor: C.goldBg, borderRadius: "6px" }}>
-                    <Typography sx={{ color: C.gold, fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
-                      COPARMEX Puebla
-                    </Typography>
+                    <Box sx={{ p: { xs: 3, md: 4 } }}>
+                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                        <Box sx={{ px: 1.5, py: 0.4, bgcolor: C.goldBg, borderRadius: "6px" }}>
+                          <Typography sx={{ color: C.gold, fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
+                            {award.organizacion}
+                          </Typography>
+                        </Box>
+                        {award.fecha_display && (
+                          <Typography sx={{ color: C.textLight, fontSize: "0.78rem" }}>
+                            {award.fecha_display}
+                          </Typography>
+                        )}
+                      </Box>
+                      <Typography
+                        sx={{
+                          color:      C.textPrimary,
+                          fontFamily: "Plus Jakarta Sans, sans-serif",
+                          fontWeight: 800,
+                          fontSize:   { xs: "1.05rem", md: "1.2rem" },
+                          lineHeight: 1.4,
+                          mb:         2,
+                        }}
+                      >
+                        {award.nombre}
+                      </Typography>
+                      {award.descripcion && (
+                        <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.75 }}>
+                          {award.descripcion}
+                        </Typography>
+                      )}
+                    </Box>
                   </Box>
-                  <Typography sx={{ color: C.textLight, fontSize: "0.78rem" }}>
-                    {AWARD.date}
-                  </Typography>
-                </Box>
-                <Typography
-                  sx={{
-                    color:      C.textPrimary,
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
-                    fontWeight: 800,
-                    fontSize:   { xs: "1.05rem", md: "1.2rem" },
-                    lineHeight: 1.4,
-                    mb:         2,
-                  }}
-                >
-                  {AWARD.name}
-                </Typography>
-                <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.75 }}>
-                  {AWARD.desc}
-                </Typography>
-              </Box>
-            </Box>
-          </motion.div>
-        </Container>
-      </Box>
+                </motion.div>
+              ))}
+            </motion.div>
+          </Container>
+        </Box>
+      )}
 
       {/* ── CTA strip ── */}
       <Box sx={{ bgcolor: C.bgMain, py: { xs: 7, md: 9 }, textAlign: "center", borderTop: `1px solid ${C.border}` }}>

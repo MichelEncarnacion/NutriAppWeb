@@ -10,7 +10,8 @@ const ADMIN_NAV = [
     { to: "/admin/planes",    label: "Planes IA", icon: "🥗" },
     { to: "/admin/lecciones", label: "Lecciones", icon: "📖" },
     { to: "/admin/noticias",   label: "Noticias",  icon: "📰" },
-    { to: "/admin/articulos",  label: "Artículos", icon: "✍️" },
+    { to: "/admin/articulos",        label: "Artículos",        icon: "✍️" },
+    { to: "/admin/reconocimientos",  label: "Reconocimientos",  icon: "🏆" },
 ];
 
 export default function AdminLayout({ titulo, children }) {
