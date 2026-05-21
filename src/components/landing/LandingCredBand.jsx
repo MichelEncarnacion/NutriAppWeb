@@ -1,127 +1,89 @@
-// src/components/landing/LandingCredBand.jsx — Stats / Oportunidad
+// src/components/landing/LandingCredBand.jsx
 import { Box, Container, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { C, fadeInUp, stagger } from "./landingTokens";
 
 const STATS = [
-  {
-    value:   "75%",
-    label:   "de adultos mexicanos vive con sobrepeso u obesidad",
-    source:  "ENSANUT 2022",
-    color:   C.primary,
-  },
-  {
-    value:   "44 días",
-    label:   "de ausentismo promedio al año por enfermedad crónica",
-    source:  "IMSS / STPS",
-    color:   C.primary,
-  },
-  {
-    value:   "60%",
-    label:   "de productividad cuando hay enfermedades crónicas no gestionadas",
-    source:  "OIT México",
-    color:   C.primary,
-  },
+  { value: "75%",     label: "de adultos mexicanos vive con sobrepeso u obesidad", source: "ENSANUT 2022" },
+  { value: "44 días", label: "de ausentismo promedio al año por enfermedad crónica", source: "IMSS / STPS" },
+  { value: "60%",     label: "de productividad perdida por enfermedades crónicas no gestionadas", source: "OIT México" },
 ];
 
 export default function LandingCredBand() {
   return (
-    <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
+    <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 10 }, borderTop: `1px solid ${C.border}` }}>
       <Container maxWidth="lg">
-        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
-          <Typography
-            component="p"
-            sx={{
-              color:          C.primary,
-              fontWeight:     700,
-              fontSize:       "0.78rem",
-              textTransform:  "uppercase",
-              letterSpacing:  "0.1em",
-              mb:             1.5,
-            }}
-          >
-            El problema que nadie está midiendo
-          </Typography>
-          <Typography
-            component="h2"
-            sx={{
-              color:      C.textPrimary,
-              fontFamily: "Plus Jakarta Sans, sans-serif",
-              fontWeight: 900,
-              fontSize:   { xs: "1.9rem", md: "2.6rem" },
-              lineHeight: 1.2,
-            }}
-          >
-            La salud de tu equipo impacta directamente
-            <br />
-            en tus resultados de negocio
-          </Typography>
-        </Box>
-
         <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
-          style={{
-            display:               "grid",
-            gridTemplateColumns:   "repeat(auto-fit, minmax(220px, 1fr))",
-            gap:                   24,
-          }}
         >
-          {STATS.map((s) => (
-            <motion.div key={s.value} variants={fadeInUp}>
-              <Box
+          <Box
+            sx={{
+              display:             "grid",
+              gridTemplateColumns: { xs: "1fr", md: "5fr 7fr" },
+              gap:                 { xs: 6, md: 8 },
+              alignItems:          "center",
+            }}
+          >
+            {/* Heading */}
+            <motion.div variants={fadeInUp}>
+              <Typography
+                component="h2"
                 sx={{
-                  bgcolor:      C.bgCard,
-                  borderRadius: "16px",
-                  border:       `1px solid ${C.border}`,
-                  p:            { xs: 3, md: 3.5 },
-                  textAlign:    "center",
-                  boxShadow:    C.shadow,
-                  transition:   "transform 0.25s ease, box-shadow 0.25s ease",
-                  "&:hover":    {
-                    transform:  "translateY(-4px)",
-                    boxShadow:  C.shadowMd,
-                  },
+                  color:      C.textPrimary,
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontWeight: 900,
+                  fontSize:   { xs: "1.75rem", md: "2.1rem" },
+                  lineHeight: 1.25,
                 }}
               >
-                <Typography
-                  sx={{
-                    color:      s.color,
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
-                    fontWeight: 900,
-                    fontSize:   { xs: "2.4rem", md: "2.8rem" },
-                    lineHeight: 1,
-                    mb:         1.5,
-                  }}
-                >
-                  {s.value}
-                </Typography>
-                <Typography
-                  sx={{
-                    color:      C.textMuted,
-                    fontSize:   "0.875rem",
-                    lineHeight: 1.65,
-                    mb:         1.5,
-                  }}
-                >
-                  {s.label}
-                </Typography>
-                <Typography
-                  sx={{
-                    color:      C.textLight,
-                    fontSize:   "0.7rem",
-                    fontWeight: 600,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {s.source}
-                </Typography>
+                La salud de tu equipo
+                impacta directamente
+                en tus resultados.
+              </Typography>
+              <Typography sx={{ color: C.textMuted, fontSize: "0.95rem", mt: 2, lineHeight: 1.7 }}>
+                Y los números lo confirman.
+              </Typography>
+            </motion.div>
+
+            {/* Stats — sin tarjetas, solo números con divisores */}
+            <motion.div variants={fadeInUp}>
+              <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+                {STATS.map((s, i) => (
+                  <Box
+                    key={s.value}
+                    sx={{
+                      px:         { xs: 2, md: 3 },
+                      py:         { xs: 1, md: 0 },
+                      borderLeft: i > 0 ? `1px solid ${C.border}` : "none",
+                      textAlign:  "center",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        color:      C.primary,
+                        fontFamily: "Plus Jakarta Sans, sans-serif",
+                        fontWeight: 900,
+                        fontSize:   { xs: "2rem", md: "2.6rem" },
+                        lineHeight: 1,
+                        mb:         1,
+                      }}
+                    >
+                      {s.value}
+                    </Typography>
+                    <Typography sx={{ color: C.textMuted, fontSize: "0.8rem", lineHeight: 1.6, mb: 0.75 }}>
+                      {s.label}
+                    </Typography>
+                    <Typography sx={{ color: C.textLight, fontSize: "0.67rem", fontWeight: 600 }}>
+                      {s.source}
+                    </Typography>
+                  </Box>
+                ))}
               </Box>
             </motion.div>
-          ))}
+          </Box>
         </motion.div>
       </Container>
     </Box>

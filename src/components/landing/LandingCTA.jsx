@@ -1,4 +1,4 @@
-// src/components/landing/LandingCTA.jsx — Final CTA Section
+// src/components/landing/LandingCTA.jsx
 import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
@@ -24,15 +24,14 @@ export default function LandingCTA() {
         overflow:   "hidden",
       }}
     >
-      {/* Background decoration */}
       <Box
         sx={{
-          position:      "absolute",
-          inset:         0,
+          position:        "absolute",
+          inset:           0,
           backgroundImage:
             "radial-gradient(circle at 10% 50%, rgba(255,255,255,0.05) 0%, transparent 45%), " +
             "radial-gradient(circle at 90% 50%, rgba(255,255,255,0.04) 0%, transparent 45%)",
-          pointerEvents: "none",
+          pointerEvents:   "none",
         }}
       />
 
@@ -43,23 +42,6 @@ export default function LandingCTA() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
-          <motion.div variants={fadeInUp}>
-            <Typography
-              component="p"
-              sx={{
-                color:         "rgba(255,255,255,0.7)",
-                fontWeight:    700,
-                fontSize:      "0.78rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.1em",
-                mb:            1.5,
-                textAlign:     "center",
-              }}
-            >
-              Listo para empezar
-            </Typography>
-          </motion.div>
-
           <motion.div variants={fadeInUp}>
             <Typography
               component="h2"
@@ -82,13 +64,13 @@ export default function LandingCTA() {
           <motion.div variants={fadeInUp}>
             <Typography
               sx={{
-                color:      "rgba(255,255,255,0.78)",
-                fontSize:   "1.05rem",
+                color:     "rgba(255,255,255,0.78)",
+                fontSize:  "1.05rem",
                 lineHeight: 1.7,
-                textAlign:  "center",
-                mb:         5,
-                maxWidth:   480,
-                mx:         "auto",
+                textAlign: "center",
+                mb:        5,
+                maxWidth:  480,
+                mx:        "auto",
               }}
             >
               $28,600 MXN/año para 20 colaboradores. La inversión más inteligente

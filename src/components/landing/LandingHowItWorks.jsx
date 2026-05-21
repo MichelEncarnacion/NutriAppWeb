@@ -1,4 +1,4 @@
-// src/components/landing/LandingHowItWorks.jsx — 4 Pasos B2B
+// src/components/landing/LandingHowItWorks.jsx
 import { Box, Container, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { Wifi, Sparkles, Smartphone, TrendingUp } from "lucide-react";
@@ -36,21 +36,16 @@ export default function LandingHowItWorks() {
     <Box id="como-funciona" sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 12 }, borderTop: `1px solid ${C.border}` }}>
       <Container maxWidth="lg">
 
-        {/* Header */}
-        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
-          <Typography
-            component="p"
-            sx={{
-              color:         C.primary,
-              fontWeight:    700,
-              fontSize:      "0.78rem",
-              textTransform: "uppercase",
-              letterSpacing: "0.1em",
-              mb:            1.5,
-            }}
-          >
-            Cómo funciona
-          </Typography>
+        {/* Header — sin eyebrow, alineado a la izquierda en desktop */}
+        <Box
+          sx={{
+            display:             "grid",
+            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
+            gap:                 { xs: 3, md: 6 },
+            mb:                  { xs: 6, md: 8 },
+            alignItems:          "flex-end",
+          }}
+        >
           <Typography
             component="h2"
             sx={{
@@ -59,79 +54,73 @@ export default function LandingHowItWorks() {
               fontWeight: 900,
               fontSize:   { xs: "1.9rem", md: "2.6rem" },
               lineHeight: 1.2,
-              mb:         2,
             }}
           >
             De la medición al ROI
-            <br />
-            en cuatro pasos simples
+            en cuatro pasos
           </Typography>
-          <Typography sx={{ color: C.textMuted, fontSize: "1rem", maxWidth: 480, mx: "auto" }}>
-            Implementación completa en menos de una semana. Primeros resultados medibles desde el mes 1.
+          <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.7 }}>
+            Implementación completa en menos de una semana.
+            Primeros resultados medibles desde el mes 1.
           </Typography>
         </Box>
 
-        {/* Steps */}
         <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.1 }}
         >
-          {/* Desktop: horizontal steps with connector line */}
+          {/* Desktop: horizontal con línea conectora */}
           <Box
             sx={{
-              display: { xs: "none", md: "grid" },
+              display:             { xs: "none", md: "grid" },
               gridTemplateColumns: "repeat(4, 1fr)",
-              gap: 3,
-              position: "relative",
+              gap:                 3,
+              position:            "relative",
             }}
           >
-            {/* Connector line */}
             <Box
               sx={{
-                position:   "absolute",
-                top:        28,
-                left:       "12.5%",
-                right:      "12.5%",
-                height:     2,
-                bgcolor:    C.border,
-                zIndex:     0,
+                position: "absolute",
+                top:      28,
+                left:     "12.5%",
+                right:    "12.5%",
+                height:   2,
+                bgcolor:  C.border,
+                zIndex:   0,
               }}
             />
 
             {STEPS.map((step) => (
               <motion.div key={step.num} variants={fadeInUp}>
                 <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-                  {/* Step circle */}
                   <Box
                     sx={{
-                      width:           56,
-                      height:          56,
-                      borderRadius:    "50%",
-                      bgcolor:         C.primary,
-                      display:         "flex",
-                      alignItems:      "center",
-                      justifyContent:  "center",
-                      mb:              2.5,
-                      position:        "relative",
-                      zIndex:          1,
-                      boxShadow:       `0 0 0 6px ${C.bgAlt}, 0 0 0 7px ${C.border}`,
+                      width:          56,
+                      height:         56,
+                      borderRadius:   "50%",
+                      bgcolor:        C.primary,
+                      display:        "flex",
+                      alignItems:     "center",
+                      justifyContent: "center",
+                      mb:             2.5,
+                      position:       "relative",
+                      zIndex:         1,
+                      boxShadow:      `0 0 0 6px ${C.bgAlt}, 0 0 0 7px ${C.border}`,
                     }}
                   >
                     <step.Icon size={22} color="#fff" />
                   </Box>
-
                   <Typography
                     sx={{
                       color:      C.textLight,
-                      fontSize:   "0.7rem",
+                      fontSize:   "0.72rem",
                       fontWeight: 700,
-                      letterSpacing: "0.1em",
                       mb:         0.75,
                     }}
                   >
-                    PASO {step.num}
+                    {step.num}
                   </Typography>
                   <Typography
                     sx={{
@@ -153,38 +142,36 @@ export default function LandingHowItWorks() {
             ))}
           </Box>
 
-          {/* Mobile: vertical steps */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: 3 }}>
+          {/* Mobile: filas sin tarjetas */}
+          <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column" }}>
             {STEPS.map((step, i) => (
               <motion.div key={step.num} variants={fadeInUp}>
                 <Box
                   sx={{
-                    bgcolor:      C.bgCard,
-                    borderRadius: "14px",
-                    border:       `1px solid ${C.border}`,
-                    p:            3,
                     display:      "flex",
                     gap:          2.5,
-                    boxShadow:    C.shadow,
+                    py:           3,
+                    borderTop:    i > 0 ? `1px solid ${C.border}` : "none",
+                    alignItems:   "flex-start",
                   }}
                 >
                   <Box
                     sx={{
-                      width:           48,
-                      height:          48,
-                      borderRadius:    "50%",
-                      bgcolor:         C.primary,
-                      display:         "flex",
-                      alignItems:      "center",
-                      justifyContent:  "center",
-                      flexShrink:      0,
+                      width:          44,
+                      height:         44,
+                      borderRadius:   "50%",
+                      bgcolor:        C.primary,
+                      display:        "flex",
+                      alignItems:     "center",
+                      justifyContent: "center",
+                      flexShrink:     0,
                     }}
                   >
-                    <step.Icon size={20} color="#fff" />
+                    <step.Icon size={19} color="#fff" />
                   </Box>
                   <Box>
-                    <Typography sx={{ color: C.textLight, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", mb: 0.5 }}>
-                      PASO {step.num}
+                    <Typography sx={{ color: C.textLight, fontSize: "0.68rem", fontWeight: 700, mb: 0.4 }}>
+                      {step.num}
                     </Typography>
                     <Typography sx={{ color: C.textPrimary, fontWeight: 800, fontSize: "0.95rem", mb: 0.75 }}>
                       {step.title}
