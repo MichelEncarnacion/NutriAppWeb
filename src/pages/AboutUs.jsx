@@ -285,7 +285,7 @@ export default function AboutUs() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 24 }}
+            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, maxWidth: 720, margin: "0 auto" }}
           >
             {founders.map((f) => (
               <motion.div key={f.id} variants={fadeInUp}>
@@ -294,79 +294,77 @@ export default function AboutUs() {
                     bgcolor:      C.bgCard,
                     borderRadius: "16px",
                     border:       `1px solid ${C.border}`,
-                    overflow:     "hidden",
+                    p:            { xs: 2, md: 2.5 },
                     textAlign:    "center",
                     boxShadow:    C.shadow,
                     transition:   "transform 0.25s, box-shadow 0.25s",
-                    "&:hover":    { transform: "translateY(-4px)", boxShadow: C.shadowMd },
+                    "&:hover":    { transform: "translateY(-3px)", boxShadow: C.shadowMd },
                   }}
                 >
-                  {/* Foto o avatar */}
-                  {f.imagen_url ? (
-                    <Box
-                      sx={{
-                        position: "relative",
-                        overflow: "hidden",
-                        cursor:   "pointer",
-                        "&:hover .fo": { opacity: 1 },
-                        "&:hover img": { transform: "scale(1.04)" },
-                      }}
-                      onClick={() => window.open(f.imagen_url, "_blank")}
-                    >
-                      <Box
-                        component="img"
-                        src={f.imagen_url}
-                        alt={f.nombre}
-                        sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.35s ease" }}
-                        onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
-                      />
-                      <Box
-                        className="fo"
-                        sx={{
-                          position:       "absolute",
-                          inset:          0,
-                          bgcolor:        "rgba(0,0,0,0.38)",
-                          opacity:        0,
-                          transition:     "opacity 0.25s ease",
-                          display:        "flex",
-                          alignItems:     "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Typography sx={{ color: "#fff", fontSize: "0.78rem", fontWeight: 700 }}>Ver foto completa</Typography>
-                      </Box>
-                    </Box>
-                  ) : (
-                    <Box
-                      sx={{
-                        height:         140,
-                        background:     C.heroGrad,
-                        display:        "flex",
-                        alignItems:     "center",
-                        justifyContent: "center",
-                        fontSize:       "2.2rem",
-                        fontWeight:     900,
-                        color:          C.white,
-                        fontFamily:     "Plus Jakarta Sans, sans-serif",
-                      }}
-                    >
-                      {f.initials}
-                    </Box>
-                  )}
-
-                  <Box sx={{ p: 3 }}>
-                    <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "1.05rem", mb: 0.5 }}>
-                      {f.nombre}
-                    </Typography>
-                    <Typography sx={{ color: C.primary, fontSize: "0.75rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em", mb: 1.5 }}>
-                      {f.rol}
-                    </Typography>
-                    {f.descripcion && (
-                      <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.72 }}>
-                        {f.descripcion}
+                  {/* Foto circular o avatar */}
+                  <Box
+                    sx={{
+                      width:          96,
+                      height:         96,
+                      borderRadius:   "50%",
+                      overflow:       "hidden",
+                      mx:             "auto",
+                      mb:             1.5,
+                      border:         `3px solid ${C.border}`,
+                      cursor:         f.imagen_url ? "pointer" : "default",
+                      flexShrink:     0,
+                      position:       "relative",
+                      background:     C.heroGrad,
+                      display:        "flex",
+                      alignItems:     "center",
+                      justifyContent: "center",
+                      "&:hover .fo":  { opacity: f.imagen_url ? 1 : 0 },
+                    }}
+                    onClick={() => f.imagen_url && window.open(f.imagen_url, "_blank")}
+                  >
+                    {f.imagen_url ? (
+                      <>
+                        <Box
+                          component="img"
+                          src={f.imagen_url}
+                          alt={f.nombre}
+                          sx={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
+                        />
+                        <Box
+                          className="fo"
+                          sx={{
+                            position:       "absolute",
+                            inset:          0,
+                            bgcolor:        "rgba(0,0,0,0.4)",
+                            opacity:        0,
+                            transition:     "opacity 0.2s",
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Typography sx={{ color: "#fff", fontSize: "0.65rem", fontWeight: 700 }}>Ver</Typography>
+                        </Box>
+                      </>
+                    ) : (
+                      <Typography sx={{ fontSize: "1.9rem", fontWeight: 900, color: C.white, fontFamily: "Plus Jakarta Sans, sans-serif", lineHeight: 1 }}>
+                        {f.initials}
                       </Typography>
                     )}
                   </Box>
+
+                  <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "0.88rem", lineHeight: 1.3, mb: 0.4 }}>
+                    {f.nombre}
+                  </Typography>
+                  <Typography sx={{ color: C.primary, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", mb: f.descripcion ? 1 : 0 }}>
+                    {f.rol}
+                  </Typography>
+                  {f.descripcion && (
+                    <Typography sx={{ color: C.textMuted, fontSize: "0.78rem", lineHeight: 1.6 }}>
+                      {f.descripcion}
+                    </Typography>
+                  )}
                 </Box>
               </motion.div>
             ))}
