@@ -126,26 +126,22 @@ export default function AboutUs() {
             {/* Credibility badges */}
             <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center", flexWrap: "wrap" }}>
               {[
-                { icon: "🏆", text: "1er lugar COPARMEX Start Up 2025" },
-                { icon: "🎓", text: "UPAEP · Puebla, México" },
-                { icon: "🚀", text: "HealthTech · Nutrición con IA" },
-              ].map((b) => (
+                "1er lugar COPARMEX Start Up 2026",
+                "UPAEP · Puebla, México",
+                "HealthTech · Nutrición con IA",
+              ].map((text) => (
                 <Box
-                  key={b.text}
+                  key={text}
                   sx={{
-                    display:    "flex",
-                    alignItems: "center",
-                    gap:        0.75,
-                    bgcolor:    "rgba(255,255,255,0.10)",
-                    border:     "1px solid rgba(255,255,255,0.18)",
+                    bgcolor:      "rgba(255,255,255,0.10)",
+                    border:       "1px solid rgba(255,255,255,0.18)",
                     borderRadius: "100px",
-                    px:         2,
-                    py:         0.75,
+                    px:           2,
+                    py:           0.75,
                   }}
                 >
-                  <Typography sx={{ fontSize: "0.85rem", lineHeight: 1 }}>{b.icon}</Typography>
                   <Typography sx={{ color: "rgba(255,255,255,0.9)", fontSize: "0.78rem", fontWeight: 600, whiteSpace: "nowrap" }}>
-                    {b.text}
+                    {text}
                   </Typography>
                 </Box>
               ))}
