@@ -1,22 +1,25 @@
 // src/pages/Landing.jsx
-import LandingNavbar      from "../components/landing/LandingNavbar";
-import LandingHero        from "../components/landing/LandingHero";
-import LandingCredBand    from "../components/landing/LandingCredBand";
-import LandingHowItWorks  from "../components/landing/LandingHowItWorks";
-import LandingBenefits    from "../components/landing/LandingBenefits";
-import LandingFAQ         from "../components/landing/LandingFAQ";
-import LandingFooter      from "../components/landing/LandingFooter";
+import { Box } from "@mui/material";
+import LandingNavbar     from "../components/landing/LandingNavbar";
+import LandingHero       from "../components/landing/LandingHero";
+import LandingCredBand   from "../components/landing/LandingCredBand";
+import LandingBenefits   from "../components/landing/LandingBenefits";
+import LandingHowItWorks from "../components/landing/LandingHowItWorks";
+import LandingFAQ        from "../components/landing/LandingFAQ";
+import LandingCTA        from "../components/landing/LandingCTA";
+import LandingFooter     from "../components/landing/LandingFooter";
 
 export default function Landing() {
   return (
-    <>
+    <Box sx={{ bgcolor: "#FFFFFF", minHeight: "100vh" }}>
       <LandingNavbar />
       <LandingHero />
       <LandingCredBand />
-      <LandingHowItWorks />
       <LandingBenefits />
+      <LandingHowItWorks />
       <LandingFAQ />
+      <LandingCTA />
       <LandingFooter />
-    </>
+    </Box>
   );
 }

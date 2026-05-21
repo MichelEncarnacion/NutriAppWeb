@@ -1,133 +1,174 @@
 // src/components/landing/LandingFooter.jsx
 import { useNavigate } from "react-router-dom";
-import { Box, Container, Typography, Button, IconButton } from "@mui/material";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import FacebookIcon from "@mui/icons-material/Facebook";
+import { Box, Container, Typography, IconButton } from "@mui/material";
+import { Instagram, Facebook, Linkedin, Mail } from "lucide-react";
 import { C } from "./landingTokens";
-import { useAuth } from "../../hooks/useAuth";
+import Logo from "../Logo";
 
-const NAV_LINKS = [
-  { label: "Cómo funciona",         href: "#como-funciona" },
-  { label: "Preguntas frecuentes",  href: "#faq" },
-  { label: "Términos y condiciones", to: "/terminos" },
-  { label: "Iniciar sesión",         to: "/login" },
+const COMPANY_LINKS = [
+  { label: "Inicio",        to:   "/" },
+  { label: "Nosotros",      to:   "/nosotros" },
+  { label: "Solicitar demo",to:   "/demo" },
+];
+
+const LEGAL_LINKS = [
+  { label: "Política de privacidad",   to: "/privacidad" },
+  { label: "Acceso colaboradores",     to: "/login" },
 ];
 
 export default function LandingFooter() {
   const navigate = useNavigate();
-  const { session } = useAuth();
 
   return (
-    <Box sx={{ bgcolor: C.bgFooter, borderTop: `1px solid ${C.border}`, pt: 8, pb: 4 }}>
+    <Box
+      sx={{
+        bgcolor:   C.bgAlt,
+        borderTop: `1px solid ${C.border}`,
+        pt:        { xs: 7, md: 9 },
+        pb:        4,
+      }}
+    >
       <Container maxWidth="lg">
-        {/* Top 3 columns */}
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "2fr 1fr 1.5fr" },
-            gap: 6,
-            mb: 6,
+            display:               "grid",
+            gridTemplateColumns:   { xs: "1fr", sm: "2fr 1fr 1fr", md: "2.5fr 1fr 1fr" },
+            gap:                   { xs: 5, md: 6 },
+            mb:                    6,
           }}
         >
           {/* Col 1 — Brand */}
           <Box>
-            <Typography sx={{ fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: "1.6rem", mb: 1.5 }}>
-              <Box component="span" sx={{ color: C.green }}>Nutrii</Box>
-              <Box component="span" sx={{ color: C.textPrimary }}>App</Box>
-            </Typography>
-            <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.75, mb: 3, maxWidth: 280 }}>
-              Nutrición personalizada con IA y expertos certificados.
+            <Box sx={{ mb: 2 }}>
+              <Logo size="sm" />
+            </Box>
+            <Typography
+              sx={{
+                color:     C.textMuted,
+                fontSize:  "0.875rem",
+                lineHeight: 1.78,
+                mb:        3,
+                maxWidth:  300,
+              }}
+            >
+              Plataforma SaaS de salud preventiva corporativa para empresas mexicanas.
+              IoT + IA clínica + ROI medible desde el día uno.
             </Typography>
             <Box sx={{ display: "flex", gap: 0.5 }}>
-              <IconButton size="small" sx={{ color: C.textMuted, "&:hover": { color: C.green } }}>
-                <InstagramIcon fontSize="small" />
-              </IconButton>
-              <IconButton size="small" sx={{ color: C.textMuted, "&:hover": { color: C.green } }}>
-                <FacebookIcon fontSize="small" />
-              </IconButton>
+              {[
+                { Icon: Instagram, label: "Instagram" },
+                { Icon: Facebook,  label: "Facebook"  },
+                { Icon: Linkedin,  label: "LinkedIn"  },
+                { Icon: Mail,      label: "Email"     },
+              ].map(({ Icon, label }) => (
+                <IconButton
+                  key={label}
+                  size="small"
+                  aria-label={label}
+                  sx={{
+                    color:     C.textLight,
+                    border:    `1px solid ${C.border}`,
+                    borderRadius: "8px",
+                    width:     34,
+                    height:    34,
+                    "&:hover": { color: C.primary, borderColor: C.accent, bgcolor: "#E8F5E9" },
+                  }}
+                >
+                  <Icon size={15} />
+                </IconButton>
+              ))}
             </Box>
           </Box>
 
-          {/* Col 2 — Links */}
+          {/* Col 2 — Empresa */}
           <Box>
             <Typography
               sx={{
-                color: C.textPrimary, fontWeight: 700, fontSize: "0.8rem",
-                mb: 2.5, textTransform: "uppercase", letterSpacing: "0.1em",
+                color:         C.textPrimary,
+                fontWeight:    700,
+                fontSize:      "0.78rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                mb:            2.5,
               }}
             >
-              Navegación
+              Empresa
             </Typography>
-            {NAV_LINKS.map((link) => (
-              <Box key={link.label} sx={{ mb: 1.5 }}>
-                {link.href ? (
-                  <Box
-                    component="a"
-                    href={link.href}
-                    sx={{
-                      color: C.textMuted, fontSize: "0.875rem",
-                      textDecoration: "none",
-                      "&:hover": { color: C.textPrimary },
-                    }}
-                  >
-                    {link.label}
-                  </Box>
-                ) : (
-                  <Box
-                    component="span"
-                    onClick={() => navigate(link.to)}
-                    sx={{
-                      color: C.textMuted, fontSize: "0.875rem",
-                      cursor: "pointer",
-                      "&:hover": { color: C.textPrimary },
-                    }}
-                  >
-                    {link.label}
-                  </Box>
-                )}
+            {COMPANY_LINKS.map((link) => (
+              <Box
+                key={link.label}
+                onClick={() => navigate(link.to)}
+                sx={{
+                  color:    C.textMuted,
+                  fontSize: "0.875rem",
+                  mb:       1.5,
+                  cursor:   "pointer",
+                  display:  "block",
+                  transition: "color 0.2s",
+                  "&:hover": { color: C.primary },
+                }}
+              >
+                {link.label}
               </Box>
             ))}
           </Box>
 
-          {/* Col 3 — CTA */}
+          {/* Col 3 — Legal / Acceso */}
           <Box>
             <Typography
               sx={{
-                color: C.textPrimary, fontWeight: 800,
-                fontSize: "1.2rem", fontFamily: "Plus Jakarta Sans, sans-serif", mb: 1,
+                color:         C.textPrimary,
+                fontWeight:    700,
+                fontSize:      "0.78rem",
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                mb:            2.5,
               }}
             >
-              ¿Listo para empezar?
+              Acceso
             </Typography>
-            <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", mb: 3 }}>
-              Únete gratis hoy
-            </Typography>
-            <Button
-              onClick={() => navigate(session ? "/panel" : "/registro")}
-              variant="contained"
-              fullWidth
-              sx={{
-                bgcolor: C.green, color: "#000", fontWeight: 700,
-                textTransform: "none", borderRadius: "12px",
-                py: 1.5, fontSize: "0.95rem", boxShadow: "none",
-                "&:hover": { bgcolor: "#5EF0A0" },
-              }}
-            >
-              {session ? "Ir al panel" : "Crear cuenta gratis"}
-            </Button>
+            {LEGAL_LINKS.map((link) => (
+              <Box
+                key={link.label}
+                onClick={() => navigate(link.to)}
+                sx={{
+                  color:    C.textMuted,
+                  fontSize: "0.875rem",
+                  mb:       1.5,
+                  cursor:   "pointer",
+                  display:  "block",
+                  transition: "color 0.2s",
+                  "&:hover": { color: C.primary },
+                }}
+              >
+                {link.label}
+              </Box>
+            ))}
           </Box>
         </Box>
 
         {/* Bottom bar */}
-        <Box sx={{ borderTop: `1px solid ${C.border}`, pt: 3, display: "flex", flexDirection: { xs: "column", sm: "row" }, alignItems: "center", justifyContent: "space-between", gap: 1 }}>
-          <Typography sx={{ color: C.textMuted, fontSize: "0.75rem" }}>
-            © {new Date().getFullYear()} NutriiApp · Todos los derechos reservados
+        <Box
+          sx={{
+            borderTop:     `1px solid ${C.border}`,
+            pt:            3,
+            display:       "flex",
+            flexDirection: { xs: "column", sm: "row" },
+            alignItems:    "center",
+            justifyContent:"space-between",
+            gap:           1,
+          }}
+        >
+          <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+            © {new Date().getFullYear()} NutriiApp · Todos los derechos reservados · Ciudad de México
           </Typography>
-          <Typography sx={{ color: C.textMuted, fontSize: "0.75rem" }}>
-            Desarrollado por{" "}
-            <Box component="span" sx={{ color: C.green, fontWeight: 700 }}>
-              Michel Encarnación
+          <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+            Hecho en{" "}
+            <Box component="span" sx={{ color: C.primary, fontWeight: 700 }}>
+              México
             </Box>
+            {" · "}
+            NOM-030 · NOM-035
           </Typography>
         </Box>
       </Container>

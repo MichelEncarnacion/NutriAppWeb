@@ -1,119 +1,202 @@
-// src/components/landing/LandingHowItWorks.jsx
+// src/components/landing/LandingHowItWorks.jsx — 4 Pasos B2B
 import { Box, Container, Typography } from "@mui/material";
 import { motion } from "framer-motion";
+import { Wifi, Sparkles, Smartphone, TrendingUp } from "lucide-react";
 import { C, fadeInUp, stagger } from "./landingTokens";
 
 const STEPS = [
   {
-    num: "01",
-    img: "https://images.unsplash.com/photo-1551076805-e1869033e561?w=200&q=80",
-    title: "Cuéntanos sobre ti",
-    desc:  "Responde 24 preguntas sobre tu cuerpo, objetivos, hábitos y presupuesto.",
+    num:   "01",
+    Icon:  Wifi,
+    title: "Medición con NutriiPoint",
+    desc:  "El dispositivo IoT instalado en tu empresa mide 16+ indicadores biométricos de cada colaborador en menos de 5 minutos: composición corporal, hidratación, masa muscular y biomarcadores clave.",
   },
   {
-    num: "02",
-    img: "https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=200&q=80",
-    title: "La IA y nuestros expertos diseñan tu plan",
-    desc:  "Nuestro equipo de nutriólogos y algoritmo de IA generan un plan de 15 días específico para ti en segundos.",
+    num:   "02",
+    Icon:  Sparkles,
+    title: "IA genera el plan personalizado",
+    desc:  "Nuestro motor de IA procesa los datos biométricos junto con alergias, enfermedades, medicamentos y el presupuesto real del colaborador para generar un plan nutricional clínicamente preciso.",
   },
   {
-    num: "03",
-    img: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=200&q=80",
-    title: "Sigue tu plan día a día",
-    desc:  "Marca comidas completadas, monitorea tu progreso y recibe un nuevo plan adaptado cada quincena.",
+    num:   "03",
+    Icon:  Smartphone,
+    title: "El colaborador actúa",
+    desc:  "Cada colaborador recibe su plan en la app móvil con guías de alimentación, listas de compra y seguimiento diario. Acompañamiento continuo sin depender del equipo de RR.HH.",
+  },
+  {
+    num:   "04",
+    Icon:  TrendingUp,
+    title: "La empresa mide el impacto",
+    desc:  "El dashboard empresarial muestra KPIs de salud, reducción de ausentismo, productividad y ROI en tiempo real. Genera reportes de cumplimiento NOM-030 y NOM-035 con un clic.",
   },
 ];
 
 export default function LandingHowItWorks() {
   return (
-    <Box id="como-funciona" sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 12 } }}>
+    <Box id="como-funciona" sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 12 }, borderTop: `1px solid ${C.border}` }}>
       <Container maxWidth="lg">
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+
+        {/* Header */}
+        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
           <Typography
-            variant="h2"
+            component="p"
             sx={{
-              color: C.textPrimary,
-              fontFamily: "Plus Jakarta Sans, sans-serif",
-              fontWeight: 900,
-              fontSize: { xs: "2rem", md: "2.8rem" },
-              mb: 2,
+              color:         C.primary,
+              fontWeight:    700,
+              fontSize:      "0.78rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              mb:            1.5,
             }}
           >
-            Así de simple
+            Cómo funciona
           </Typography>
-          <Typography sx={{ color: C.textMuted, fontSize: "1.05rem" }}>
-            De cero a tu plan personalizado en menos de 10 minutos
+          <Typography
+            component="h2"
+            sx={{
+              color:      C.textPrimary,
+              fontFamily: "Plus Jakarta Sans, sans-serif",
+              fontWeight: 900,
+              fontSize:   { xs: "1.9rem", md: "2.6rem" },
+              lineHeight: 1.2,
+              mb:         2,
+            }}
+          >
+            De la medición al ROI
+            <br />
+            en cuatro pasos simples
+          </Typography>
+          <Typography sx={{ color: C.textMuted, fontSize: "1rem", maxWidth: 480, mx: "auto" }}>
+            Implementación completa en menos de una semana. Primeros resultados medibles desde el mes 1.
           </Typography>
         </Box>
 
+        {/* Steps */}
         <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, amount: 0.15 }}
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-            gap: 24,
-          }}
+          viewport={{ once: true, amount: 0.1 }}
         >
-          {STEPS.map((step) => (
-            <motion.div key={step.num} variants={fadeInUp}>
-              <Box
-                sx={{
-                  bgcolor: C.bgCard,
-                  border: `1px solid ${C.border}`,
-                  borderRadius: "16px",
-                  p: 4,
-                  position: "relative",
-                  overflow: "hidden",
-                  height: "100%",
-                  transition: "border-color 0.25s",
-                  "&:hover": { borderColor: "rgba(61,220,132,0.4)" },
-                }}
-              >
-                {/* Watermark number */}
-                <Typography
-                  sx={{
-                    position: "absolute",
-                    top: 12, right: 16,
-                    color: C.green,
-                    opacity: 0.1,
-                    fontSize: "5rem",
-                    fontWeight: 900,
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
-                    lineHeight: 1,
-                    userSelect: "none",
-                    pointerEvents: "none",
-                  }}
-                >
-                  {step.num}
-                </Typography>
+          {/* Desktop: horizontal steps with connector line */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "grid" },
+              gridTemplateColumns: "repeat(4, 1fr)",
+              gap: 3,
+              position: "relative",
+            }}
+          >
+            {/* Connector line */}
+            <Box
+              sx={{
+                position:   "absolute",
+                top:        28,
+                left:       "12.5%",
+                right:      "12.5%",
+                height:     2,
+                bgcolor:    C.border,
+                zIndex:     0,
+              }}
+            />
 
+            {STEPS.map((step) => (
+              <motion.div key={step.num} variants={fadeInUp}>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                  {/* Step circle */}
+                  <Box
+                    sx={{
+                      width:           56,
+                      height:          56,
+                      borderRadius:    "50%",
+                      bgcolor:         C.primary,
+                      display:         "flex",
+                      alignItems:      "center",
+                      justifyContent:  "center",
+                      mb:              2.5,
+                      position:        "relative",
+                      zIndex:          1,
+                      boxShadow:       `0 0 0 6px ${C.bgAlt}, 0 0 0 7px ${C.border}`,
+                    }}
+                  >
+                    <step.Icon size={22} color="#fff" />
+                  </Box>
+
+                  <Typography
+                    sx={{
+                      color:      C.textLight,
+                      fontSize:   "0.7rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.1em",
+                      mb:         0.75,
+                    }}
+                  >
+                    PASO {step.num}
+                  </Typography>
+                  <Typography
+                    sx={{
+                      color:      C.textPrimary,
+                      fontFamily: "Plus Jakarta Sans, sans-serif",
+                      fontWeight: 800,
+                      fontSize:   "0.95rem",
+                      mb:         1.25,
+                      lineHeight: 1.3,
+                    }}
+                  >
+                    {step.title}
+                  </Typography>
+                  <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", lineHeight: 1.7 }}>
+                    {step.desc}
+                  </Typography>
+                </Box>
+              </motion.div>
+            ))}
+          </Box>
+
+          {/* Mobile: vertical steps */}
+          <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column", gap: 3 }}>
+            {STEPS.map((step, i) => (
+              <motion.div key={step.num} variants={fadeInUp}>
                 <Box
-                  component="img"
-                  src={step.img}
-                  alt={step.title}
-                  loading="lazy"
-                  sx={{ width: 80, height: 80, borderRadius: "50%", objectFit: "cover", mb: 3 }}
-                />
-                <Typography
                   sx={{
-                    color: C.textPrimary,
-                    fontWeight: 700,
-                    fontSize: "1.05rem",
-                    mb: 1.5,
-                    fontFamily: "Plus Jakarta Sans, sans-serif",
+                    bgcolor:      C.bgCard,
+                    borderRadius: "14px",
+                    border:       `1px solid ${C.border}`,
+                    p:            3,
+                    display:      "flex",
+                    gap:          2.5,
+                    boxShadow:    C.shadow,
                   }}
                 >
-                  {step.title}
-                </Typography>
-                <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.75 }}>
-                  {step.desc}
-                </Typography>
-              </Box>
-            </motion.div>
-          ))}
+                  <Box
+                    sx={{
+                      width:           48,
+                      height:          48,
+                      borderRadius:    "50%",
+                      bgcolor:         C.primary,
+                      display:         "flex",
+                      alignItems:      "center",
+                      justifyContent:  "center",
+                      flexShrink:      0,
+                    }}
+                  >
+                    <step.Icon size={20} color="#fff" />
+                  </Box>
+                  <Box>
+                    <Typography sx={{ color: C.textLight, fontSize: "0.68rem", fontWeight: 700, letterSpacing: "0.1em", mb: 0.5 }}>
+                      PASO {step.num}
+                    </Typography>
+                    <Typography sx={{ color: C.textPrimary, fontWeight: 800, fontSize: "0.95rem", mb: 0.75 }}>
+                      {step.title}
+                    </Typography>
+                    <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7 }}>
+                      {step.desc}
+                    </Typography>
+                  </Box>
+                </Box>
+              </motion.div>
+            ))}
+          </Box>
         </motion.div>
       </Container>
     </Box>

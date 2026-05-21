@@ -16,6 +16,8 @@ import PoliticaPrivacidad from "./pages/PoliticaPrivacidad";
 import Diagnostico from "./pages/Diagnostico";
 import GenerandoPlan from "./pages/GenerandoPlan";
 import Landing from "./pages/Landing";
+import AboutUs from "./pages/AboutUs";
+import RequestDemo from "./pages/RequestDemo";
 
 // ── Páginas principales (usuario) ───────────────────────────────────────
 import Panel from "./pages/Panel";
@@ -42,7 +44,9 @@ function AppRoutes() {
     <Routes>
 
           {/* ── Raíz ─────────────────────────────────────── */}
-          <Route path="/" element={<Landing />} />
+          <Route path="/"         element={<Landing />}     />
+          <Route path="/nosotros" element={<AboutUs />}     />
+          <Route path="/demo"     element={<RequestDemo />} />
 
           {/* ── Auth (solo si NO hay sesión) ──────────────── */}
           <Route path="/login" element={

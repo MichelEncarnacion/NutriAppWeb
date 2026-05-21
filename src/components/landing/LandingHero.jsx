@@ -2,77 +2,97 @@
 import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography, Button, Chip } from "@mui/material";
 import { motion } from "framer-motion";
+import { ArrowRight, PlayCircle, ShieldCheck } from "lucide-react";
 import { C, fadeInUp, stagger } from "./landingTokens";
-import { useAuth } from "../../hooks/useAuth";
+
+const TRUST_BADGES = [
+  "NOM-030 / NOM-035",
+  "IoT propio · NutriiPoint",
+  "IA clínica certificada",
+];
 
 export default function LandingHero() {
   const navigate = useNavigate();
-  const { session } = useAuth();
 
   return (
     <Box
       sx={{
-        minHeight: "100vh",
-        bgcolor: C.bgMain,
-        display: "flex",
-        alignItems: "center",
-        pt: 10,
-        pb: 8,
-        position: "relative",
-        overflow: "hidden",
-        "&::before": {
-          content: '""',
-          position: "absolute",
-          top: 0, right: 0,
-          width: "60%", height: "70%",
-          background: "radial-gradient(ellipse at 80% 20%, rgba(61,220,132,0.1), transparent 60%)",
-          pointerEvents: "none",
-        },
+        background:  C.heroGrad,
+        minHeight:   "100vh",
+        display:     "flex",
+        alignItems:  "center",
+        pt:          { xs: 11, md: 10 },
+        pb:          { xs: 8, md: 10 },
+        position:    "relative",
+        overflow:    "hidden",
       }}
     >
-      <Container maxWidth="lg">
+      {/* Subtle overlay pattern */}
+      <Box
+        sx={{
+          position:      "absolute",
+          inset:         0,
+          backgroundImage:
+            "radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 50%), " +
+            "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%)",
+          pointerEvents: "none",
+        }}
+      />
+
+      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         <Box
           sx={{
-            display: "grid",
-            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-            gap: 6,
-            alignItems: "center",
+            display:               "grid",
+            gridTemplateColumns:   { xs: "1fr", lg: "1.1fr 0.9fr" },
+            gap:                   { xs: 6, lg: 8 },
+            alignItems:            "center",
           }}
         >
           {/* ── Left column ── */}
           <motion.div variants={stagger} initial="hidden" animate="visible">
+
             <motion.div variants={fadeInUp}>
               <Chip
-                label="✦ IA + Expertos en Nutrición Certificados"
+                label="Salud preventiva corporativa · México"
                 sx={{
-                  bgcolor: "rgba(61,220,132,0.08)",
-                  color: C.green,
-                  border: `1px solid ${C.border}`,
-                  fontWeight: 700,
-                  fontSize: "0.7rem",
-                  mb: 3,
-                  borderRadius: "20px",
-                  height: "auto",
-                  "& .MuiChip-label": { py: 0.5, px: 1.5 },
+                  bgcolor:     "rgba(255,255,255,0.12)",
+                  color:       "rgba(255,255,255,0.9)",
+                  border:      "1px solid rgba(255,255,255,0.2)",
+                  fontWeight:  700,
+                  fontSize:    "0.72rem",
+                  mb:          3,
+                  borderRadius:"20px",
+                  height:      "auto",
+                  letterSpacing: "0.04em",
+                  "& .MuiChip-label": { py: 0.6, px: 1.5 },
                 }}
               />
             </motion.div>
 
             <motion.div variants={fadeInUp}>
               <Typography
-                variant="h1"
+                component="h1"
                 sx={{
-                  color: C.textPrimary,
+                  color:      C.white,
                   fontFamily: "Plus Jakarta Sans, sans-serif",
                   fontWeight: 900,
-                  fontSize: { xs: "2.2rem", md: "3.4rem" },
-                  lineHeight: 1.15,
-                  mb: 3,
+                  fontSize:   { xs: "2.3rem", md: "3rem", lg: "3.4rem" },
+                  lineHeight: 1.12,
+                  mb:         3,
+                  letterSpacing: "-0.01em",
                 }}
               >
-                Tu plan nutricional personalizado,{" "}
-                <Box component="span" sx={{ color: C.green }}>
-                  listo en minutos
+                Tus colaboradores más sanos.{" "}
+                <Box
+                  component="span"
+                  sx={{
+                    color:              "transparent",
+                    backgroundImage:    "linear-gradient(90deg, #A5D6A7, #E8F5E9)",
+                    WebkitBackgroundClip: "text",
+                    backgroundClip:     "text",
+                  }}
+                >
+                  Tu empresa más productiva.
                 </Box>
               </Typography>
             </motion.div>
@@ -80,61 +100,76 @@ export default function LandingHero() {
             <motion.div variants={fadeInUp}>
               <Typography
                 sx={{
-                  color: C.textMuted,
-                  fontSize: "1.1rem",
-                  lineHeight: 1.75,
-                  mb: 4,
-                  maxWidth: 480,
+                  color:     "rgba(255,255,255,0.82)",
+                  fontSize:  { xs: "1rem", md: "1.1rem" },
+                  lineHeight: 1.78,
+                  mb:        4,
+                  maxWidth:  500,
                 }}
               >
-                Planes creados por nutriólogos certificados y potenciados por IA.
-                Adaptados a tu cuerpo, objetivos y presupuesto. Sin esperas.
+                NutriiApp combina IoT, IA clínica y un dashboard de ROI para transformar
+                el bienestar corporativo en resultados medibles. Planes nutricionales
+                personalizados por colaborador — desde $28,600 MXN/año para 20 personas.
               </Typography>
             </motion.div>
 
             <motion.div variants={fadeInUp}>
               <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 5 }}>
                 <Button
-                  onClick={() => navigate(session ? "/panel" : "/registro")}
+                  onClick={() => navigate("/demo")}
                   variant="contained"
                   size="large"
+                  endIcon={<ArrowRight size={18} />}
                   sx={{
-                    bgcolor: C.green, color: "#000", fontWeight: 700,
-                    textTransform: "none", borderRadius: "12px",
-                    px: 4, py: 1.5, fontSize: "1rem",
-                    boxShadow: "0 0 32px rgba(61,220,132,0.25)",
-                    "&:hover": { bgcolor: "#5EF0A0" },
+                    bgcolor:       C.white,
+                    color:         C.primary,
+                    fontWeight:    800,
+                    textTransform: "none",
+                    borderRadius:  "12px",
+                    px:            3.5,
+                    py:            1.5,
+                    fontSize:      "1rem",
+                    boxShadow:     "0 4px 24px rgba(0,0,0,0.18)",
+                    "&:hover":     { bgcolor: "#F0FFF4", boxShadow: "0 6px 32px rgba(0,0,0,0.22)" },
                   }}
                 >
-                  {session ? "Ir al panel →" : "Comenzar gratis →"}
+                  Solicitar demo
                 </Button>
-                {!session && (
-                  <Button
-                    onClick={() => navigate("/login")}
-                    variant="outlined"
-                    size="large"
-                    sx={{
-                      borderColor: C.border, color: C.textMuted,
-                      textTransform: "none", borderRadius: "12px",
-                      px: 4, py: 1.5, fontSize: "1rem",
-                      "&:hover": { borderColor: C.green, color: C.textPrimary },
-                    }}
-                  >
-                    Ya tengo cuenta
-                  </Button>
-                )}
+
+                <Button
+                  href="#como-funciona"
+                  component="a"
+                  size="large"
+                  startIcon={<PlayCircle size={18} />}
+                  sx={{
+                    borderColor:   "rgba(255,255,255,0.45)",
+                    color:         C.white,
+                    border:        "1.5px solid rgba(255,255,255,0.4)",
+                    textTransform: "none",
+                    fontWeight:    600,
+                    borderRadius:  "12px",
+                    px:            3,
+                    py:            1.5,
+                    fontSize:      "1rem",
+                    "&:hover":     { bgcolor: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.7)" },
+                  }}
+                >
+                  Ver cómo funciona
+                </Button>
               </Box>
             </motion.div>
 
+            {/* Trust badges */}
             <motion.div variants={fadeInUp}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, flexWrap: "wrap" }}>
-                {["Plan de 15 días", "24 preguntas", "100% personalizado"].map((stat, i) => (
-                  <Box key={stat} sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
+                <ShieldCheck size={14} color="rgba(255,255,255,0.6)" style={{ marginRight: 4 }} />
+                {TRUST_BADGES.map((badge, i) => (
+                  <Box key={badge} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                     {i > 0 && (
-                      <Box sx={{ width: 4, height: 4, borderRadius: "50%", bgcolor: C.textMuted, flexShrink: 0 }} />
+                      <Box sx={{ width: 3, height: 3, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.35)", mx: 0.5 }} />
                     )}
-                    <Typography sx={{ color: C.textMuted, fontSize: "0.85rem", fontWeight: 600 }}>
-                      {stat}
+                    <Typography sx={{ color: "rgba(255,255,255,0.65)", fontSize: "0.78rem", fontWeight: 600 }}>
+                      {badge}
                     </Typography>
                   </Box>
                 ))}
@@ -142,42 +177,103 @@ export default function LandingHero() {
             </motion.div>
           </motion.div>
 
-          {/* ── Right column — image ── */}
+          {/* ── Right column — visual ── */}
           <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            initial={{ opacity: 0, x: 40, scale: 0.97 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
           >
-            <Box sx={{ position: "relative", display: "flex", justifyContent: "center" }}>
+            <Box
+              sx={{
+                position:        "relative",
+                display:         "flex",
+                justifyContent:  "center",
+                alignItems:      "center",
+              }}
+            >
               {/* Glow blob */}
               <Box
                 sx={{
-                  position: "absolute",
-                  inset: "-20%",
-                  background:
-                    "radial-gradient(ellipse, rgba(61,220,132,0.18), rgba(88,166,255,0.08), transparent 70%)",
-                  filter: "blur(40px)",
+                  position:      "absolute",
+                  inset:         "-10%",
+                  background:    "radial-gradient(ellipse, rgba(255,255,255,0.1), transparent 70%)",
+                  filter:        "blur(30px)",
                   pointerEvents: "none",
                 }}
               />
+
+              {/* Dashboard mockup placeholder */}
               <Box
-                component="img"
-                src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&q=80"
-                alt="Plan nutricional personalizado"
-                fetchPriority="high"
-                onError={(e) => { e.currentTarget.style.display = "none"; }}
                 sx={{
-                  width: "100%",
-                  maxWidth: 500,
-                  borderRadius: "24px",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
-                  objectFit: "cover",
-                  aspectRatio: "4/3",
-                  position: "relative",
-                  zIndex: 1,
+                  width:        "100%",
+                  maxWidth:     480,
+                  borderRadius: "20px",
+                  overflow:     "hidden",
+                  border:       "1px solid rgba(255,255,255,0.15)",
+                  boxShadow:    "0 32px 80px rgba(0,0,0,0.35)",
+                  bgcolor:      "rgba(255,255,255,0.06)",
+                  backdropFilter: "blur(10px)",
+                  position:     "relative",
+                  zIndex:       1,
+                  p:            3,
                 }}
-              />
+              >
+                {/* Mock header bar */}
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2.5 }}>
+                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)" }} />
+                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)" }} />
+                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)" }} />
+                  <Box sx={{ flex: 1, height: 8, borderRadius: 4, bgcolor: "rgba(255,255,255,0.1)", ml: 1 }} />
+                </Box>
+
+                {/* Mock KPI cards */}
+                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5, mb: 2 }}>
+                  {[
+                    { label: "Ausentismo",   value: "−38%", color: "#A5D6A7" },
+                    { label: "Productividad",value: "+24%",  color: "#81C784" },
+                    { label: "ROI",          value: "3.2×",  color: "#66BB6A" },
+                    { label: "NOM Cumpl.",   value: "100%",  color: "#A5D6A7" },
+                  ].map((kpi) => (
+                    <Box
+                      key={kpi.label}
+                      sx={{
+                        bgcolor:      "rgba(255,255,255,0.07)",
+                        borderRadius: "10px",
+                        p:            1.5,
+                        border:       "1px solid rgba(255,255,255,0.08)",
+                      }}
+                    >
+                      <Typography sx={{ color: kpi.color, fontWeight: 900, fontSize: "1.3rem", lineHeight: 1 }}>
+                        {kpi.value}
+                      </Typography>
+                      <Typography sx={{ color: "rgba(255,255,255,0.55)", fontSize: "0.68rem", mt: 0.4, fontWeight: 600 }}>
+                        {kpi.label}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+
+                {/* Mock chart bars */}
+                <Box sx={{ bgcolor: "rgba(255,255,255,0.05)", borderRadius: "10px", p: 2 }}>
+                  <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.65rem", mb: 1.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                    Impacto en salud corporativa
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1, height: 56 }}>
+                    {[40, 55, 48, 70, 62, 85, 78].map((h, i) => (
+                      <Box
+                        key={i}
+                        sx={{
+                          flex:         1,
+                          height:       `${h}%`,
+                          bgcolor:      i === 5 ? "#66BB6A" : "rgba(255,255,255,0.12)",
+                          borderRadius: "4px 4px 0 0",
+                          transition:   "height 0.3s ease",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </Box>
+              </Box>
             </Box>
           </motion.div>
         </Box>

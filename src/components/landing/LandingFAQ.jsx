@@ -1,34 +1,34 @@
+// src/components/landing/LandingFAQ.jsx — FAQs B2B
 import { useState } from "react";
 import { Box, Container, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import RemoveIcon from "@mui/icons-material/Remove";
+import { Plus, Minus } from "lucide-react";
 import { motion } from "framer-motion";
 import { C, fadeInUp, stagger } from "./landingTokens";
 
 const FAQS = [
   {
-    q: "¿Necesito saber de nutrición para usar NutriiApp?",
-    a: "No. Solo responde las preguntas del diagnóstico y nuestro equipo de nutriólogos junto con la IA hacen todo el trabajo por ti.",
+    q: "¿Cuánto cuesta NutriiApp para mi empresa?",
+    a: "$28,600 MXN al año para 20 colaboradores — eso es $1,430 MXN por persona al año. Somos 50% más baratos que el competidor corporativo más cercano y 65% más económicos que una consulta nutricional tradicional. El punto de equilibrio se alcanza en el mes 3.",
   },
   {
-    q: "¿Qué tan personalizado es el plan?",
-    a: "Totalmente. Cada plan es diseñado por nutriólogos certificados y personalizado por IA según tu peso, estatura, edad, objetivo, nivel de actividad, alergias, enfermedades y presupuesto quincenal.",
+    q: "¿Cómo se calcula el ROI y cuándo veo resultados?",
+    a: "El dashboard mide reducción de ausentismo, incremento de productividad y ahorro en servicios médicos. En promedio, nuestros clientes reportan ROI positivo desde el tercer mes. Con un margen bruto del 86.9% y una TIR del 54.6% a 5 años, la inversión en NutriiApp se justifica sola ante el CFO.",
   },
   {
-    q: "¿Cada cuánto se actualiza mi plan?",
-    a: "Cada 15 días. Completas un formulario de seguimiento y la IA, con supervisión de nuestros especialistas, genera un nuevo plan adaptado a tu progreso.",
+    q: "¿Qué es el NutriiPoint y cómo se instala?",
+    a: "NutriiPoint es nuestro dispositivo IoT propio que mide 16+ indicadores corporales por colaborador — composición corporal, biométricos y biomarcadores — en menos de 5 minutos. La instalación en tu empresa toma menos de 1 día y no requiere modificaciones de infraestructura.",
   },
   {
-    q: "¿Funciona si tengo restricciones alimenticias?",
-    a: "Sí. El diagnóstico incluye campos para alergias, intolerancias y condiciones médicas. Tu plan las respeta completamente.",
+    q: "¿Cómo cumple NutriiApp con NOM-030 y NOM-035?",
+    a: "NutriiApp tiene cumplimiento nativo con ambas normas. El dashboard genera automáticamente los reportes de diagnóstico y seguimiento requeridos por la NOM-030 (medidas preventivas) y NOM-035 (factores de riesgo psicosocial) con un solo clic. Tu equipo de RR.HH. no tiene que hacer trabajo extra.",
   },
   {
-    q: "¿Es gratis?",
-    a: "Hay un plan Freemium gratuito con funciones básicas. El plan Premium desbloquea seguimiento completo de progreso, lecciones nutricionales y planes ilimitados.",
+    q: "¿Cuánto tiempo tarda la implementación completa?",
+    a: "La instalación del NutriiPoint y la configuración del dashboard empresarial toman menos de una semana. Los primeros planes personalizados para colaboradores están disponibles en las primeras 48 horas tras la medición inicial.",
   },
   {
-    q: "¿Mis datos están seguros?",
-    a: "Toda tu información se almacena de forma segura y nunca se comparte con terceros. Tu privacidad es nuestra prioridad.",
+    q: "¿Cómo se protege la información médica de mis colaboradores?",
+    a: "Los datos biométricos se almacenan con cifrado de extremo a extremo y nunca se comparten con terceros. Cumplimos con la Ley Federal de Protección de Datos Personales (LFPDPPP) y los datos sensibles están segregados por nivel de acceso según el rol (colaborador, RR.HH., administrador).",
   },
 ];
 
@@ -38,17 +38,34 @@ export default function LandingFAQ() {
   return (
     <Box id="faq" sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 12 } }}>
       <Container maxWidth="md">
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+
+        <Box sx={{ textAlign: "center", mb: { xs: 6, md: 8 } }}>
           <Typography
-            variant="h2"
+            component="p"
             sx={{
-              color: C.textPrimary,
-              fontFamily: "Plus Jakarta Sans, sans-serif",
-              fontWeight: 900,
-              fontSize: { xs: "2rem", md: "2.8rem" },
+              color:         C.primary,
+              fontWeight:    700,
+              fontSize:      "0.78rem",
+              textTransform: "uppercase",
+              letterSpacing: "0.1em",
+              mb:            1.5,
             }}
           >
             Preguntas frecuentes
+          </Typography>
+          <Typography
+            component="h2"
+            sx={{
+              color:      C.textPrimary,
+              fontFamily: "Plus Jakarta Sans, sans-serif",
+              fontWeight: 900,
+              fontSize:   { xs: "1.9rem", md: "2.6rem" },
+              lineHeight: 1.2,
+            }}
+          >
+            Todo lo que necesitas saber
+            <br />
+            antes de agendar tu demo
           </Typography>
         </Box>
 
@@ -67,27 +84,35 @@ export default function LandingFAQ() {
                   disableGutters
                   elevation={0}
                   sx={{
-                    bgcolor: C.bgCard,
-                    border: `1px solid ${expanded === i ? "rgba(61,220,132,0.35)" : C.border}`,
-                    borderRadius: "12px !important",
+                    bgcolor:     C.bgCard,
+                    border:      `1px solid ${expanded === i ? C.accent : C.border}`,
+                    borderRadius:"12px !important",
+                    boxShadow:   expanded === i ? C.shadow : "none",
                     "&::before": { display: "none" },
-                    transition: "border-color 0.2s",
+                    transition:  "border-color 0.2s, box-shadow 0.2s",
                   }}
                 >
                   <AccordionSummary
                     expandIcon={
                       expanded === i
-                        ? <RemoveIcon sx={{ color: C.green, fontSize: "1.1rem" }} />
-                        : <AddIcon    sx={{ color: C.green, fontSize: "1.1rem" }} />
+                        ? <Minus size={16} color={C.primary} />
+                        : <Plus  size={16} color={C.textMuted} />
                     }
-                    sx={{ px: 3, py: 1 }}
+                    sx={{ px: 3, py: 1.25 }}
                   >
-                    <Typography sx={{ color: C.textPrimary, fontWeight: 600, fontSize: "0.95rem" }}>
+                    <Typography
+                      sx={{
+                        color:      expanded === i ? C.primary : C.textPrimary,
+                        fontWeight: 700,
+                        fontSize:   "0.95rem",
+                        transition: "color 0.2s",
+                      }}
+                    >
                       {faq.q}
                     </Typography>
                   </AccordionSummary>
-                  <AccordionDetails sx={{ px: 3, pb: 3 }}>
-                    <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.75 }}>
+                  <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+                    <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.78 }}>
                       {faq.a}
                     </Typography>
                   </AccordionDetails>
