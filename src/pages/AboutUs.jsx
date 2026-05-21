@@ -240,42 +240,45 @@ export default function AboutUs() {
 
           {/* Foto grupal */}
           {fotoEquipo && (
-            <Box
-              sx={{
-                mb:           { xs: 5, md: 6 },
-                borderRadius: "20px",
-                overflow:     "hidden",
-                border:       `1px solid ${C.border}`,
-                boxShadow:    C.shadowMd,
-                cursor:       "pointer",
-                position:     "relative",
-                "&:hover .foto-overlay": { opacity: 1 },
-                "&:hover img":           { transform: "scale(1.02)" },
-              }}
-              onClick={() => window.open(fotoEquipo, "_blank")}
-            >
+            <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 4, md: 5 } }}>
               <Box
-                component="img"
-                src={fotoEquipo}
-                alt="El equipo NutriiApp"
-                sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.4s ease" }}
-              />
-              <Box
-                className="foto-overlay"
                 sx={{
-                  position:       "absolute",
-                  inset:          0,
-                  bgcolor:        "rgba(0,0,0,0.35)",
-                  opacity:        0,
-                  transition:     "opacity 0.25s ease",
-                  display:        "flex",
-                  alignItems:     "center",
-                  justifyContent: "center",
+                  maxWidth:     360,
+                  width:        "100%",
+                  borderRadius: "16px",
+                  overflow:     "hidden",
+                  border:       `1px solid ${C.border}`,
+                  boxShadow:    C.shadow,
+                  cursor:       "pointer",
+                  position:     "relative",
+                  "&:hover .foto-overlay": { opacity: 1 },
+                  "&:hover img":           { transform: "scale(1.03)" },
                 }}
+                onClick={() => window.open(fotoEquipo, "_blank")}
               >
-                <Typography sx={{ color: "#fff", fontSize: "0.85rem", fontWeight: 700 }}>
-                  Ver foto completa
-                </Typography>
+                <Box
+                  component="img"
+                  src={fotoEquipo}
+                  alt="El equipo NutriiApp"
+                  sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.4s ease" }}
+                />
+                <Box
+                  className="foto-overlay"
+                  sx={{
+                    position:       "absolute",
+                    inset:          0,
+                    bgcolor:        "rgba(0,0,0,0.35)",
+                    opacity:        0,
+                    transition:     "opacity 0.25s ease",
+                    display:        "flex",
+                    alignItems:     "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Typography sx={{ color: "#fff", fontSize: "0.82rem", fontWeight: 700 }}>
+                    Ver foto completa
+                  </Typography>
+                </Box>
               </Box>
             </Box>
           )}
