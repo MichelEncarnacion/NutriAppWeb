@@ -1,6 +1,6 @@
 // src/components/landing/LandingHero.jsx
 import { useNavigate } from "react-router-dom";
-import { Box, Container, Typography, Button, Chip } from "@mui/material";
+import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { ArrowRight, PlayCircle, ShieldCheck } from "lucide-react";
 import { C, fadeInUp, stagger } from "./landingTokens";
@@ -9,6 +9,18 @@ const TRUST_BADGES = [
   "NOM-030 / NOM-035",
   "IoT propio · NutriiPoint",
   "IA clínica certificada",
+];
+
+const EMPLOYEES = [
+  { name: "Ana García",    dept: "Finanzas",    score: 87, trend: "+12 pts" },
+  { name: "Carlos Méndez", dept: "Operaciones", score: 74, trend: "+8 pts"  },
+  { name: "Laura Torres",  dept: "Ventas",      score: 91, trend: "+19 pts" },
+];
+
+const KPIS = [
+  { label: "Ausentismo",    value: "−38%", sub: "vs. año ant.", color: "#A5D6A7" },
+  { label: "Productividad", value: "+24%", sub: "índice gral.", color: "#81C784" },
+  { label: "ROI acum.",     value: "3.2×", sub: "mes 7",       color: "#66BB6A" },
 ];
 
 export default function LandingHero() {
@@ -27,7 +39,6 @@ export default function LandingHero() {
         overflow:    "hidden",
       }}
     >
-      {/* Subtle overlay pattern */}
       <Box
         sx={{
           position:      "absolute",
@@ -42,43 +53,25 @@ export default function LandingHero() {
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         <Box
           sx={{
-            display:               "grid",
-            gridTemplateColumns:   { xs: "1fr", lg: "1.1fr 0.9fr" },
-            gap:                   { xs: 6, lg: 8 },
-            alignItems:            "center",
+            display:             "grid",
+            gridTemplateColumns: { xs: "1fr", lg: "1.1fr 0.9fr" },
+            gap:                 { xs: 6, lg: 8 },
+            alignItems:          "center",
           }}
         >
-          {/* ── Left column ── */}
+          {/* Left column */}
           <motion.div variants={stagger} initial="hidden" animate="visible">
-
-            <motion.div variants={fadeInUp}>
-              <Chip
-                label="Salud preventiva corporativa · México"
-                sx={{
-                  bgcolor:     "rgba(255,255,255,0.12)",
-                  color:       "rgba(255,255,255,0.9)",
-                  border:      "1px solid rgba(255,255,255,0.2)",
-                  fontWeight:  700,
-                  fontSize:    "0.72rem",
-                  mb:          3,
-                  borderRadius:"20px",
-                  height:      "auto",
-                  letterSpacing: "0.04em",
-                  "& .MuiChip-label": { py: 0.6, px: 1.5 },
-                }}
-              />
-            </motion.div>
 
             <motion.div variants={fadeInUp}>
               <Typography
                 component="h1"
                 sx={{
-                  color:      C.white,
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontWeight: 900,
-                  fontSize:   { xs: "2.3rem", md: "3rem", lg: "3.4rem" },
-                  lineHeight: 1.12,
-                  mb:         3,
+                  color:         C.white,
+                  fontFamily:    "Plus Jakarta Sans, sans-serif",
+                  fontWeight:    900,
+                  fontSize:      { xs: "2.3rem", md: "3rem", lg: "3.4rem" },
+                  lineHeight:    1.12,
+                  mb:            3,
                   letterSpacing: "-0.01em",
                 }}
               >
@@ -86,10 +79,10 @@ export default function LandingHero() {
                 <Box
                   component="span"
                   sx={{
-                    color:              "transparent",
-                    backgroundImage:    "linear-gradient(90deg, #A5D6A7, #E8F5E9)",
+                    color:                "transparent",
+                    backgroundImage:      "linear-gradient(90deg, #A5D6A7, #E8F5E9)",
                     WebkitBackgroundClip: "text",
-                    backgroundClip:     "text",
+                    backgroundClip:      "text",
                   }}
                 >
                   Tu empresa más productiva.
@@ -100,16 +93,16 @@ export default function LandingHero() {
             <motion.div variants={fadeInUp}>
               <Typography
                 sx={{
-                  color:     "rgba(255,255,255,0.82)",
-                  fontSize:  { xs: "1rem", md: "1.1rem" },
+                  color:      "rgba(255,255,255,0.82)",
+                  fontSize:   { xs: "1rem", md: "1.1rem" },
                   lineHeight: 1.78,
-                  mb:        4,
-                  maxWidth:  500,
+                  mb:         4,
+                  maxWidth:   500,
                 }}
               >
-                NutriiApp combina IoT, IA clínica y un dashboard de ROI para transformar
-                el bienestar corporativo en resultados medibles. Planes nutricionales
-                personalizados por colaborador, desde $28,600 MXN/año para 20 personas.
+                Medimos a cada colaborador con nuestro propio hardware, generamos un plan
+                nutricional con IA y entregamos a RR.HH. un dashboard con KPIs de
+                productividad y retorno de inversión reales.
               </Typography>
             </motion.div>
 
@@ -142,7 +135,6 @@ export default function LandingHero() {
                   size="large"
                   startIcon={<PlayCircle size={18} />}
                   sx={{
-                    borderColor:   "rgba(255,255,255,0.45)",
                     color:         C.white,
                     border:        "1.5px solid rgba(255,255,255,0.4)",
                     textTransform: "none",
@@ -177,21 +169,13 @@ export default function LandingHero() {
             </motion.div>
           </motion.div>
 
-          {/* ── Right column — visual ── */}
+          {/* Right column — dashboard preview */}
           <motion.div
             initial={{ opacity: 0, x: 40, scale: 0.97 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
           >
-            <Box
-              sx={{
-                position:        "relative",
-                display:         "flex",
-                justifyContent:  "center",
-                alignItems:      "center",
-              }}
-            >
-              {/* Glow blob */}
+            <Box sx={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }}>
               <Box
                 sx={{
                   position:      "absolute",
@@ -202,74 +186,118 @@ export default function LandingHero() {
                 }}
               />
 
-              {/* Dashboard mockup placeholder */}
               <Box
                 sx={{
-                  width:        "100%",
-                  maxWidth:     480,
-                  borderRadius: "20px",
-                  overflow:     "hidden",
-                  border:       "1px solid rgba(255,255,255,0.15)",
-                  boxShadow:    "0 32px 80px rgba(0,0,0,0.35)",
-                  bgcolor:      "rgba(255,255,255,0.06)",
+                  width:          "100%",
+                  maxWidth:       460,
+                  borderRadius:   "20px",
+                  overflow:       "hidden",
+                  border:         "1px solid rgba(255,255,255,0.15)",
+                  boxShadow:      "0 32px 80px rgba(0,0,0,0.35)",
+                  bgcolor:        "rgba(255,255,255,0.06)",
                   backdropFilter: "blur(10px)",
-                  position:     "relative",
-                  zIndex:       1,
-                  p:            3,
+                  position:       "relative",
+                  zIndex:         1,
                 }}
               >
-                {/* Mock header bar */}
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 2.5 }}>
-                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)" }} />
-                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)" }} />
-                  <Box sx={{ width: 10, height: 10, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.2)" }} />
-                  <Box sx={{ flex: 1, height: 8, borderRadius: 4, bgcolor: "rgba(255,255,255,0.1)", ml: 1 }} />
-                </Box>
-
-                {/* Mock KPI cards */}
-                <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.5, mb: 2 }}>
-                  {[
-                    { label: "Ausentismo",   value: "−38%", color: "#A5D6A7" },
-                    { label: "Productividad",value: "+24%",  color: "#81C784" },
-                    { label: "ROI",          value: "3.2×",  color: "#66BB6A" },
-                    { label: "NOM Cumpl.",   value: "100%",  color: "#A5D6A7" },
-                  ].map((kpi) => (
-                    <Box
-                      key={kpi.label}
-                      sx={{
-                        bgcolor:      "rgba(255,255,255,0.07)",
-                        borderRadius: "10px",
-                        p:            1.5,
-                        border:       "1px solid rgba(255,255,255,0.08)",
-                      }}
-                    >
-                      <Typography sx={{ color: kpi.color, fontWeight: 900, fontSize: "1.3rem", lineHeight: 1 }}>
-                        {kpi.value}
-                      </Typography>
-                      <Typography sx={{ color: "rgba(255,255,255,0.55)", fontSize: "0.68rem", mt: 0.4, fontWeight: 600 }}>
-                        {kpi.label}
-                      </Typography>
-                    </Box>
-                  ))}
-                </Box>
-
-                {/* Mock chart bars */}
-                <Box sx={{ bgcolor: "rgba(255,255,255,0.05)", borderRadius: "10px", p: 2 }}>
-                  <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.65rem", mb: 1.5, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                    Impacto en salud corporativa
+                {/* App bar */}
+                <Box
+                  sx={{
+                    bgcolor:      "rgba(255,255,255,0.08)",
+                    px:           2.5,
+                    py:           1.5,
+                    display:      "flex",
+                    alignItems:   "center",
+                    justifyContent: "space-between",
+                    borderBottom: "1px solid rgba(255,255,255,0.1)",
+                  }}
+                >
+                  <Typography sx={{ color: "rgba(255,255,255,0.9)", fontSize: "0.78rem", fontWeight: 700 }}>
+                    NutriiApp · Dashboard RR.HH.
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "flex-end", gap: 1, height: 56 }}>
-                    {[40, 55, 48, 70, 62, 85, 78].map((h, i) => (
+                  <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.68rem" }}>
+                    Mayo 2026
+                  </Typography>
+                </Box>
+
+                <Box sx={{ p: 2.5 }}>
+                  {/* KPI row */}
+                  <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 1.25, mb: 2 }}>
+                    {KPIS.map((kpi) => (
                       <Box
-                        key={i}
+                        key={kpi.label}
                         sx={{
-                          flex:         1,
-                          height:       `${h}%`,
-                          bgcolor:      i === 5 ? "#66BB6A" : "rgba(255,255,255,0.12)",
-                          borderRadius: "4px 4px 0 0",
-                          transition:   "height 0.3s ease",
+                          bgcolor:      "rgba(255,255,255,0.07)",
+                          borderRadius: "10px",
+                          p:            1.25,
+                          border:       "1px solid rgba(255,255,255,0.08)",
                         }}
-                      />
+                      >
+                        <Typography sx={{ color: kpi.color, fontWeight: 900, fontSize: "1.15rem", lineHeight: 1 }}>
+                          {kpi.value}
+                        </Typography>
+                        <Typography sx={{ color: "rgba(255,255,255,0.55)", fontSize: "0.6rem", mt: 0.4, fontWeight: 600 }}>
+                          {kpi.label}
+                        </Typography>
+                        <Typography sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.56rem", mt: 0.2 }}>
+                          {kpi.sub}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+
+                  {/* Employee list */}
+                  <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.62rem", fontWeight: 600, mb: 1 }}>
+                    Colaboradores · plan activo
+                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                    {EMPLOYEES.map((emp) => (
+                      <Box
+                        key={emp.name}
+                        sx={{
+                          display:      "flex",
+                          alignItems:   "center",
+                          gap:          1.5,
+                          bgcolor:      "rgba(255,255,255,0.05)",
+                          borderRadius: "8px",
+                          px:           1.5,
+                          py:           0.85,
+                          border:       "1px solid rgba(255,255,255,0.06)",
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            width:          28,
+                            height:         28,
+                            borderRadius:   "50%",
+                            bgcolor:        "rgba(165,214,167,0.25)",
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                            flexShrink:     0,
+                          }}
+                        >
+                          <Typography sx={{ color: "#A5D6A7", fontSize: "0.6rem", fontWeight: 800 }}>
+                            {emp.name.split(" ").map(w => w[0]).join("")}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ flex: 1, minWidth: 0 }}>
+                          <Typography sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.7rem", fontWeight: 700, lineHeight: 1.2 }}>
+                            {emp.name}
+                          </Typography>
+                          <Typography sx={{ color: "rgba(255,255,255,0.38)", fontSize: "0.58rem" }}>
+                            {emp.dept}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ textAlign: "right", flexShrink: 0 }}>
+                          <Typography sx={{ color: "#81C784", fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>
+                            {emp.score}
+                          </Typography>
+                          <Typography sx={{ color: "rgba(129,199,132,0.6)", fontSize: "0.56rem" }}>
+                            {emp.trend}
+                          </Typography>
+                        </Box>
+                      </Box>
                     ))}
                   </Box>
                 </Box>

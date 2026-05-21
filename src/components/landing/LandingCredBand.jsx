@@ -44,7 +44,7 @@ export default function LandingCredBand() {
                 en tus resultados.
               </Typography>
               <Typography sx={{ color: C.textMuted, fontSize: "0.95rem", mt: 2, lineHeight: 1.7 }}>
-                Y los números lo confirman.
+                Tres realidades que toda empresa mexicana enfrenta, pero pocas miden.
               </Typography>
             </motion.div>
 
