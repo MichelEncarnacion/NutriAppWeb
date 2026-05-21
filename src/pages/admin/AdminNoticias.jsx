@@ -21,6 +21,7 @@ const FORM_EMPTY = {
   imagen_url:    "",
   contenido:     "",
   autor:         "",
+  fuente_url:    "",
   publicado:     false,
   orden:         0,
 };
@@ -70,6 +71,7 @@ export default function AdminNoticias() {
       imagen_url:    n.imagen_url ?? "",
       contenido:     n.contenido ?? "",
       autor:         n.autor ?? "",
+      fuente_url:    n.fuente_url ?? "",
       publicado:     n.publicado,
       orden:         n.orden,
     });
@@ -97,6 +99,7 @@ export default function AdminNoticias() {
       imagen_url:    formData.imagen_url || null,
       contenido:     formData.contenido.trim() || null,
       autor:         formData.autor.trim() || null,
+      fuente_url:    formData.fuente_url.trim() || null,
       publicado:     formData.publicado,
       orden:         Number(formData.orden) || 0,
     };
@@ -365,16 +368,27 @@ export default function AdminNoticias() {
                   />
                 </FormField>
 
-                {/* Autor */}
-                <FormField label="Autor (opcional)">
-                  <input
-                    type="text"
-                    value={formData.autor}
-                    onChange={set("autor")}
-                    placeholder="Ej. NutriiApp Editorial"
-                    className={INPUT_CLS}
-                  />
-                </FormField>
+                {/* Autor + URL fuente */}
+                <div className="grid grid-cols-2 gap-3">
+                  <FormField label="Autor (opcional)">
+                    <input
+                      type="text"
+                      value={formData.autor}
+                      onChange={set("autor")}
+                      placeholder="Ej. NutriiApp Editorial"
+                      className={INPUT_CLS}
+                    />
+                  </FormField>
+                  <FormField label='URL "Leer más" (opcional)'>
+                    <input
+                      type="url"
+                      value={formData.fuente_url}
+                      onChange={set("fuente_url")}
+                      placeholder="https://..."
+                      className={INPUT_CLS}
+                    />
+                  </FormField>
+                </div>
 
                 {/* Orden + Publicado */}
                 <div className="grid grid-cols-2 gap-3 items-end">
