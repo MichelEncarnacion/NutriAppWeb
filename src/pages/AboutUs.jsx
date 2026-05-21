@@ -47,7 +47,7 @@ export default function AboutUs() {
   useEffect(() => {
     supabase
       .from("noticias")
-      .select("id, titulo, extracto, categoria, fecha_display, imagen_url, autor")
+      .select("id, titulo, extracto, categoria, fecha_display, imagen_url, autor, fuente_url")
       .eq("publicado", true)
       .order("orden", { ascending: true })
       .limit(6)
@@ -415,21 +415,27 @@ export default function AboutUs() {
                               {article.autor}
                             </Typography>
                           )}
-                          <Box
-                            sx={{
-                              display:    "flex",
-                              alignItems: "center",
-                              gap:        0.5,
-                              color:      C.primary,
-                              fontSize:   "0.83rem",
-                              fontWeight: 700,
-                              cursor:     "pointer",
-                              ml:         "auto",
-                              "&:hover":  { opacity: 0.75 },
-                            }}
-                          >
-                            Leer más <ArrowRight size={14} />
-                          </Box>
+                          {article.fuente_url && (
+                            <Box
+                              component="a"
+                              href={article.fuente_url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              sx={{
+                                display:        "flex",
+                                alignItems:     "center",
+                                gap:            0.5,
+                                color:          C.primary,
+                                fontSize:       "0.83rem",
+                                fontWeight:     700,
+                                ml:             "auto",
+                                textDecoration: "none",
+                                "&:hover":      { opacity: 0.75 },
+                              }}
+                            >
+                              Leer más <ArrowRight size={14} />
+                            </Box>
+                          )}
                         </Box>
                       </Box>
                     </Box>
