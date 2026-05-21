@@ -1,10 +1,9 @@
 // src/pages/AboutUs.jsx
 import { useState, useEffect } from "react";
-import { Box, Container, Typography, Skeleton } from "@mui/material";
+import { Box, Container, Typography, Skeleton, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { Award, Leaf, ArrowRight, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@mui/material";
 import LandingNavbar from "../components/landing/LandingNavbar";
 import LandingFooter from "../components/landing/LandingFooter";
 import { C, fadeInUp, stagger } from "../components/landing/landingTokens";
@@ -16,14 +15,20 @@ const CATEGORY_COLORS = {
   "Salud Corporativa": { bg: "#E3F2FD", color: "#1565C0" },
 };
 
+const COMPANY_STATS = [
+  { value: "2024",  label: "Año de fundación",      sub: "Puebla, México"       },
+  { value: "1°",    label: "Lugar COPARMEX Start Up", sub: "edición 2026"        },
+  { value: "16+",   label: "Indicadores biométricos", sub: "por NutriiPoint"     },
+];
+
 export default function AboutUs() {
   const navigate = useNavigate();
-  const [news,          setNews]          = useState([]);
-  const [awards,        setAwards]        = useState([]);
-  const [founders,      setFounders]      = useState([]);
-  const [fotoEquipo,    setFotoEquipo]    = useState(null);
-  const [loadingNews,   setLoadingNews]   = useState(true);
-  const [loadingAwards, setLoadingAwards] = useState(true);
+  const [news,            setNews]            = useState([]);
+  const [awards,          setAwards]          = useState([]);
+  const [founders,        setFounders]        = useState([]);
+  const [fotoEquipo,      setFotoEquipo]      = useState(null);
+  const [loadingNews,     setLoadingNews]     = useState(true);
+  const [loadingAwards,   setLoadingAwards]   = useState(true);
   const [loadingFounders, setLoadingFounders] = useState(true);
 
   useEffect(() => {
@@ -70,7 +75,14 @@ export default function AboutUs() {
           overflow:   "hidden",
         }}
       >
-        <Box sx={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06), transparent 50%)", pointerEvents: "none" }} />
+        <Box
+          sx={{
+            position:        "absolute",
+            inset:           0,
+            backgroundImage: "radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06), transparent 50%)",
+            pointerEvents:   "none",
+          }}
+        />
         <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
             <Typography
@@ -98,20 +110,22 @@ export default function AboutUs() {
               </Box>
               {" "}de cada empresa mexicana.
             </Typography>
+
             <Typography
               sx={{
                 color:      "rgba(255,255,255,0.78)",
                 fontSize:   { xs: "1rem", md: "1.1rem" },
                 lineHeight: 1.75,
-                maxWidth:   520,
+                maxWidth:   540,
                 mx:         "auto",
                 mb:         4,
               }}
             >
-              Devolviendo a cada colaborador el bienestar que merece y que su organización necesita.
+              Somos un equipo de Puebla, México. Construimos hardware propio,
+              inteligencia artificial clínica y un dashboard de ROI para que
+              cualquier empresa mida y mejore la salud de sus colaboradores desde el día uno.
             </Typography>
 
-            {/* Credibility badges */}
             <Box sx={{ display: "flex", gap: 1.5, justifyContent: "center", flexWrap: "wrap" }}>
               {[
                 "1er lugar COPARMEX Start Up 2026",
@@ -138,8 +152,103 @@ export default function AboutUs() {
         </Container>
       </Box>
 
-      {/* ── Misión + Visión (lado a lado) ── */}
-      <Box sx={{ bgcolor: C.bgMain, py: { xs: 7, md: 10 }, borderTop: `1px solid ${C.border}` }}>
+      {/* ── Nuestra historia ── */}
+      <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
+        <Container maxWidth="lg">
+          <Box
+            sx={{
+              display:             "grid",
+              gridTemplateColumns: { xs: "1fr", md: "6fr 5fr" },
+              gap:                 { xs: 6, md: 10 },
+              alignItems:          "center",
+            }}
+          >
+            {/* Texto narrativo */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5 }}
+            >
+              <Typography
+                component="h2"
+                sx={{
+                  color:      C.textPrimary,
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontWeight: 900,
+                  fontSize:   { xs: "1.8rem", md: "2.2rem" },
+                  lineHeight: 1.2,
+                  mb:         3,
+                }}
+              >
+                Empezamos con una pregunta incómoda
+              </Typography>
+              <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.85, mb: 2.5 }}>
+                ¿Por qué las empresas invierten en capacitaciones, herramientas y tecnología,
+                pero casi nadie mide la salud de sus colaboradores con datos reales?
+              </Typography>
+              <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.85, mb: 2.5 }}>
+                Vimos que las opciones existentes eran caras, genéricas o simplemente inútiles
+                para el tomador de decisiones. Así nació NutriiApp: con un dispositivo IoT propio
+                para medir lo que otros solo estiman, un modelo de IA que genera planes de nutrición
+                realmente personalizados, y un dashboard que traduce todo eso en ROI.
+              </Typography>
+              <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.85 }}>
+                En 2026, COPARMEX eligió a NutriiApp como el Start Up número uno de México en
+                nuestra categoría. Seguimos construyendo desde Puebla.
+              </Typography>
+            </motion.div>
+
+            {/* Stats verticales */}
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.2 }}
+            >
+              <Box sx={{ display: "flex", flexDirection: "column" }}>
+                {COMPANY_STATS.map((s, i) => (
+                  <motion.div key={s.value} variants={fadeInUp}>
+                    <Box
+                      sx={{
+                        py:          { xs: 3, md: 3.5 },
+                        borderTop:   i > 0 ? `1px solid ${C.border}` : "none",
+                        display:     "flex",
+                        alignItems:  "baseline",
+                        gap:         2,
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          color:      C.primary,
+                          fontFamily: "Plus Jakarta Sans, sans-serif",
+                          fontWeight: 900,
+                          fontSize:   { xs: "2.8rem", md: "3.2rem" },
+                          lineHeight: 1,
+                          minWidth:   80,
+                        }}
+                      >
+                        {s.value}
+                      </Typography>
+                      <Box>
+                        <Typography sx={{ color: C.textPrimary, fontWeight: 700, fontSize: "0.95rem", lineHeight: 1.3 }}>
+                          {s.label}
+                        </Typography>
+                        <Typography sx={{ color: C.textLight, fontSize: "0.8rem", mt: 0.3 }}>
+                          {s.sub}
+                        </Typography>
+                      </Box>
+                    </Box>
+                  </motion.div>
+                ))}
+              </Box>
+            </motion.div>
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ── Misión + Visión ── */}
+      <Box sx={{ bgcolor: C.bgAlt, py: { xs: 7, md: 10 }, borderTop: `1px solid ${C.border}` }}>
         <Container maxWidth="md">
           <motion.div
             variants={stagger}
@@ -147,11 +256,24 @@ export default function AboutUs() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
+            <motion.div variants={fadeInUp}>
+              <Typography
+                sx={{
+                  color:      C.textMuted,
+                  fontSize:   "1rem",
+                  lineHeight: 1.7,
+                  mb:         { xs: 4, md: 5 },
+                  maxWidth:   560,
+                }}
+              >
+                Lo que nos mueve como empresa, en dos frases.
+              </Typography>
+            </motion.div>
+
             <Box
               sx={{
                 display:             "grid",
                 gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-                gap:                 { xs: 0, md: 0 },
                 border:              `1px solid ${C.border}`,
                 borderRadius:        "20px",
                 overflow:            "hidden",
@@ -207,15 +329,18 @@ export default function AboutUs() {
         </Container>
       </Box>
 
-      {/* ── Quiénes somos ── */}
-      <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
+      {/* ── El equipo ── */}
+      <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: { xs: 5, md: 6 } }}>
+          <Box sx={{ mb: { xs: 5, md: 6 } }}>
             <Typography
               component="h2"
-              sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2 }}
+              sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2, mb: 1 }}
             >
               El equipo detrás de NutriiApp
+            </Typography>
+            <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.7 }}>
+              Un equipo multidisciplinario de Puebla, México.
             </Typography>
           </Box>
 
@@ -224,14 +349,14 @@ export default function AboutUs() {
             <Box sx={{ display: "flex", justifyContent: "center", mb: { xs: 4, md: 5 } }}>
               <Box
                 sx={{
-                  maxWidth:     360,
-                  width:        "100%",
+                  maxWidth:  360,
+                  width:     "100%",
                   borderRadius: "16px",
-                  overflow:     "hidden",
-                  border:       `1px solid ${C.border}`,
-                  boxShadow:    C.shadow,
-                  cursor:       "pointer",
-                  position:     "relative",
+                  overflow:  "hidden",
+                  border:    `1px solid ${C.border}`,
+                  boxShadow: C.shadow,
+                  cursor:    "pointer",
+                  position:  "relative",
                   "&:hover .foto-overlay": { opacity: 1 },
                   "&:hover img":           { transform: "scale(1.03)" },
                 }}
@@ -356,7 +481,7 @@ export default function AboutUs() {
                       <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "0.95rem", lineHeight: 1.3, mb: 0.5 }}>
                         {f.nombre}
                       </Typography>
-                      <Typography sx={{ color: C.primary, fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", mb: f.descripcion ? 1.25 : 0 }}>
+                      <Typography sx={{ color: C.primary, fontSize: "0.8rem", fontWeight: 600, mb: f.descripcion ? 1.25 : 0 }}>
                         {f.rol}
                       </Typography>
                       {f.descripcion && (
@@ -374,7 +499,7 @@ export default function AboutUs() {
       </Box>
 
       {/* ── Noticias ── */}
-      <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 11 } }}>
+      <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
         <Container maxWidth="lg">
           <Box sx={{ mb: { xs: 6, md: 7 } }}>
             <Typography
@@ -389,7 +514,7 @@ export default function AboutUs() {
           </Box>
 
           {loadingNews ? (
-            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 3 }}>
+            <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" }, gap: 3 }}>
               {[1, 2, 3].map((i) => (
                 <Box key={i} sx={{ bgcolor: C.bgCard, borderRadius: "16px", border: `1px solid ${C.border}`, overflow: "hidden" }}>
                   <Skeleton variant="rectangular" height={200} />
@@ -403,7 +528,7 @@ export default function AboutUs() {
               ))}
             </Box>
           ) : news.length === 0 ? (
-            <Box sx={{ textAlign: "center", py: 6 }}>
+            <Box sx={{ py: 6 }}>
               <Typography sx={{ color: C.textLight, fontSize: "0.95rem" }}>
                 Próximamente publicaremos noticias y recursos.
               </Typography>
@@ -414,115 +539,116 @@ export default function AboutUs() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, amount: 0.1 }}
-              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}
             >
-              {news.map((article, idx) => {
-                const cat = CATEGORY_COLORS[article.categoria] || { bg: "#F3F4F6", color: C.textMuted };
-                return (
-                  <motion.div key={article.id ?? idx} variants={fadeInUp}>
-                    <Box
-                      sx={{
-                        bgcolor:       C.bgCard,
-                        borderRadius:  "16px",
-                        border:        `1px solid ${C.border}`,
-                        overflow:      "hidden",
-                        boxShadow:     C.shadow,
-                        height:        "100%",
-                        display:       "flex",
-                        flexDirection: "column",
-                        transition:    "border-color 0.2s, box-shadow 0.2s",
-                        "&:hover":     { borderColor: C.accent, boxShadow: C.shadowMd },
-                      }}
-                    >
-                      {article.imagen_url ? (
-                        <Box
-                          component="img"
-                          src={article.imagen_url}
-                          alt={article.titulo}
-                          loading="lazy"
-                          onClick={() => window.open(article.imagen_url, "_blank")}
-                          onError={(e) => { e.currentTarget.style.display = "none"; }}
-                          sx={{ width: "100%", height: 200, objectFit: "cover", display: "block", cursor: "pointer" }}
-                        />
-                      ) : (
-                        <Box
-                          sx={{
-                            height:         200,
-                            background:     `linear-gradient(135deg, ${cat.bg} 0%, #F0FFF4 100%)`,
-                            display:        "flex",
-                            alignItems:     "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          <Box sx={{ width: 48, height: 48, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <Leaf size={22} color={cat.color} />
-                          </Box>
-                        </Box>
-                      )}
-
-                      <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                          <Box sx={{ px: 1.25, py: 0.35, borderRadius: "6px", bgcolor: cat.bg }}>
-                            <Typography sx={{ color: cat.color, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                              {article.categoria}
-                            </Typography>
-                          </Box>
-                          <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
-                            {article.fecha_display}
-                          </Typography>
-                        </Box>
-
-                        <Typography
-                          sx={{
-                            color:      C.textPrimary,
-                            fontFamily: "Plus Jakarta Sans, sans-serif",
-                            fontWeight: 800,
-                            fontSize:   "0.95rem",
-                            lineHeight: 1.45,
-                            mb:         1.25,
-                            flex:       1,
-                          }}
-                        >
-                          {article.titulo}
-                        </Typography>
-
-                        <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7, mb: 2 }}>
-                          {article.extracto}
-                        </Typography>
-
-                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                          {article.autor && (
-                            <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
-                              {article.autor}
-                            </Typography>
-                          )}
-                          {article.fuente_url && (
-                            <Box
-                              component="a"
-                              href={article.fuente_url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              sx={{
-                                display:        "flex",
-                                alignItems:     "center",
-                                gap:            0.5,
-                                color:          C.primary,
-                                fontSize:       "0.83rem",
-                                fontWeight:     700,
-                                ml:             "auto",
-                                textDecoration: "none",
-                                "&:hover":      { opacity: 0.75 },
-                              }}
-                            >
-                              Leer más <ArrowRight size={14} />
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" }, gap: 3 }}>
+                {news.map((article, idx) => {
+                  const cat = CATEGORY_COLORS[article.categoria] || { bg: "#F3F4F6", color: C.textMuted };
+                  return (
+                    <motion.div key={article.id ?? idx} variants={fadeInUp}>
+                      <Box
+                        sx={{
+                          bgcolor:       C.bgCard,
+                          borderRadius:  "16px",
+                          border:        `1px solid ${C.border}`,
+                          overflow:      "hidden",
+                          boxShadow:     C.shadow,
+                          height:        "100%",
+                          display:       "flex",
+                          flexDirection: "column",
+                          transition:    "border-color 0.2s, box-shadow 0.2s",
+                          "&:hover":     { borderColor: C.accent, boxShadow: C.shadowMd },
+                        }}
+                      >
+                        {article.imagen_url ? (
+                          <Box
+                            component="img"
+                            src={article.imagen_url}
+                            alt={article.titulo}
+                            loading="lazy"
+                            onClick={() => window.open(article.imagen_url, "_blank")}
+                            onError={(e) => { e.currentTarget.style.display = "none"; }}
+                            sx={{ width: "100%", height: 200, objectFit: "cover", display: "block", cursor: "pointer" }}
+                          />
+                        ) : (
+                          <Box
+                            sx={{
+                              height:         200,
+                              background:     `linear-gradient(135deg, ${cat.bg} 0%, #F0FFF4 100%)`,
+                              display:        "flex",
+                              alignItems:     "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <Box sx={{ width: 48, height: 48, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <Leaf size={22} color={cat.color} />
                             </Box>
-                          )}
+                          </Box>
+                        )}
+
+                        <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+                            <Box sx={{ px: 1.25, py: 0.35, borderRadius: "6px", bgcolor: cat.bg }}>
+                              <Typography sx={{ color: cat.color, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                                {article.categoria}
+                              </Typography>
+                            </Box>
+                            <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+                              {article.fecha_display}
+                            </Typography>
+                          </Box>
+
+                          <Typography
+                            sx={{
+                              color:      C.textPrimary,
+                              fontFamily: "Plus Jakarta Sans, sans-serif",
+                              fontWeight: 800,
+                              fontSize:   "0.95rem",
+                              lineHeight: 1.45,
+                              mb:         1.25,
+                              flex:       1,
+                            }}
+                          >
+                            {article.titulo}
+                          </Typography>
+
+                          <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7, mb: 2 }}>
+                            {article.extracto}
+                          </Typography>
+
+                          <Box sx={{ display: "flex", alignItems: "center" }}>
+                            {article.autor && (
+                              <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+                                {article.autor}
+                              </Typography>
+                            )}
+                            {article.fuente_url && (
+                              <Box
+                                component="a"
+                                href={article.fuente_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                  display:        "flex",
+                                  alignItems:     "center",
+                                  gap:            0.5,
+                                  color:          C.primary,
+                                  fontSize:       "0.83rem",
+                                  fontWeight:     700,
+                                  ml:             "auto",
+                                  textDecoration: "none",
+                                  "&:hover":      { opacity: 0.75 },
+                                }}
+                              >
+                                Leer más <ArrowRight size={14} />
+                              </Box>
+                            )}
+                          </Box>
                         </Box>
                       </Box>
-                    </Box>
-                  </motion.div>
-                );
-              })}
+                    </motion.div>
+                  );
+                })}
+              </Box>
             </motion.div>
           )}
         </Container>
@@ -530,7 +656,7 @@ export default function AboutUs() {
 
       {/* ── Reconocimientos ── */}
       {(loadingAwards || awards.length > 0) && (
-        <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
+        <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
           <Container maxWidth="lg">
             <Box sx={{ mb: { xs: 6, md: 7 } }}>
               <Typography
@@ -545,7 +671,7 @@ export default function AboutUs() {
             </Box>
 
             {loadingAwards ? (
-              <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: 3 }}>
+              <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" }, gap: 3 }}>
                 {[1, 2].map((i) => (
                   <Box key={i} sx={{ bgcolor: C.bgCard, borderRadius: "20px", border: "1px solid rgba(191,144,0,0.2)", overflow: "hidden" }}>
                     <Skeleton variant="rectangular" height={220} />
@@ -563,123 +689,125 @@ export default function AboutUs() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.1 }}
-                style={{
-                  display:             "grid",
-                  gridTemplateColumns: awards.length === 1 ? "min(640px, 100%)" : "repeat(auto-fit, minmax(300px, 1fr))",
-                  gap:                 24,
-                  justifyContent:      "center",
-                }}
               >
-                {awards.map((award) => (
-                  <motion.div key={award.id} variants={fadeInUp}>
-                    <Box
-                      sx={{
-                        bgcolor:      C.bgCard,
-                        borderRadius: "20px",
-                        border:       "1px solid rgba(191,144,0,0.25)",
-                        boxShadow:    "0 4px 24px rgba(191,144,0,0.08)",
-                        overflow:     "hidden",
-                        mx:           awards.length === 1 ? "auto" : 0,
-                      }}
-                    >
-                      {award.imagen_url ? (
-                        <Box
-                          onClick={() => window.open(award.imagen_url, "_blank")}
-                          sx={{
-                            position:  "relative",
-                            overflow:  "hidden",
-                            cursor:    "pointer",
-                            "&:hover .overlay": { opacity: 1 },
-                            "&:hover img":      { transform: "scale(1.03)" },
-                          }}
-                        >
+                <Box
+                  sx={{
+                    display:             "grid",
+                    gridTemplateColumns: awards.length === 1 ? { xs: "1fr", md: "min(640px, 100%)" } : { xs: "1fr", md: "repeat(2, 1fr)" },
+                    gap:                 3,
+                    justifyContent:      "center",
+                  }}
+                >
+                  {awards.map((award) => (
+                    <motion.div key={award.id} variants={fadeInUp}>
+                      <Box
+                        sx={{
+                          bgcolor:      C.bgCard,
+                          borderRadius: "20px",
+                          border:       "1px solid rgba(191,144,0,0.25)",
+                          boxShadow:    "0 4px 24px rgba(191,144,0,0.08)",
+                          overflow:     "hidden",
+                        }}
+                      >
+                        {award.imagen_url ? (
                           <Box
-                            component="img"
-                            src={award.imagen_url}
-                            alt={award.nombre}
-                            loading="lazy"
-                            onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
-                            sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.4s ease" }}
-                          />
-                          <Box
-                            className="overlay"
+                            onClick={() => window.open(award.imagen_url, "_blank")}
                             sx={{
-                              position:       "absolute",
-                              inset:          0,
-                              bgcolor:        "rgba(0,0,0,0.38)",
-                              display:        "flex",
-                              alignItems:     "center",
-                              justifyContent: "center",
-                              opacity:        0,
-                              transition:     "opacity 0.25s ease",
+                              position: "relative",
+                              overflow: "hidden",
+                              cursor:   "pointer",
+                              "&:hover .overlay": { opacity: 1 },
+                              "&:hover img":      { transform: "scale(1.03)" },
                             }}
                           >
-                            <Typography sx={{ color: "#fff", fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                              Ver foto completa
-                            </Typography>
+                            <Box
+                              component="img"
+                              src={award.imagen_url}
+                              alt={award.nombre}
+                              loading="lazy"
+                              onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                              sx={{ width: "100%", height: "auto", display: "block", transition: "transform 0.4s ease" }}
+                            />
+                            <Box
+                              className="overlay"
+                              sx={{
+                                position:       "absolute",
+                                inset:          0,
+                                bgcolor:        "rgba(0,0,0,0.38)",
+                                display:        "flex",
+                                alignItems:     "center",
+                                justifyContent: "center",
+                                opacity:        0,
+                                transition:     "opacity 0.25s ease",
+                              }}
+                            >
+                              <Typography sx={{ color: "#fff", fontSize: "0.82rem", fontWeight: 700 }}>
+                                Ver foto completa
+                              </Typography>
+                            </Box>
                           </Box>
-                        </Box>
-                      ) : (
-                        <Box
-                          sx={{
-                            height:         140,
-                            background:     "linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%)",
-                            display:        "flex",
-                            alignItems:     "center",
-                            justifyContent: "center",
-                          }}
-                        >
+                        ) : (
                           <Box
                             sx={{
-                              width:          64,
-                              height:         64,
-                              borderRadius:   "50%",
-                              bgcolor:        C.goldBg,
-                              border:         "2px solid rgba(191,144,0,0.3)",
+                              height:         140,
+                              background:     "linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%)",
                               display:        "flex",
                               alignItems:     "center",
                               justifyContent: "center",
                             }}
                           >
-                            <Award size={28} color={C.gold} />
+                            <Box
+                              sx={{
+                                width:          64,
+                                height:         64,
+                                borderRadius:   "50%",
+                                bgcolor:        C.goldBg,
+                                border:         "2px solid rgba(191,144,0,0.3)",
+                                display:        "flex",
+                                alignItems:     "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <Award size={28} color={C.gold} />
+                            </Box>
                           </Box>
-                        </Box>
-                      )}
+                        )}
 
-                      <Box sx={{ p: { xs: 3, md: 4 } }}>
-                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
-                          <Box sx={{ px: 1.5, py: 0.4, bgcolor: C.goldBg, borderRadius: "6px" }}>
-                            <Typography sx={{ color: C.gold, fontSize: "0.7rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
-                              {award.organizacion}
-                            </Typography>
+                        <Box sx={{ p: { xs: 3, md: 4 } }}>
+                          <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 2 }}>
+                            <Box sx={{ px: 1.5, py: 0.4, bgcolor: C.goldBg, borderRadius: "6px" }}>
+                              <Typography sx={{ color: C.gold, fontSize: "0.78rem", fontWeight: 700 }}>
+                                {award.organizacion}
+                              </Typography>
+                            </Box>
+                            {award.fecha_display && (
+                              <Typography sx={{ color: C.textLight, fontSize: "0.78rem" }}>
+                                {award.fecha_display}
+                              </Typography>
+                            )}
                           </Box>
-                          {award.fecha_display && (
-                            <Typography sx={{ color: C.textLight, fontSize: "0.78rem" }}>
-                              {award.fecha_display}
+                          <Typography
+                            sx={{
+                              color:      C.textPrimary,
+                              fontFamily: "Plus Jakarta Sans, sans-serif",
+                              fontWeight: 800,
+                              fontSize:   { xs: "1.05rem", md: "1.2rem" },
+                              lineHeight: 1.4,
+                              mb:         2,
+                            }}
+                          >
+                            {award.nombre}
+                          </Typography>
+                          {award.descripcion && (
+                            <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.75 }}>
+                              {award.descripcion}
                             </Typography>
                           )}
                         </Box>
-                        <Typography
-                          sx={{
-                            color:      C.textPrimary,
-                            fontFamily: "Plus Jakarta Sans, sans-serif",
-                            fontWeight: 800,
-                            fontSize:   { xs: "1.05rem", md: "1.2rem" },
-                            lineHeight: 1.4,
-                            mb:         2,
-                          }}
-                        >
-                          {award.nombre}
-                        </Typography>
-                        {award.descripcion && (
-                          <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.75 }}>
-                            {award.descripcion}
-                          </Typography>
-                        )}
                       </Box>
-                    </Box>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  ))}
+                </Box>
               </motion.div>
             )}
           </Container>
@@ -689,12 +817,12 @@ export default function AboutUs() {
       {/* ── CTA ── */}
       <Box
         sx={{
-          py:         { xs: 8, md: 10 },
-          textAlign:  "center",
-          borderTop:  `1px solid ${C.border}`,
+          py:        { xs: 8, md: 10 },
+          textAlign: "center",
+          borderTop: `1px solid ${C.border}`,
           background: C.heroGrad,
-          position:   "relative",
-          overflow:   "hidden",
+          position:  "relative",
+          overflow:  "hidden",
         }}
       >
         <Box sx={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 20% 70%, rgba(255,255,255,0.05), transparent 50%)", pointerEvents: "none" }} />
