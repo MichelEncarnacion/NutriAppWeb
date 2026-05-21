@@ -288,39 +288,42 @@ export default function AboutUs() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
-            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20, maxWidth: 720, margin: "0 auto" }}
+            style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24, maxWidth: 860, margin: "0 auto" }}
           >
             {founders.map((f) => (
-              <motion.div key={f.id} variants={fadeInUp}>
+              <motion.div key={f.id} variants={fadeInUp} style={{ display: "flex" }}>
                 <Box
                   sx={{
-                    bgcolor:      C.bgCard,
-                    borderRadius: "16px",
-                    border:       `1px solid ${C.border}`,
-                    p:            { xs: 2, md: 2.5 },
-                    textAlign:    "center",
-                    boxShadow:    C.shadow,
-                    transition:   "transform 0.25s, box-shadow 0.25s",
-                    "&:hover":    { transform: "translateY(-3px)", boxShadow: C.shadowMd },
+                    bgcolor:       C.bgCard,
+                    borderRadius:  "18px",
+                    border:        `1px solid ${C.border}`,
+                    p:             3,
+                    textAlign:     "center",
+                    boxShadow:     C.shadow,
+                    transition:    "transform 0.25s, box-shadow 0.25s",
+                    "&:hover":     { transform: "translateY(-3px)", boxShadow: C.shadowMd },
+                    display:       "flex",
+                    flexDirection: "column",
+                    alignItems:    "center",
+                    width:         "100%",
                   }}
                 >
                   {/* Foto circular o avatar */}
                   <Box
                     sx={{
-                      width:          96,
-                      height:         96,
+                      width:          120,
+                      height:         120,
                       borderRadius:   "50%",
                       overflow:       "hidden",
-                      mx:             "auto",
-                      mb:             1.5,
+                      mb:             2,
                       border:         `3px solid ${C.border}`,
                       cursor:         f.imagen_url ? "pointer" : "default",
-                      flexShrink:     0,
                       position:       "relative",
                       background:     C.heroGrad,
                       display:        "flex",
                       alignItems:     "center",
                       justifyContent: "center",
+                      flexShrink:     0,
                       "&:hover .fo":  { opacity: f.imagen_url ? 1 : 0 },
                     }}
                     onClick={() => f.imagen_url && window.open(f.imagen_url, "_blank")}
@@ -347,24 +350,24 @@ export default function AboutUs() {
                             justifyContent: "center",
                           }}
                         >
-                          <Typography sx={{ color: "#fff", fontSize: "0.65rem", fontWeight: 700 }}>Ver</Typography>
+                          <Typography sx={{ color: "#fff", fontSize: "0.7rem", fontWeight: 700 }}>Ver</Typography>
                         </Box>
                       </>
                     ) : (
-                      <Typography sx={{ fontSize: "1.9rem", fontWeight: 900, color: C.white, fontFamily: "Plus Jakarta Sans, sans-serif", lineHeight: 1 }}>
+                      <Typography sx={{ fontSize: "2.2rem", fontWeight: 900, color: C.white, fontFamily: "Plus Jakarta Sans, sans-serif", lineHeight: 1 }}>
                         {f.initials}
                       </Typography>
                     )}
                   </Box>
 
-                  <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "0.88rem", lineHeight: 1.3, mb: 0.4 }}>
+                  <Typography sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 800, fontSize: "0.95rem", lineHeight: 1.3, mb: 0.5 }}>
                     {f.nombre}
                   </Typography>
-                  <Typography sx={{ color: C.primary, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", mb: f.descripcion ? 1 : 0 }}>
+                  <Typography sx={{ color: C.primary, fontSize: "0.72rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", mb: f.descripcion ? 1.25 : 0 }}>
                     {f.rol}
                   </Typography>
                   {f.descripcion && (
-                    <Typography sx={{ color: C.textMuted, fontSize: "0.78rem", lineHeight: 1.6 }}>
+                    <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", lineHeight: 1.65, flex: 1 }}>
                       {f.descripcion}
                     </Typography>
                   )}
