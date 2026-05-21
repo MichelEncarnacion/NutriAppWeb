@@ -32,27 +32,6 @@ const FOUNDERS = [
   },
 ];
 
-/* ── News (fallback estático mientras no hay DB) ─────────────── */
-const NEWS_FALLBACK = [
-  {
-    categoria:     "Empresa",
-    fecha_display: "Mayo 2025",
-    titulo:        "NutriiApp obtiene reconocimiento COPARMEX Puebla por innovación en salud corporativa",
-    extracto:      "La plataforma fue distinguida entre más de 40 proyectos por su impacto en bienestar empresarial y su modelo de negocio sostenible.",
-  },
-  {
-    categoria:     "Investigación",
-    fecha_display: "Abril 2025",
-    titulo:        "El costo oculto de no gestionar la salud de tus colaboradores",
-    extracto:      "Un análisis de los datos de ausentismo y productividad en empresas mexicanas de 50 a 500 colaboradores durante 2024.",
-  },
-  {
-    categoria:     "Salud Corporativa",
-    fecha_display: "Marzo 2025",
-    titulo:        "NOM-030 y NOM-035: qué necesitan hacer las empresas en 2025",
-    extracto:      "Guía práctica para directores de RR.HH. sobre las obligaciones legales de bienestar y cómo cumplirlas sin esfuerzo adicional.",
-  },
-];
 
 /* ── Award ─────────────────────────────────────────────────── */
 const AWARD = {
@@ -69,16 +48,16 @@ const CATEGORY_COLORS = {
 
 export default function AboutUs() {
   const navigate = useNavigate();
-  const [news, setNews] = useState(NEWS_FALLBACK);
+  const [news, setNews] = useState([]);
 
   useEffect(() => {
     supabase
       .from("noticias")
-      .select("id, titulo, extracto, categoria, fecha_display, imagen_url")
+      .select("id, titulo, extracto, categoria, fecha_display, imagen_url, autor")
       .eq("publicado", true)
       .order("orden", { ascending: true })
       .limit(6)
-      .then(({ data }) => { if (data && data.length > 0) setNews(data); });
+      .then(({ data }) => setNews(data ?? []));
   }, []);
 
   return (
@@ -341,108 +320,122 @@ export default function AboutUs() {
             </Typography>
           </Box>
 
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.1 }}
-            style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}
-          >
-            {news.map((article, idx) => {
-              const cat = CATEGORY_COLORS[article.categoria] || { bg: "#F3F4F6", color: C.textMuted };
-              return (
-                <motion.div key={article.id ?? idx} variants={fadeInUp}>
-                  <Box
-                    sx={{
-                      bgcolor:       C.bgCard,
-                      borderRadius:  "16px",
-                      border:        `1px solid ${C.border}`,
-                      overflow:      "hidden",
-                      boxShadow:     C.shadow,
-                      height:        "100%",
-                      display:       "flex",
-                      flexDirection: "column",
-                      transition:    "transform 0.25s, box-shadow 0.25s",
-                      "&:hover":     { transform: "translateY(-4px)", boxShadow: C.shadowMd },
-                    }}
-                  >
-                    {/* Imagen o placeholder */}
-                    {article.imagen_url ? (
-                      <Box
-                        component="img"
-                        src={article.imagen_url}
-                        alt={article.titulo}
-                        loading="lazy"
-                        onError={(e) => { e.currentTarget.style.display = "none"; }}
-                        sx={{ width: "100%", height: 160, objectFit: "cover", display: "block" }}
-                      />
-                    ) : (
-                      <Box
-                        sx={{
-                          height:     160,
-                          background: `linear-gradient(135deg, ${cat.bg} 0%, #F0FFF4 100%)`,
-                          display:    "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <Box sx={{ width: 48, height: 48, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                          <Leaf size={22} color={cat.color} />
+          {news.length === 0 ? (
+            <Box sx={{ textAlign: "center", py: 6 }}>
+              <Typography sx={{ color: C.textLight, fontSize: "0.95rem" }}>
+                Próximamente publicaremos noticias y recursos.
+              </Typography>
+            </Box>
+          ) : (
+            <motion.div
+              variants={stagger}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.1 }}
+              style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}
+            >
+              {news.map((article, idx) => {
+                const cat = CATEGORY_COLORS[article.categoria] || { bg: "#F3F4F6", color: C.textMuted };
+                return (
+                  <motion.div key={article.id ?? idx} variants={fadeInUp}>
+                    <Box
+                      sx={{
+                        bgcolor:       C.bgCard,
+                        borderRadius:  "16px",
+                        border:        `1px solid ${C.border}`,
+                        overflow:      "hidden",
+                        boxShadow:     C.shadow,
+                        height:        "100%",
+                        display:       "flex",
+                        flexDirection: "column",
+                        transition:    "transform 0.25s, box-shadow 0.25s",
+                        "&:hover":     { transform: "translateY(-4px)", boxShadow: C.shadowMd },
+                      }}
+                    >
+                      {article.imagen_url ? (
+                        <Box
+                          component="img"
+                          src={article.imagen_url}
+                          alt={article.titulo}
+                          loading="lazy"
+                          onError={(e) => { e.currentTarget.style.display = "none"; }}
+                          sx={{ width: "100%", height: 160, objectFit: "cover", display: "block" }}
+                        />
+                      ) : (
+                        <Box
+                          sx={{
+                            height:         160,
+                            background:     `linear-gradient(135deg, ${cat.bg} 0%, #F0FFF4 100%)`,
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Box sx={{ width: 48, height: 48, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <Leaf size={22} color={cat.color} />
+                          </Box>
                         </Box>
-                      </Box>
-                    )}
+                      )}
 
-                    <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
-                      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                        <Box sx={{ px: 1.25, py: 0.35, borderRadius: "6px", bgcolor: cat.bg }}>
-                          <Typography sx={{ color: cat.color, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                            {article.categoria}
+                      <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
+                        <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
+                          <Box sx={{ px: 1.25, py: 0.35, borderRadius: "6px", bgcolor: cat.bg }}>
+                            <Typography sx={{ color: cat.color, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                              {article.categoria}
+                            </Typography>
+                          </Box>
+                          <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+                            {article.fecha_display}
                           </Typography>
                         </Box>
-                        <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
-                          {article.fecha_display}
+
+                        <Typography
+                          sx={{
+                            color:      C.textPrimary,
+                            fontFamily: "Plus Jakarta Sans, sans-serif",
+                            fontWeight: 800,
+                            fontSize:   "0.95rem",
+                            lineHeight: 1.45,
+                            mb:         1.25,
+                            flex:       1,
+                          }}
+                        >
+                          {article.titulo}
                         </Typography>
-                      </Box>
 
-                      <Typography
-                        sx={{
-                          color:      C.textPrimary,
-                          fontFamily: "Plus Jakarta Sans, sans-serif",
-                          fontWeight: 800,
-                          fontSize:   "0.95rem",
-                          lineHeight: 1.45,
-                          mb:         1.25,
-                          flex:       1,
-                        }}
-                      >
-                        {article.titulo}
-                      </Typography>
+                        <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7, mb: 2 }}>
+                          {article.extracto}
+                        </Typography>
 
-                      <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7, mb: 2 }}>
-                        {article.extracto}
-                      </Typography>
-
-                      <Box
-                        sx={{
-                          display:    "flex",
-                          alignItems: "center",
-                          gap:        0.5,
-                          color:      C.primary,
-                          fontSize:   "0.83rem",
-                          fontWeight: 700,
-                          cursor:     "pointer",
-                          width:      "fit-content",
-                          "&:hover":  { opacity: 0.75 },
-                        }}
-                      >
-                        Leer más <ArrowRight size={14} />
+                        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                          {article.autor && (
+                            <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+                              {article.autor}
+                            </Typography>
+                          )}
+                          <Box
+                            sx={{
+                              display:    "flex",
+                              alignItems: "center",
+                              gap:        0.5,
+                              color:      C.primary,
+                              fontSize:   "0.83rem",
+                              fontWeight: 700,
+                              cursor:     "pointer",
+                              ml:         "auto",
+                              "&:hover":  { opacity: 0.75 },
+                            }}
+                          >
+                            Leer más <ArrowRight size={14} />
+                          </Box>
+                        </Box>
                       </Box>
                     </Box>
-                  </Box>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          )}
         </Container>
       </Box>
 

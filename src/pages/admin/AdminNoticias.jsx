@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminLayout from "../../components/AdminLayout";
+import ImageUploader from "../../components/admin/ImageUploader";
 
 /* ── Constantes ──────────────────────────────────────────────── */
 const CATEGORIAS = ["Empresa", "Investigación", "Salud Corporativa"];
@@ -19,6 +20,7 @@ const FORM_EMPTY = {
   fecha_display: "",
   imagen_url:    "",
   contenido:     "",
+  autor:         "",
   publicado:     false,
   orden:         0,
 };
@@ -67,6 +69,7 @@ export default function AdminNoticias() {
       fecha_display: n.fecha_display,
       imagen_url:    n.imagen_url ?? "",
       contenido:     n.contenido ?? "",
+      autor:         n.autor ?? "",
       publicado:     n.publicado,
       orden:         n.orden,
     });
@@ -91,8 +94,9 @@ export default function AdminNoticias() {
       extracto:      formData.extracto.trim(),
       categoria:     formData.categoria,
       fecha_display: formData.fecha_display.trim(),
-      imagen_url:    formData.imagen_url.trim() || null,
+      imagen_url:    formData.imagen_url || null,
       contenido:     formData.contenido.trim() || null,
+      autor:         formData.autor.trim() || null,
       publicado:     formData.publicado,
       orden:         Number(formData.orden) || 0,
     };
@@ -352,13 +356,22 @@ export default function AdminNoticias() {
                   />
                 </FormField>
 
-                {/* Imagen URL */}
-                <FormField label="URL de imagen (opcional)">
-                  <input
-                    type="url"
+                {/* Imagen */}
+                <FormField label="Imagen (opcional)">
+                  <ImageUploader
                     value={formData.imagen_url}
-                    onChange={set("imagen_url")}
-                    placeholder="https://..."
+                    onChange={(url) => setFormData((p) => ({ ...p, imagen_url: url }))}
+                    folder="noticias"
+                  />
+                </FormField>
+
+                {/* Autor */}
+                <FormField label="Autor (opcional)">
+                  <input
+                    type="text"
+                    value={formData.autor}
+                    onChange={set("autor")}
+                    placeholder="Ej. NutriiApp Editorial"
                     className={INPUT_CLS}
                   />
                 </FormField>

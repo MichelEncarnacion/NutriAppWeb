@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminLayout from "../../components/AdminLayout";
+import ImageUploader from "../../components/admin/ImageUploader";
 
 const CATEGORIAS = ["Blog", "Salud", "Nutrición", "Empresa", "Investigación"];
 
@@ -361,13 +362,11 @@ export default function AdminArticulos() {
                   />
                 </FormField>
 
-                <FormField label="URL de imagen (opcional)">
-                  <input
-                    type="url"
+                <FormField label="Imagen (opcional)">
+                  <ImageUploader
                     value={formData.imagen_url}
-                    onChange={set("imagen_url")}
-                    placeholder="https://..."
-                    className={INPUT_CLS}
+                    onChange={(url) => setFormData((p) => ({ ...p, imagen_url: url }))}
+                    folder="articulos"
                   />
                 </FormField>
 
