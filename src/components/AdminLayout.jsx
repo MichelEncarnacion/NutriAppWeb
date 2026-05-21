@@ -5,10 +5,11 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 
 const ADMIN_NAV = [
-    { to: "/admin", label: "Dashboard", icon: "⊞", exact: true },
-    { to: "/admin/usuarios", label: "Usuarios", icon: "👥" },
-    { to: "/admin/planes", label: "Planes IA", icon: "🥗" },
+    { to: "/admin",           label: "Dashboard", icon: "⊞", exact: true },
+    { to: "/admin/usuarios",  label: "Usuarios",  icon: "👥" },
+    { to: "/admin/planes",    label: "Planes IA", icon: "🥗" },
     { to: "/admin/lecciones", label: "Lecciones", icon: "📖" },
+    { to: "/admin/noticias",  label: "Noticias",  icon: "📰" },
 ];
 
 export default function AdminLayout({ titulo, children }) {

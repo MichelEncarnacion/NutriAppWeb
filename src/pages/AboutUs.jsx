@@ -1,4 +1,5 @@
 // src/pages/AboutUs.jsx
+import { useState, useEffect } from "react";
 import { Box, Container, Typography, Chip } from "@mui/material";
 import { motion } from "framer-motion";
 import { Award, Leaf, ArrowRight } from "lucide-react";
@@ -7,6 +8,7 @@ import { Button } from "@mui/material";
 import LandingNavbar from "../components/landing/LandingNavbar";
 import LandingFooter from "../components/landing/LandingFooter";
 import { C, fadeInUp, stagger } from "../components/landing/landingTokens";
+import { supabase } from "../lib/supabase";
 
 /* ── Founders ──────────────────────────────────────────────── */
 const FOUNDERS = [
@@ -30,25 +32,25 @@ const FOUNDERS = [
   },
 ];
 
-/* ── News ──────────────────────────────────────────────────── */
-const NEWS = [
+/* ── News (fallback estático mientras no hay DB) ─────────────── */
+const NEWS_FALLBACK = [
   {
-    category: "Empresa",
-    date:      "Mayo 2025",
-    title:     "NutriiApp obtiene reconocimiento COPARMEX Puebla por innovación en salud corporativa",
-    excerpt:   "La plataforma fue distinguida entre más de 40 proyectos por su impacto en bienestar empresarial y su modelo de negocio sostenible.",
+    categoria:     "Empresa",
+    fecha_display: "Mayo 2025",
+    titulo:        "NutriiApp obtiene reconocimiento COPARMEX Puebla por innovación en salud corporativa",
+    extracto:      "La plataforma fue distinguida entre más de 40 proyectos por su impacto en bienestar empresarial y su modelo de negocio sostenible.",
   },
   {
-    category: "Investigación",
-    date:      "Abril 2025",
-    title:     "El costo oculto de no gestionar la salud de tus colaboradores",
-    excerpt:   "Un análisis de los datos de ausentismo y productividad en empresas mexicanas de 50 a 500 colaboradores durante 2024.",
+    categoria:     "Investigación",
+    fecha_display: "Abril 2025",
+    titulo:        "El costo oculto de no gestionar la salud de tus colaboradores",
+    extracto:      "Un análisis de los datos de ausentismo y productividad en empresas mexicanas de 50 a 500 colaboradores durante 2024.",
   },
   {
-    category: "Salud Corporativa",
-    date:      "Marzo 2025",
-    title:     "NOM-030 y NOM-035: qué necesitan hacer las empresas en 2025",
-    excerpt:   "Guía práctica para directores de RR.HH. sobre las obligaciones legales de bienestar y cómo cumplirlas sin esfuerzo adicional.",
+    categoria:     "Salud Corporativa",
+    fecha_display: "Marzo 2025",
+    titulo:        "NOM-030 y NOM-035: qué necesitan hacer las empresas en 2025",
+    extracto:      "Guía práctica para directores de RR.HH. sobre las obligaciones legales de bienestar y cómo cumplirlas sin esfuerzo adicional.",
   },
 ];
 
@@ -67,6 +69,17 @@ const CATEGORY_COLORS = {
 
 export default function AboutUs() {
   const navigate = useNavigate();
+  const [news, setNews] = useState(NEWS_FALLBACK);
+
+  useEffect(() => {
+    supabase
+      .from("noticias")
+      .select("id, titulo, extracto, categoria, fecha_display, imagen_url")
+      .eq("publicado", true)
+      .order("orden", { ascending: true })
+      .limit(6)
+      .then(({ data }) => { if (data && data.length > 0) setNews(data); });
+  }, []);
 
   return (
     <Box sx={{ bgcolor: "#FFFFFF", minHeight: "100vh" }}>
@@ -285,10 +298,10 @@ export default function AboutUs() {
             viewport={{ once: true, amount: 0.1 }}
             style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 24 }}
           >
-            {NEWS.map((article) => {
-              const cat = CATEGORY_COLORS[article.category] || { bg: "#F3F4F6", color: C.textMuted };
+            {news.map((article, idx) => {
+              const cat = CATEGORY_COLORS[article.categoria] || { bg: "#F3F4F6", color: C.textMuted };
               return (
-                <motion.div key={article.title} variants={fadeInUp}>
+                <motion.div key={article.id ?? idx} variants={fadeInUp}>
                   <Box
                     sx={{
                       bgcolor:       C.bgCard,
@@ -303,47 +316,41 @@ export default function AboutUs() {
                       "&:hover":     { transform: "translateY(-4px)", boxShadow: C.shadowMd },
                     }}
                   >
-                    {/* Image placeholder */}
-                    <Box
-                      sx={{
-                        height:     160,
-                        background: `linear-gradient(135deg, ${cat.bg} 0%, #F0FFF4 100%)`,
-                        display:    "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
+                    {/* Imagen o placeholder */}
+                    {article.imagen_url ? (
+                      <Box
+                        component="img"
+                        src={article.imagen_url}
+                        alt={article.titulo}
+                        loading="lazy"
+                        onError={(e) => { e.currentTarget.style.display = "none"; }}
+                        sx={{ width: "100%", height: 160, objectFit: "cover", display: "block" }}
+                      />
+                    ) : (
                       <Box
                         sx={{
-                          width:        48,
-                          height:       48,
-                          borderRadius: "50%",
-                          bgcolor:      "rgba(255,255,255,0.7)",
-                          display:      "flex",
-                          alignItems:   "center",
+                          height:     160,
+                          background: `linear-gradient(135deg, ${cat.bg} 0%, #F0FFF4 100%)`,
+                          display:    "flex",
+                          alignItems: "center",
                           justifyContent: "center",
                         }}
                       >
-                        <Leaf size={22} color={cat.color} />
+                        <Box sx={{ width: 48, height: 48, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.7)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <Leaf size={22} color={cat.color} />
+                        </Box>
                       </Box>
-                    </Box>
+                    )}
 
                     <Box sx={{ p: 3, flex: 1, display: "flex", flexDirection: "column" }}>
                       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1.5 }}>
-                        <Box
-                          sx={{
-                            px:           1.25,
-                            py:           0.35,
-                            borderRadius: "6px",
-                            bgcolor:      cat.bg,
-                          }}
-                        >
+                        <Box sx={{ px: 1.25, py: 0.35, borderRadius: "6px", bgcolor: cat.bg }}>
                           <Typography sx={{ color: cat.color, fontSize: "0.68rem", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                            {article.category}
+                            {article.categoria}
                           </Typography>
                         </Box>
                         <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
-                          {article.date}
+                          {article.fecha_display}
                         </Typography>
                       </Box>
 
@@ -358,11 +365,11 @@ export default function AboutUs() {
                           flex:       1,
                         }}
                       >
-                        {article.title}
+                        {article.titulo}
                       </Typography>
 
                       <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7, mb: 2 }}>
-                        {article.excerpt}
+                        {article.extracto}
                       </Typography>
 
                       <Box

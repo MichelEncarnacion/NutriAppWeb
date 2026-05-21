@@ -38,6 +38,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 import AdminPlanes from "./pages/admin/AdminPlanes";
 import AdminLecciones from "./pages/admin/AdminLecciones";
+import AdminNoticias from "./pages/admin/AdminNoticias";
 
 function AppRoutes() {
   return (
@@ -146,6 +147,9 @@ function AppRoutes() {
           } />
           <Route path="/admin/lecciones" element={
             <AdminRoute><AdminLecciones /></AdminRoute>
+          } />
+          <Route path="/admin/noticias" element={
+            <AdminRoute><AdminNoticias /></AdminRoute>
           } />
 
           {/* ── 404 ──────────────────────────────────────── */}
