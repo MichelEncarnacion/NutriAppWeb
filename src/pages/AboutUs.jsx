@@ -359,8 +359,9 @@ export default function AboutUs() {
                           src={article.imagen_url}
                           alt={article.titulo}
                           loading="lazy"
+                          onClick={() => window.open(article.imagen_url, "_blank")}
                           onError={(e) => { e.currentTarget.style.display = "none"; }}
-                          sx={{ width: "100%", height: 160, objectFit: "cover", display: "block" }}
+                          sx={{ width: "100%", height: 200, objectFit: "contain", display: "block", bgcolor: "#F8F9FA", cursor: "pointer" }}
                         />
                       ) : (
                         <Box
@@ -489,8 +490,9 @@ export default function AboutUs() {
                         src={award.imagen_url}
                         alt={award.nombre}
                         loading="lazy"
+                        onClick={() => window.open(award.imagen_url, "_blank")}
                         onError={(e) => { e.currentTarget.style.display = "none"; }}
-                        sx={{ width: "100%", height: 200, objectFit: "cover", display: "block" }}
+                        sx={{ width: "100%", maxHeight: 320, objectFit: "contain", display: "block", bgcolor: "#FFFBEB", cursor: "pointer" }}
                       />
                     ) : (
                       <Box

@@ -158,9 +158,11 @@ export default function AdminReconocimientos() {
                   <img
                     src={r.imagen_url}
                     alt={r.nombre}
-                    className="w-full object-cover"
-                    style={{ height: 160 }}
+                    className="w-full object-contain cursor-pointer"
+                    style={{ height: 200, background: "#0D1117" }}
+                    onClick={() => window.open(r.imagen_url, "_blank")}
                     onError={(e) => { e.currentTarget.style.display = "none"; }}
+                    title="Clic para ver en tamaño completo"
                   />
                 ) : (
                   <div

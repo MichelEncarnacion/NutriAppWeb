@@ -45,7 +45,9 @@ export default function ImageUploader({ value, onChange, folder = "misc" }) {
           <img
             src={value}
             alt="preview"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain cursor-pointer"
+            style={{ background: "#1C2330" }}
+            onClick={() => window.open(value, "_blank")}
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
           <button
