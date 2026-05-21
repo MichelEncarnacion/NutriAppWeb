@@ -9,6 +9,7 @@ import { CheckCircle2, Clock, Users, Shield } from "lucide-react";
 import LandingNavbar from "../components/landing/LandingNavbar";
 import LandingFooter from "../components/landing/LandingFooter";
 import { C, fadeInUp, stagger } from "../components/landing/landingTokens";
+import { supabase } from "../lib/supabase";
 
 const COLLABORATOR_RANGES = [
   { value: "20-50",   label: "20 – 50 colaboradores"  },
@@ -42,19 +43,31 @@ export default function RequestDemo() {
     empresa:       "",
     cargo:         "",
     email:         "",
+    telefono:      "",
     colaboradores: "",
     reto:          "",
   });
   const [submitted, setSubmitted] = useState(false);
   const [loading,   setLoading]   = useState(false);
+  const [errorMsg,  setErrorMsg]  = useState(null);
 
   const handleChange = (field) => (e) => setForm((p) => ({ ...p, [field]: e.target.value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 900));
+    setErrorMsg(null);
+    const { error } = await supabase.from("solicitudes_demo").insert({
+      nombre:        form.nombre.trim(),
+      empresa:       form.empresa.trim(),
+      cargo:         form.cargo.trim(),
+      email:         form.email.trim(),
+      telefono:      form.telefono.trim() || null,
+      colaboradores: form.colaboradores,
+      reto:          form.reto.trim() || null,
+    });
     setLoading(false);
+    if (error) { setErrorMsg("Ocurrió un error al enviar. Intenta de nuevo."); return; }
     setSubmitted(true);
   };
 
@@ -227,15 +240,24 @@ export default function RequestDemo() {
                   </motion.div>
 
                   <motion.div variants={fadeInUp}>
-                    <TextField
-                      label="Correo corporativo"
-                      type="email"
-                      value={form.email}
-                      onChange={handleChange("email")}
-                      fullWidth
-                      required
-                      sx={FIELD_SX}
-                    />
+                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
+                      <TextField
+                        label="Correo corporativo"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange("email")}
+                        required
+                        sx={FIELD_SX}
+                      />
+                      <TextField
+                        label="Teléfono (opcional)"
+                        type="tel"
+                        value={form.telefono}
+                        onChange={handleChange("telefono")}
+                        placeholder="Ej. 222 123 4567"
+                        sx={FIELD_SX}
+                      />
+                    </Box>
                   </motion.div>
 
                   <motion.div variants={fadeInUp}>
@@ -266,6 +288,12 @@ export default function RequestDemo() {
                       sx={FIELD_SX}
                     />
                   </motion.div>
+
+                  {errorMsg && (
+                    <Box sx={{ bgcolor: "rgba(255,107,107,.08)", border: "1px solid rgba(255,107,107,.3)", borderRadius: "10px", px: 2, py: 1.5 }}>
+                      <Typography sx={{ color: "#FF6B6B", fontSize: "0.85rem" }}>{errorMsg}</Typography>
+                    </Box>
+                  )}
 
                   <motion.div variants={fadeInUp}>
                     <Button

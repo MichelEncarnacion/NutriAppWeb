@@ -22,12 +22,6 @@ const STATS = [
     source:  "OIT México",
     color:   C.primary,
   },
-  {
-    value:   "$1,430",
-    label:   "MXN por colaborador al año. El plan nutricional personalizado más accesible del mercado.",
-    source:  "Precio base NutriiApp",
-    color:   C.primary,
-  },
 ];
 
 export default function LandingCredBand() {
