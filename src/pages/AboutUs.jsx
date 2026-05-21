@@ -1,6 +1,6 @@
 // src/pages/AboutUs.jsx
 import { useState, useEffect } from "react";
-import { Box, Container, Typography, Chip, Skeleton } from "@mui/material";
+import { Box, Container, Typography, Skeleton } from "@mui/material";
 import { motion } from "framer-motion";
 import { Award, Leaf, ArrowRight, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -73,18 +73,6 @@ export default function AboutUs() {
         <Box sx={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 80% 30%, rgba(255,255,255,0.06), transparent 50%)", pointerEvents: "none" }} />
         <Container maxWidth="md" sx={{ position: "relative", zIndex: 1, textAlign: "center" }}>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55 }}>
-            <Chip
-              label="Nuestra historia"
-              sx={{
-                bgcolor:    "rgba(255,255,255,0.12)",
-                color:      "rgba(255,255,255,0.9)",
-                border:     "1px solid rgba(255,255,255,0.2)",
-                fontWeight: 700,
-                fontSize:   "0.72rem",
-                mb:         3,
-                "& .MuiChip-label": { py: 0.6, px: 1.5 },
-              }}
-            />
             <Typography
               component="h1"
               sx={{
@@ -224,12 +212,6 @@ export default function AboutUs() {
         <Container maxWidth="lg">
           <Box sx={{ textAlign: "center", mb: { xs: 5, md: 6 } }}>
             <Typography
-              component="p"
-              sx={{ color: C.primary, fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5 }}
-            >
-              Quiénes somos
-            </Typography>
-            <Typography
               component="h2"
               sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2 }}
             >
@@ -312,8 +294,8 @@ export default function AboutUs() {
                         p:             3,
                         textAlign:     "center",
                         boxShadow:     C.shadow,
-                        transition:    "transform 0.25s, box-shadow 0.25s",
-                        "&:hover":     { transform: "translateY(-3px)", boxShadow: C.shadowMd },
+                        transition:    "border-color 0.2s, box-shadow 0.2s",
+                        "&:hover":     { borderColor: C.accent, boxShadow: C.shadowMd },
                         display:       "flex",
                         flexDirection: "column",
                         alignItems:    "center",
@@ -394,18 +376,15 @@ export default function AboutUs() {
       {/* ── Noticias ── */}
       <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 11 } }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: { xs: 6, md: 7 } }}>
-            <Typography
-              component="p"
-              sx={{ color: C.primary, fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5 }}
-            >
-              Noticias y recursos
-            </Typography>
+          <Box sx={{ mb: { xs: 6, md: 7 } }}>
             <Typography
               component="h2"
-              sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2 }}
+              sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2, mb: 1 }}
             >
               Lo último de NutriiApp
+            </Typography>
+            <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.7 }}>
+              Noticias, prensa y recursos del equipo.
             </Typography>
           </Box>
 
@@ -451,8 +430,8 @@ export default function AboutUs() {
                         height:        "100%",
                         display:       "flex",
                         flexDirection: "column",
-                        transition:    "transform 0.25s, box-shadow 0.25s",
-                        "&:hover":     { transform: "translateY(-4px)", boxShadow: C.shadowMd },
+                        transition:    "border-color 0.2s, box-shadow 0.2s",
+                        "&:hover":     { borderColor: C.accent, boxShadow: C.shadowMd },
                       }}
                     >
                       {article.imagen_url ? (
@@ -553,18 +532,15 @@ export default function AboutUs() {
       {(loadingAwards || awards.length > 0) && (
         <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
           <Container maxWidth="lg">
-            <Box sx={{ textAlign: "center", mb: { xs: 6, md: 7 } }}>
-              <Typography
-                component="p"
-                sx={{ color: C.gold, fontWeight: 700, fontSize: "0.78rem", textTransform: "uppercase", letterSpacing: "0.1em", mb: 1.5 }}
-              >
-                Reconocimientos
-              </Typography>
+            <Box sx={{ mb: { xs: 6, md: 7 } }}>
               <Typography
                 component="h2"
-                sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2 }}
+                sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: { xs: "1.9rem", md: "2.4rem" }, lineHeight: 1.2, mb: 1 }}
               >
                 Premios y distinciones
+              </Typography>
+              <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.7 }}>
+                Reconocimientos que validan el trabajo del equipo.
               </Typography>
             </Box>
 
