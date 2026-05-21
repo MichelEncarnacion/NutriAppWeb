@@ -486,18 +486,50 @@ export default function AboutUs() {
                   >
                     {award.imagen_url ? (
                       <Box
-                        component="img"
-                        src={award.imagen_url}
-                        alt={award.nombre}
-                        loading="lazy"
                         onClick={() => window.open(award.imagen_url, "_blank")}
-                        onError={(e) => { e.currentTarget.style.display = "none"; }}
-                        sx={{ width: "100%", maxHeight: 320, objectFit: "contain", display: "block", bgcolor: "#FFFBEB", cursor: "pointer" }}
-                      />
+                        sx={{
+                          position:  "relative",
+                          overflow:  "hidden",
+                          cursor:    "pointer",
+                          "&:hover .overlay": { opacity: 1 },
+                          "&:hover img":      { transform: "scale(1.03)" },
+                        }}
+                      >
+                        <Box
+                          component="img"
+                          src={award.imagen_url}
+                          alt={award.nombre}
+                          loading="lazy"
+                          onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                          sx={{
+                            width:      "100%",
+                            height:     "auto",
+                            display:    "block",
+                            transition: "transform 0.4s ease",
+                          }}
+                        />
+                        <Box
+                          className="overlay"
+                          sx={{
+                            position:       "absolute",
+                            inset:          0,
+                            bgcolor:        "rgba(0,0,0,0.38)",
+                            display:        "flex",
+                            alignItems:     "center",
+                            justifyContent: "center",
+                            opacity:        0,
+                            transition:     "opacity 0.25s ease",
+                          }}
+                        >
+                          <Typography sx={{ color: "#fff", fontSize: "0.82rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                            Ver foto completa
+                          </Typography>
+                        </Box>
+                      </Box>
                     ) : (
                       <Box
                         sx={{
-                          height:         160,
+                          height:         140,
                           background:     "linear-gradient(135deg, #FFF8E1 0%, #FFFDE7 100%)",
                           display:        "flex",
                           alignItems:     "center",

@@ -155,15 +155,24 @@ export default function AdminReconocimientos() {
               >
                 {/* Imagen */}
                 {r.imagen_url ? (
-                  <img
-                    src={r.imagen_url}
-                    alt={r.nombre}
-                    className="w-full object-contain cursor-pointer"
-                    style={{ height: 200, background: "#0D1117" }}
+                  <div
+                    className="relative overflow-hidden cursor-pointer group"
+                    style={{ background: "#0D1117" }}
                     onClick={() => window.open(r.imagen_url, "_blank")}
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                    title="Clic para ver en tamaño completo"
-                  />
+                  >
+                    <img
+                      src={r.imagen_url}
+                      alt={r.nombre}
+                      className="w-full h-auto block transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                    />
+                    <div
+                      className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                      style={{ background: "rgba(0,0,0,0.45)" }}
+                    >
+                      <span className="text-white text-xs font-bold tracking-wide">Ver foto completa</span>
+                    </div>
+                  </div>
                 ) : (
                   <div
                     className="w-full flex items-center justify-center"
