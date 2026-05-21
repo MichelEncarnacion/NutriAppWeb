@@ -23,10 +23,10 @@ const STATS = [
     color:   C.primary,
   },
   {
-    value:   "$2.3B USD",
-    label:   "mercado de bienestar corporativo en México — creciendo 12% anual",
-    source:  "Grand View Research",
-    color:   C.gold,
+    value:   "$1,430",
+    label:   "MXN por colaborador al año. El plan nutricional personalizado más accesible del mercado.",
+    source:  "Precio base NutriiApp",
+    color:   C.primary,
   },
 ];
 

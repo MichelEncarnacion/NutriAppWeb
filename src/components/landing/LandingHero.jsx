@@ -109,7 +109,7 @@ export default function LandingHero() {
               >
                 NutriiApp combina IoT, IA clínica y un dashboard de ROI para transformar
                 el bienestar corporativo en resultados medibles. Planes nutricionales
-                personalizados por colaborador — desde $28,600 MXN/año para 20 personas.
+                personalizados por colaborador, desde $28,600 MXN/año para 20 personas.
               </Typography>
             </motion.div>
 

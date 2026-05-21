@@ -9,25 +9,25 @@ const STEPS = [
     num:   "01",
     Icon:  Wifi,
     title: "Medición con NutriiPoint",
-    desc:  "El dispositivo IoT instalado en tu empresa mide 16+ indicadores biométricos de cada colaborador en menos de 5 minutos: composición corporal, hidratación, masa muscular y biomarcadores clave.",
+    desc:  "NutriiPoint mide 16+ indicadores biométricos por colaborador en menos de 5 minutos.",
   },
   {
     num:   "02",
     Icon:  Sparkles,
     title: "IA genera el plan personalizado",
-    desc:  "Nuestro motor de IA procesa los datos biométricos junto con alergias, enfermedades, medicamentos y el presupuesto real del colaborador para generar un plan nutricional clínicamente preciso.",
+    desc:  "La IA crea un plan nutricional considerando biomarcadores, alergias, enfermedades y el presupuesto real de cada persona.",
   },
   {
     num:   "03",
     Icon:  Smartphone,
     title: "El colaborador actúa",
-    desc:  "Cada colaborador recibe su plan en la app móvil con guías de alimentación, listas de compra y seguimiento diario. Acompañamiento continuo sin depender del equipo de RR.HH.",
+    desc:  "Cada colaborador recibe su plan en la app con guías de alimentación, lista de compra y seguimiento diario.",
   },
   {
     num:   "04",
     Icon:  TrendingUp,
     title: "La empresa mide el impacto",
-    desc:  "El dashboard empresarial muestra KPIs de salud, reducción de ausentismo, productividad y ROI en tiempo real. Genera reportes de cumplimiento NOM-030 y NOM-035 con un clic.",
+    desc:  "El dashboard muestra KPIs de salud, productividad y ROI en tiempo real. Reportes NOM-030 y NOM-035 con un clic.",
   },
 ];
 

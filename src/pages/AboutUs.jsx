@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Box, Container, Typography, Chip } from "@mui/material";
 import { motion } from "framer-motion";
-import { Award, Leaf, ArrowRight } from "lucide-react";
+import { Award, Leaf, ArrowRight, Target } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/material";
 import LandingNavbar from "../components/landing/LandingNavbar";
@@ -13,22 +13,22 @@ import { supabase } from "../lib/supabase";
 /* ── Founders ──────────────────────────────────────────────── */
 const FOUNDERS = [
   {
-    name:  "Gio",
-    role:  "Liderazgo Clínico",
-    desc:  "Nutrióloga certificada. Diseña los protocolos clínicos que garantizan la precisión médica de cada plan generado por NutriiApp.",
+    name:  "Emanuel Basilio Vergara",
+    role:  "CEO y Fundador · Economista",
+    desc:  "Diseña la estrategia de negocio y el modelo go-to-market. Responsable del crecimiento, alianzas y relaciones con empresas en México.",
+    initials: "E",
+  },
+  {
+    name:  "Georgiana Estefania Mota Arias",
+    role:  "COO y Co-fundadora · Nutrióloga",
+    desc:  "Diseña los protocolos clínicos que garantizan la precisión médica de cada plan generado por NutriiApp.",
     initials: "G",
   },
   {
-    name:  "Mich",
-    role:  "Arquitectura Tecnológica",
-    desc:  "Ingeniería de software y diseño del motor de IA. Construye la infraestructura que conecta el NutriiPoint con el dashboard empresarial.",
+    name:  "Michel Encarnación Dionicio",
+    role:  "CTO y Co-fundador · Ing. de Software",
+    desc:  "Arquitectura tecnológica y motor de IA. Construye la infraestructura que conecta el NutriiPoint con el dashboard empresarial.",
     initials: "M",
-  },
-  {
-    name:  "Emanuel",
-    role:  "Estrategia y Negocio",
-    desc:  "Desarrollo de negocio y relaciones con empresas. Diseña el modelo de go-to-market y las alianzas estratégicas en México.",
-    initials: "E",
   },
 ];
 
@@ -56,7 +56,7 @@ const NEWS_FALLBACK = [
 
 /* ── Award ─────────────────────────────────────────────────── */
 const AWARD = {
-  name:   "Premio COPARMEX Puebla — Innovación Empresarial",
+  name:   "Premio COPARMEX Puebla: Innovación Empresarial",
   date:   "Mayo 2025",
   desc:   "NutriiApp fue reconocida por COPARMEX Puebla como proyecto de innovación empresarial destacado, valorando su impacto en la salud preventiva corporativa y su modelo financiero con margen bruto del 86.9% y TIR del 54.6%.",
 };
@@ -190,8 +190,58 @@ export default function AboutUs() {
                   fontStyle:  "italic",
                 }}
               >
-                "Convertir la salud preventiva en el activo más rentable de cada empresa mexicana,
-                devolviendo a cada colaborador el bienestar que merece y que su organización necesita."
+                "Ampliar el acceso a los servicios de nutrición y salud preventiva con el servicio
+                más accesible, personalizado y completo del mercado, para que nadie quede fuera
+                por restricciones de precio o tiempo."
+              </Typography>
+            </motion.div>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* ── Vision ── */}
+      <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 11 }, borderTop: `1px solid ${C.border}` }}>
+        <Container maxWidth="md">
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <motion.div variants={fadeInUp}>
+              <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
+                <Box sx={{ width: 48, height: 48, bgcolor: C.goldBg, borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Target size={22} color={C.gold} />
+                </Box>
+              </Box>
+              <Typography
+                component="h2"
+                sx={{
+                  color:      C.textPrimary,
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontWeight: 900,
+                  fontSize:   { xs: "1.6rem", md: "2rem" },
+                  textAlign:  "center",
+                  mb:         2,
+                  lineHeight: 1.3,
+                }}
+              >
+                Nuestra visión
+              </Typography>
+              <Typography
+                sx={{
+                  color:      C.textMuted,
+                  fontSize:   { xs: "1rem", md: "1.1rem" },
+                  lineHeight: 1.85,
+                  textAlign:  "center",
+                  maxWidth:   600,
+                  mx:         "auto",
+                  fontStyle:  "italic",
+                }}
+              >
+                "Ser el primer unicornio mexicano de salud y la empresa número uno en LATAM en
+                HealthTech dedicada a nutrición y planeación alimentaria, medido por ingresos
+                y número de usuarios."
               </Typography>
             </motion.div>
           </motion.div>

@@ -38,7 +38,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUsuarios from "./pages/admin/AdminUsuarios";
 import AdminPlanes from "./pages/admin/AdminPlanes";
 import AdminLecciones from "./pages/admin/AdminLecciones";
-import AdminNoticias from "./pages/admin/AdminNoticias";
+import AdminNoticias   from "./pages/admin/AdminNoticias";
+import AdminArticulos  from "./pages/admin/AdminArticulos";
 
 function AppRoutes() {
   return (
@@ -150,6 +151,9 @@ function AppRoutes() {
           } />
           <Route path="/admin/noticias" element={
             <AdminRoute><AdminNoticias /></AdminRoute>
+          } />
+          <Route path="/admin/articulos" element={
+            <AdminRoute><AdminArticulos /></AdminRoute>
           } />
 
           {/* ── 404 ──────────────────────────────────────── */}

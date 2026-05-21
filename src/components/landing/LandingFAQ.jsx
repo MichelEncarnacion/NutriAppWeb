@@ -8,7 +8,7 @@ import { C, fadeInUp, stagger } from "./landingTokens";
 const FAQS = [
   {
     q: "¿Cuánto cuesta NutriiApp para mi empresa?",
-    a: "$28,600 MXN al año para 20 colaboradores — eso es $1,430 MXN por persona al año. Somos 50% más baratos que el competidor corporativo más cercano y 65% más económicos que una consulta nutricional tradicional. El punto de equilibrio se alcanza en el mes 3.",
+    a: "$28,600 MXN al año para 20 colaboradores, equivalente a $1,430 MXN por persona al año. Somos 50% más baratos que el competidor corporativo más cercano y 65% más económicos que una consulta nutricional tradicional. El punto de equilibrio se alcanza en el mes 3.",
   },
   {
     q: "¿Cómo se calcula el ROI y cuándo veo resultados?",
@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     q: "¿Qué es el NutriiPoint y cómo se instala?",
-    a: "NutriiPoint es nuestro dispositivo IoT propio que mide 16+ indicadores corporales por colaborador — composición corporal, biométricos y biomarcadores — en menos de 5 minutos. La instalación en tu empresa toma menos de 1 día y no requiere modificaciones de infraestructura.",
+    a: "NutriiPoint es nuestro dispositivo IoT propio que mide 16+ indicadores corporales por colaborador: composición corporal, biométricos y biomarcadores, en menos de 5 minutos. La instalación en tu empresa toma menos de 1 día y no requiere modificaciones de infraestructura.",
   },
   {
     q: "¿Cómo cumple NutriiApp con NOM-030 y NOM-035?",
