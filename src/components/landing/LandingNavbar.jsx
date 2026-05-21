@@ -79,10 +79,28 @@ export default function LandingNavbar() {
             ))}
 
             <Button
+              onClick={() => navigate("/login")}
+              sx={{
+                ml:            1,
+                color:         textColor,
+                fontWeight:    600,
+                textTransform: "none",
+                borderRadius:  "10px",
+                px:            2,
+                py:            0.9,
+                fontSize:      "0.9rem",
+                border:        `1px solid ${scrolled || !onHero ? C.border : "rgba(255,255,255,0.3)"}`,
+                "&:hover":     { bgcolor: "rgba(255,255,255,0.12)" },
+              }}
+            >
+              Acceso colaboradores
+            </Button>
+
+            <Button
               onClick={() => navigate("/demo")}
               variant="contained"
               sx={{
-                ml:            1.5,
+                ml:            1,
                 bgcolor:       C.primary,
                 color:         C.white,
                 fontWeight:    700,
@@ -144,7 +162,27 @@ export default function LandingNavbar() {
               </ListItem>
             ))}
 
-            <ListItem disablePadding sx={{ mt: 2 }}>
+            <ListItem disablePadding sx={{ mt: 1 }}>
+              <Button
+                fullWidth
+                onClick={() => { navigate("/login"); setMobileOpen(false); }}
+                sx={{
+                  justifyContent: "flex-start",
+                  color:          C.textPrimary,
+                  textTransform:  "none",
+                  fontWeight:     600,
+                  borderRadius:   "10px",
+                  py:             1.2,
+                  px:             2,
+                  border:         `1px solid ${C.border}`,
+                  "&:hover":      { bgcolor: C.bgAlt },
+                }}
+              >
+                Acceso colaboradores
+              </Button>
+            </ListItem>
+
+            <ListItem disablePadding sx={{ mt: 1 }}>
               <Button
                 fullWidth
                 onClick={() => { navigate("/demo"); setMobileOpen(false); }}
