@@ -15,8 +15,8 @@ export const C = {
   border:      "#E2E8F0",
   borderGreen: "rgba(27,94,32,0.15)",
   white:       "#FFFFFF",
-  heroGrad:    "linear-gradient(135deg, #1B5E20 0%, #2E7D32 55%, #43A047 100%)",
-  ctaGrad:     "linear-gradient(135deg, #1B5E20 0%, #2E7D32 100%)",
+  heroGrad:    "linear-gradient(135deg, #0D2818 0%, #1B5E20 55%, #2E7D32 100%)",
+  ctaGrad:     "linear-gradient(135deg, #0D2818 0%, #1B5E20 55%, #2E7D32 100%)",
   shadow:      "0 2px 12px rgba(0,0,0,0.06)",
   shadowMd:    "0 6px 24px rgba(0,0,0,0.09)",
   shadowLg:    "0 16px 56px rgba(0,0,0,0.13)",
@@ -29,7 +29,7 @@ export const fadeInUp = {
 
 export const stagger = {
   hidden:  {},
-  visible: { transition: { staggerChildren: 0.12 } },
+  visible: { transition: { staggerChildren: 0.18 } },
 };
 
 export const cardHover = {
@@ -37,4 +37,14 @@ export const cardHover = {
   "&:hover": {
     transform: "translateY(-4px)",
   },
+};
+
+export const floatAnim = {
+  animate:    { y: [0, -10, 0] },
+  transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+};
+
+export const pulseAnim = {
+  animate:    { scale: [1, 1.4, 1] },
+  transition: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
 };
