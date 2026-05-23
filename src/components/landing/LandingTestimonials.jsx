@@ -274,6 +274,7 @@ export default function LandingTestimonials() {
           <motion.div
             drag="x"
             dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.15}
             onDragEnd={(_, info) => {
               if (info.offset.x < -50) setActiveIndex(i => Math.min(i + 1, TESTIMONIALS.length - 1));
               if (info.offset.x > 50)  setActiveIndex(i => Math.max(i - 1, 0));
