@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { C, fadeInUp, stagger } from "./landingTokens";
+import { C, fadeInUp, stagger, pulseAnim } from "./landingTokens";
 
 const HIGHLIGHTS = [
   "Sin compromiso de contrato",
@@ -11,6 +11,9 @@ const HIGHLIGHTS = [
   "Punto de equilibrio en el mes 3",
   "50% más barato que la competencia",
 ];
+
+const HEADLINE_WORDS = ["¿Listo", "para", "medir", "el", "ROI"];
+const HEADLINE_WORDS2 = ["de", "tu", "inversión", "en", "salud?"];
 
 export default function LandingCTA() {
   const navigate = useNavigate();
@@ -24,6 +27,7 @@ export default function LandingCTA() {
         overflow:   "hidden",
       }}
     >
+      {/* Radial base */}
       <Box
         sx={{
           position:        "absolute",
@@ -35,6 +39,40 @@ export default function LandingCTA() {
         }}
       />
 
+      {/* Orbe izquierda */}
+      <motion.div
+        animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.55, 0.35] }}
+        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          position:     "absolute",
+          top:          "-20%",
+          left:         "-10%",
+          width:        "45%",
+          aspectRatio:  "1",
+          borderRadius: "50%",
+          background:   "radial-gradient(circle, rgba(165,214,167,0.15), transparent 70%)",
+          filter:       "blur(50px)",
+          pointerEvents:"none",
+        }}
+      />
+
+      {/* Orbe derecha */}
+      <motion.div
+        animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.45, 0.25] }}
+        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+        style={{
+          position:     "absolute",
+          bottom:       "-15%",
+          right:        "-8%",
+          width:        "40%",
+          aspectRatio:  "1",
+          borderRadius: "50%",
+          background:   "radial-gradient(circle, rgba(67,160,71,0.12), transparent 70%)",
+          filter:       "blur(60px)",
+          pointerEvents:"none",
+        }}
+      />
+
       <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
         <motion.div
           variants={stagger}
@@ -42,35 +80,84 @@ export default function LandingCTA() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
+          {/* Badge de actividad */}
           <motion.div variants={fadeInUp}>
-            <Typography
-              component="h2"
-              sx={{
-                color:      C.white,
-                fontFamily: "Plus Jakarta Sans, sans-serif",
-                fontWeight: 900,
-                fontSize:   { xs: "2rem", md: "2.8rem" },
-                lineHeight: 1.15,
-                textAlign:  "center",
-                mb:         2,
-              }}
-            >
-              ¿Listo para medir el ROI
-              <br />
-              de tu inversión en salud?
-            </Typography>
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
+              <Box
+                sx={{
+                  display:      "flex",
+                  alignItems:   "center",
+                  gap:          0.75,
+                  bgcolor:      "rgba(255,255,255,0.1)",
+                  border:       "1px solid rgba(255,255,255,0.18)",
+                  borderRadius: "20px",
+                  px:           2,
+                  py:           0.75,
+                }}
+              >
+                <motion.div {...pulseAnim}>
+                  <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#4CAF50", boxShadow: "0 0 8px #4CAF50" }} />
+                </motion.div>
+                <Typography sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.78rem", fontWeight: 600 }}>
+                  +124 empresas activas este mes
+                </Typography>
+              </Box>
+            </Box>
+          </motion.div>
+
+          {/* Headline animado por palabras */}
+          <motion.div variants={fadeInUp}>
+            <Box sx={{ textAlign: "center", mb: 2 }}>
+              <Typography
+                component="h2"
+                sx={{
+                  color:      C.white,
+                  fontFamily: "Plus Jakarta Sans, sans-serif",
+                  fontWeight: 900,
+                  fontSize:   { xs: "2rem", md: "2.8rem" },
+                  lineHeight: 1.15,
+                }}
+              >
+                <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+                  {HEADLINE_WORDS.map((word, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.07, duration: 0.4, ease: "easeOut" }}
+                    >
+                      {word}
+                    </motion.span>
+                  ))}
+                </Box>
+                <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+                  {HEADLINE_WORDS2.map((word, i) => (
+                    <motion.span
+                      key={i}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: (HEADLINE_WORDS.length + i) * 0.07, duration: 0.4, ease: "easeOut" }}
+                    >
+                      {word}
+                    </motion.span>
+                  ))}
+                </Box>
+              </Typography>
+            </Box>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
             <Typography
               sx={{
-                color:     "rgba(255,255,255,0.78)",
-                fontSize:  "1.05rem",
+                color:      "rgba(255,255,255,0.78)",
+                fontSize:   "1.05rem",
                 lineHeight: 1.7,
-                textAlign: "center",
-                mb:        5,
-                maxWidth:  480,
-                mx:        "auto",
+                textAlign:  "center",
+                mb:         5,
+                maxWidth:   480,
+                mx:         "auto",
               }}
             >
               $28,600 MXN/año para 20 colaboradores. La inversión más inteligente
@@ -78,28 +165,49 @@ export default function LandingCTA() {
             </Typography>
           </motion.div>
 
+          {/* Botón con shimmer */}
           <motion.div variants={fadeInUp}>
             <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-              <Button
-                onClick={() => navigate("/demo")}
-                variant="contained"
-                size="large"
-                endIcon={<ArrowRight size={18} />}
-                sx={{
-                  bgcolor:       C.white,
-                  color:         C.primary,
-                  fontWeight:    800,
-                  textTransform: "none",
-                  borderRadius:  "12px",
-                  px:            4,
-                  py:            1.7,
-                  fontSize:      "1.05rem",
-                  boxShadow:     "0 6px 28px rgba(0,0,0,0.2)",
-                  "&:hover":     { bgcolor: "#F0FFF4", boxShadow: "0 10px 36px rgba(0,0,0,0.25)" },
-                }}
-              >
-                Agendar mi demo gratuita
-              </Button>
+              <Box sx={{ position: "relative", overflow: "hidden", borderRadius: "12px", display: "inline-flex" }}>
+                <Button
+                  onClick={() => navigate("/demo")}
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowRight size={18} />}
+                  sx={{
+                    bgcolor:       C.white,
+                    color:         C.primary,
+                    fontWeight:    800,
+                    textTransform: "none",
+                    borderRadius:  "12px",
+                    px:            4,
+                    py:            1.7,
+                    fontSize:      "1.05rem",
+                    boxShadow:     "0 6px 28px rgba(0,0,0,0.2)",
+                    "&:hover":     { bgcolor: "#F0FFF4", boxShadow: "0 10px 36px rgba(0,0,0,0.25)" },
+                    position:      "relative",
+                    zIndex:        1,
+                  }}
+                >
+                  Agendar mi demo gratuita
+                </Button>
+                {/* Shimmer sweep */}
+                <motion.div
+                  animate={{ x: ["-100%", "200%"] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
+                  style={{
+                    position:    "absolute",
+                    top:         0,
+                    left:        0,
+                    width:       "40%",
+                    height:      "100%",
+                    background:  "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)",
+                    transform:   "skewX(-15deg)",
+                    pointerEvents: "none",
+                    zIndex:      2,
+                  }}
+                />
+              </Box>
             </Box>
           </motion.div>
 
