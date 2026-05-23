@@ -1,0 +1,103 @@
+<h2>Diseño propuesto — Hero Section</h2>
+<p class="subtitle">Mejora progresiva sobre el código existente. ¿Te parece bien esta dirección?</p>
+
+<div class="mockup">
+  <div class="mockup-header">Hero — antes vs después</div>
+  <div class="mockup-body">
+    <div class="split">
+
+      <!-- ANTES -->
+      <div class="mockup">
+        <div class="mockup-header" style="background:#f0f0f0;color:#666;">Antes</div>
+        <div class="mockup-body" style="background:linear-gradient(135deg,#1B5E20,#2E7D32,#43A047);padding:20px;min-height:220px;display:flex;flex-direction:column;gap:12px;">
+          <div style="width:70%;height:10px;background:rgba(255,255,255,0.9);border-radius:5px;"></div>
+          <div style="width:55%;height:10px;background:rgba(165,214,167,0.7);border-radius:5px;"></div>
+          <div style="width:90%;height:6px;background:rgba(255,255,255,0.3);border-radius:3px;margin-top:4px;"></div>
+          <div style="width:80%;height:6px;background:rgba(255,255,255,0.3);border-radius:3px;"></div>
+          <div style="display:flex;gap:8px;margin-top:8px;">
+            <div style="padding:8px 16px;background:white;border-radius:8px;width:100px;height:20px;"></div>
+            <div style="padding:8px 16px;border:1.5px solid rgba(255,255,255,0.4);border-radius:8px;width:100px;height:20px;"></div>
+          </div>
+          <div style="margin-top:auto;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:12px;height:80px;display:flex;align-items:center;justify-content:center;">
+            <span style="color:rgba(255,255,255,0.4);font-size:10px;">Dashboard mockup estático</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESPUÉS -->
+      <div class="mockup">
+        <div class="mockup-header" style="background:#E8F5E9;color:#1B5E20;">Después ✨</div>
+        <div class="mockup-body" style="background:linear-gradient(135deg,#0D2818,#1B5E20,#2E7D32);padding:20px;min-height:220px;display:flex;flex-direction:column;gap:10px;position:relative;overflow:hidden;">
+          <!-- Orbes animadas (simuladas) -->
+          <div style="position:absolute;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(165,214,167,0.12),transparent);top:-30px;right:20px;filter:blur(20px);"></div>
+          <div style="position:absolute;width:80px;height:80px;border-radius:50%;background:radial-gradient(circle,rgba(67,160,71,0.15),transparent);bottom:20px;left:10px;filter:blur(15px);"></div>
+
+          <!-- Headline con gradiente animado -->
+          <div style="width:75%;height:10px;background:linear-gradient(90deg,rgba(255,255,255,0.95),rgba(165,214,167,0.8));border-radius:5px;"></div>
+          <div style="width:60%;height:10px;background:linear-gradient(90deg,rgba(165,214,167,0.9),rgba(232,245,233,0.6));border-radius:5px;"></div>
+          <div style="width:85%;height:5px;background:rgba(255,255,255,0.25);border-radius:3px;margin-top:2px;"></div>
+          <div style="width:75%;height:5px;background:rgba(255,255,255,0.25);border-radius:3px;"></div>
+
+          <!-- Botones -->
+          <div style="display:flex;gap:8px;margin-top:4px;">
+            <div style="padding:6px 14px;background:white;border-radius:10px;width:90px;height:22px;box-shadow:0 4px 12px rgba(0,0,0,0.2);"></div>
+            <div style="padding:6px 14px;border:1.5px solid rgba(255,255,255,0.5);border-radius:10px;width:90px;height:22px;background:rgba(255,255,255,0.05);"></div>
+          </div>
+
+          <!-- Dashboard 3D -->
+          <div style="margin-top:6px;position:relative;">
+            <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:14px;padding:10px;box-shadow:0 20px 50px rgba(0,0,0,0.4);transform:perspective(400px) rotateX(4deg) rotateY(-4deg);backdrop-filter:blur(8px);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div style="width:50%;height:6px;background:rgba(255,255,255,0.7);border-radius:3px;"></div>
+                <div style="width:15%;height:5px;background:rgba(255,255,255,0.25);border-radius:3px;"></div>
+              </div>
+              <!-- KPI contadores animados -->
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+                <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:8px;border:1px solid rgba(255,255,255,0.08);">
+                  <div style="color:#A5D6A7;font-size:13px;font-weight:900;font-family:monospace;">−38%</div>
+                  <div style="width:60%;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:3px;"></div>
+                </div>
+                <div style="background:rgba(255,255,255,0.07);border-radius:8px;padding:8px;border:1px solid rgba(255,255,255,0.08);">
+                  <div style="color:#81C784;font-size:13px;font-weight:900;font-family:monospace;">+24%</div>
+                  <div style="width:50%;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;margin-top:3px;"></div>
+                </div>
+              </div>
+              <!-- Barra de progreso animada -->
+              <div style="height:4px;background:rgba(255,255,255,0.08);border-radius:2px;overflow:hidden;">
+                <div style="width:72%;height:100%;background:linear-gradient(90deg,#66BB6A,#A5D6A7);border-radius:2px;"></div>
+              </div>
+            </div>
+            <!-- Floating badge -->
+            <div style="position:absolute;bottom:-8px;right:10px;background:white;border-radius:8px;padding:4px 8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);display:flex;align-items:center;gap:4px;">
+              <div style="width:6px;height:6px;border-radius:50%;background:#4CAF50;"></div>
+              <span style="font-size:9px;color:#1B5E20;font-weight:700;">+24 empresas este mes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div style="margin-top:16px;padding:12px;background:#F0FFF4;border-radius:8px;border:1px solid #C8E6C9;">
+      <p style="margin:0;font-size:13px;color:#1B5E20;"><strong>Cambios en el Hero:</strong></p>
+      <ul style="margin:8px 0 0;padding-left:16px;font-size:12px;color:#2E7D32;line-height:1.8;">
+        <li>Fondo más profundo con orbes de luz animadas (Framer Motion keyframes)</li>
+        <li>Dashboard con perspectiva 3D sutil (rotateX/rotateY) + animación de flotación</li>
+        <li>KPIs que cuentan desde 0 al entrar al viewport (react-countup)</li>
+        <li>Badge flotante "empresas activas" con pulso verde</li>
+        <li>Headline con gradiente animado en la segunda línea</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div style="margin-top:16px;display:flex;gap:12px;">
+  <div class="option" data-choice="approve" onclick="toggleSelect(this)" style="flex:1;">
+    <div class="letter" style="background:#1B5E20;">✓</div>
+    <div class="content"><h3>Aprobado, siguiente sección</h3></div>
+  </div>
+  <div class="option" data-choice="adjust" onclick="toggleSelect(this)" style="flex:1;">
+    <div class="letter" style="background:#888;">↩</div>
+    <div class="content"><h3>Quiero ajustes</h3></div>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<h2>¿Qué dirección visual quieres para el landing?</h2>
+<p class="subtitle">El landing actual usa verde corporativo limpio. ¿Hacia dónde lo llevamos?</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(135deg,#0D2818 0%,#1B5E20 60%,#2E7D32 100%);padding:24px;min-height:160px;display:flex;flex-direction:column;gap:12px;">
+      <div style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);border-radius:12px;padding:14px;">
+        <div style="width:60%;height:8px;background:rgba(165,214,167,0.6);border-radius:4px;margin-bottom:8px;"></div>
+        <div style="width:40%;height:6px;background:rgba(255,255,255,0.2);border-radius:4px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.08);">
+          <div style="width:30px;height:30px;border-radius:50%;background:rgba(165,214,167,0.25);margin-bottom:6px;"></div>
+          <div style="width:80%;height:5px;background:rgba(255,255,255,0.2);border-radius:3px;"></div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:8px;padding:10px;border:1px solid rgba(255,255,255,0.08);">
+          <div style="width:30px;height:30px;border-radius:50%;background:rgba(165,214,167,0.25);margin-bottom:6px;"></div>
+          <div style="width:80%;height:5px;background:rgba(255,255,255,0.2);border-radius:3px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Dark Premium</h3>
+      <p>Fondo oscuro profundo tipo Vercel/Linear. Verde vibrante como acento. Glassmorphism + partículas animadas. Transmite tecnología de punta y exclusividad.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F8FFF9;padding:24px;min-height:160px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid #E2E8F0;">
+      <div style="background:#FFFFFF;border:1px solid #E2E8F0;border-radius:12px;padding:14px;box-shadow:0 4px 16px rgba(27,94,32,0.08);">
+        <div style="width:60%;height:8px;background:#1B5E20;border-radius:4px;margin-bottom:8px;opacity:0.8;"></div>
+        <div style="width:40%;height:6px;background:#A5D6A7;border-radius:4px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div style="flex:1;background:#FFFFFF;border-radius:8px;padding:10px;border:1px solid #E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="width:30px;height:30px;border-radius:50%;background:#E8F5E9;margin-bottom:6px;display:flex;align-items:center;justify-content:center;">
+            <div style="width:14px;height:14px;background:#2E7D32;border-radius:50%;"></div>
+          </div>
+          <div style="width:80%;height:5px;background:#E2E8F0;border-radius:3px;"></div>
+        </div>
+        <div style="flex:1;background:#FFFFFF;border-radius:8px;padding:10px;border:1px solid #E2E8F0;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+          <div style="width:30px;height:30px;border-radius:50%;background:#E8F5E9;margin-bottom:6px;display:flex;align-items:center;justify-content:center;">
+            <div style="width:14px;height:14px;background:#2E7D32;border-radius:50%;"></div>
+          </div>
+          <div style="width:80%;height:5px;background:#E2E8F0;border-radius:3px;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — Light Elevated (Recomendado)</h3>
+      <p>Base blanca/crema con verdes ricos. Tarjetas con sombras suaves y micro-animaciones. Imágenes reales de personas. Estilo Notion/Stripe. Profesional y confiable para B2B.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:linear-gradient(180deg,#FFFFFF 0%,#F0FFF4 100%);padding:24px;min-height:160px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid #E2E8F0;">
+      <div style="position:relative;background:linear-gradient(135deg,#1B5E20,#43A047);border-radius:12px;padding:14px;overflow:hidden;">
+        <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,0.08);"></div>
+        <div style="width:50%;height:8px;background:rgba(255,255,255,0.9);border-radius:4px;margin-bottom:8px;"></div>
+        <div style="width:35%;height:6px;background:rgba(255,255,255,0.5);border-radius:4px;"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <div style="flex:1;text-align:center;padding:8px;background:rgba(27,94,32,0.06);border-radius:8px;">
+          <div style="width:24px;height:24px;background:#1B5E20;border-radius:6px;margin:0 auto 4px;"></div>
+          <div style="width:60%;height:4px;background:#C8E6C9;border-radius:3px;margin:0 auto;"></div>
+        </div>
+        <div style="flex:1;text-align:center;padding:8px;background:rgba(27,94,32,0.06);border-radius:8px;">
+          <div style="width:24px;height:24px;background:#1B5E20;border-radius:6px;margin:0 auto 4px;"></div>
+          <div style="width:60%;height:4px;background:#C8E6C9;border-radius:3px;margin:0 auto;"></div>
+        </div>
+        <div style="flex:1;text-align:center;padding:8px;background:rgba(27,94,32,0.06);border-radius:8px;">
+          <div style="width:24px;height:24px;background:#1B5E20;border-radius:6px;margin:0 auto 4px;"></div>
+          <div style="width:60%;height:4px;background:#C8E6C9;border-radius:3px;margin:0 auto;"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Bold & Fresh</h3>
+      <p>Hero con blobs de color animados, secciones alternas con colores vibrantes. Más dinámico y moderno tipo Webflow. Llamativo pero mantiene credibilidad corporativa.</p>
+    </div>
+  </div>
+
+</div>

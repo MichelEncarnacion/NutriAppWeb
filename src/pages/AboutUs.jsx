@@ -16,7 +16,7 @@ const CATEGORY_COLORS = {
 };
 
 const COMPANY_STATS = [
-  { value: "2024",  label: "Año de fundación",      sub: "Puebla, México"       },
+  { value: "2025",  label: "Año de fundación",      sub: "Puebla, México"       },
   { value: "1°",    label: "Lugar COPARMEX Start Up", sub: "edición 2026"        },
   { value: "16+",   label: "Indicadores biométricos", sub: "por NutriiPoint"     },
 ];

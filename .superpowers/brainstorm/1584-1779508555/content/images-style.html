@@ -1,0 +1,93 @@
+<h2>¿Qué tipo de imágenes quieres en el landing?</h2>
+<p class="subtitle">Animaciones: Dinámicas ✓ — Ahora definamos las imágenes/visuales para cada sección.</p>
+
+<div class="cards">
+
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F0F4F8;padding:16px;min-height:160px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid #E2E8F0;">
+      <!-- Mockup: personas reales en oficina -->
+      <div style="display:flex;gap:8px;height:100px;">
+        <div style="flex:2;background:linear-gradient(135deg,#C8E6C9,#A5D6A7);border-radius:10px;display:flex;align-items:flex-end;justify-content:center;padding:8px;position:relative;overflow:hidden;">
+          <div style="position:absolute;top:10px;left:50%;transform:translateX(-50%);width:32px;height:32px;background:rgba(255,255,255,0.7);border-radius:50%;"></div>
+          <div style="position:absolute;top:40px;left:50%;transform:translateX(-50%);width:50px;height:30px;background:rgba(255,255,255,0.5);border-radius:8px 8px 0 0;"></div>
+          <span style="font-size:10px;color:#1B5E20;font-weight:700;position:relative;">Foto: colaborador</span>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+          <div style="flex:1;background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:9px;color:#2E7D32;font-weight:600;">Equipo RR.HH.</span>
+          </div>
+          <div style="flex:1;background:linear-gradient(135deg,#DCEDC8,#C8E6C9);border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:9px;color:#2E7D32;font-weight:600;">Oficina</span>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#666;text-align:center;">Fotos reales de personas en contexto laboral (Unsplash/Pexels)</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Fotografía Real</h3>
+      <p>Fotos de personas reales: colaboradores saludables, equipos en oficina, reuniones de RR.HH. Muy humano y empático. Las mejores fotos gratuitas vía Unsplash.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#F8FFF9;padding:16px;min-height:160px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid #E2E8F0;">
+      <!-- Mockup: dashboard 3D + device mockups -->
+      <div style="display:flex;gap:8px;height:100px;align-items:center;">
+        <div style="flex:1;position:relative;">
+          <div style="background:linear-gradient(135deg,#1B5E20,#43A047);border-radius:12px;padding:10px;transform:perspective(300px) rotateY(-10deg);box-shadow:8px 8px 20px rgba(0,0,0,0.15);">
+            <div style="width:100%;height:6px;background:rgba(255,255,255,0.4);border-radius:3px;margin-bottom:4px;"></div>
+            <div style="width:70%;height:5px;background:rgba(255,255,255,0.2);border-radius:3px;margin-bottom:8px;"></div>
+            <div style="display:flex;gap:4px;">
+              <div style="flex:1;height:20px;background:rgba(255,255,255,0.1);border-radius:4px;"></div>
+              <div style="flex:1;height:20px;background:rgba(255,255,255,0.1);border-radius:4px;"></div>
+            </div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;">
+          <div style="width:40px;height:70px;background:linear-gradient(180deg,#2E2E2E,#1A1A1A);border-radius:8px;border:2px solid #444;display:flex;align-items:center;justify-content:center;">
+            <div style="width:28px;height:50px;background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:4px;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#666;text-align:center;">Dashboard en 3D + mockup en teléfono/laptop</div>
+    </div>
+    <div class="card-body">
+      <h3>B — Product Mockups 3D (Recomendado)</h3>
+      <p>El dashboard de NutriApp renderizado en dispositivos 3D (laptop, teléfono). Perspectiva isométrica animada. Muestra el producto de forma impactante. Estilo moderno SaaS.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#FAFAFA;padding:16px;min-height:160px;display:flex;flex-direction:column;gap:8px;border-bottom:1px solid #E2E8F0;">
+      <!-- Mockup: combinado -->
+      <div style="display:flex;gap:6px;height:100px;">
+        <div style="flex:1;position:relative;">
+          <div style="background:linear-gradient(135deg,#C8E6C9,#81C784);border-radius:10px;height:65px;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+            <div style="width:28px;height:28px;background:rgba(255,255,255,0.7);border-radius:50%;position:absolute;top:8px;left:50%;transform:translateX(-50%);"></div>
+            <div style="width:44px;height:22px;background:rgba(255,255,255,0.5);border-radius:6px 6px 0 0;position:absolute;bottom:0;left:50%;transform:translateX(-50%);"></div>
+          </div>
+          <div style="background:linear-gradient(135deg,#1B5E20,#2E7D32);border-radius:8px;padding:6px;margin-top:4px;transform:perspective(200px) rotateX(5deg);">
+            <div style="width:80%;height:4px;background:rgba(255,255,255,0.4);border-radius:2px;margin-bottom:3px;"></div>
+            <div style="width:50%;height:4px;background:rgba(255,255,255,0.2);border-radius:2px;"></div>
+          </div>
+        </div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:4px;justify-content:center;">
+          <div style="background:linear-gradient(135deg,#E8F5E9,#DCEDC8);border-radius:8px;padding:6px;display:flex;align-items:center;gap:4px;">
+            <div style="width:12px;height:12px;background:#1B5E20;border-radius:50%;flex-shrink:0;"></div>
+            <div style="width:60%;height:4px;background:#1B5E20;border-radius:2px;opacity:0.5;"></div>
+          </div>
+          <div style="background:linear-gradient(135deg,#E8F5E9,#DCEDC8);border-radius:8px;padding:6px;display:flex;align-items:center;gap:4px;">
+            <div style="width:12px;height:12px;background:#2E7D32;border-radius:50%;flex-shrink:0;"></div>
+            <div style="width:45%;height:4px;background:#2E7D32;border-radius:2px;opacity:0.5;"></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#666;text-align:center;">Foto real de persona + dashboard flotante encima</div>
+    </div>
+    <div class="card-body">
+      <h3>C — Híbrido: Foto + UI Flotante</h3>
+      <p>Foto de persona real en el hero con el dashboard de la app flotando encima animado. Lo mejor de ambos mundos: conexión humana + demostración del producto.</p>
+    </div>
+  </div>
+
+</div>
