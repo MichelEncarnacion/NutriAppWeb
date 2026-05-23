@@ -8,11 +8,11 @@ import { C, fadeInUp, stagger } from "./landingTokens";
 const FAQS = [
   {
     q: "¿Cuánto cuesta NutriiApp para mi empresa?",
-    a: "$28,600 MXN al año para 20 colaboradores, equivalente a $1,430 MXN por persona al año. Somos 50% más baratos que el competidor corporativo más cercano y 65% más económicos que una consulta nutricional tradicional. El punto de equilibrio se alcanza en el mes 3.",
+    a: "$28,600 MXN al año para 20 colaboradores, equivalente a $1,430 MXN por persona al año. Somos 50% más baratos que el competidor corporativo más cercano y 65% más económicos que una consulta nutricional tradicional.",
   },
   {
     q: "¿Cómo se calcula el ROI y cuándo veo resultados?",
-    a: "El dashboard mide reducción de ausentismo, incremento de productividad y ahorro en servicios médicos. En promedio, nuestros clientes reportan ROI positivo desde el tercer mes. Con un margen bruto del 86.9% y una TIR del 54.6% a 5 años, la inversión en NutriiApp se justifica sola ante el CFO.",
+    a: "El dashboard mide reducción de ausentismo, incremento de productividad y ahorro en servicios médicos. Con un margen bruto del 86.9% y una TIR del 54.6% a 5 años, la inversión en NutriiApp se justifica sola ante el CFO.",
   },
   {
     q: "¿Qué es el NutriiPoint y cómo se instala?",

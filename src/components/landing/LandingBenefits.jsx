@@ -122,19 +122,6 @@ export default function LandingBenefits() {
                 50% más barato que el competidor corporativo más cercano.
                 65% más barato que una consulta nutricional tradicional.
               </Typography>
-              <Box
-                sx={{
-                  display:      "inline-block",
-                  bgcolor:      "#E8F5E9",
-                  borderRadius: "10px",
-                  px:           2,
-                  py:           1,
-                }}
-              >
-                <Typography sx={{ color: C.primary, fontWeight: 700, fontSize: "0.85rem" }}>
-                  Punto de equilibrio en el mes 3
-                </Typography>
-              </Box>
             </Box>
           </motion.div>
 

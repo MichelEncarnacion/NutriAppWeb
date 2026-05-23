@@ -4,7 +4,7 @@ import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import { ArrowRight, PlayCircle, ShieldCheck } from "lucide-react";
-import { C, fadeInUp, stagger, floatAnim, pulseAnim } from "./landingTokens";
+import { C, fadeInUp, stagger, floatAnim } from "./landingTokens";
 
 const TRUST_BADGES = [
   "NOM-030 / NOM-035",
@@ -266,7 +266,7 @@ export default function LandingHero() {
 
                   <Box sx={{ p: 2.5 }}>
                     {/* KPI row con CountUp */}
-                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.25, mb: 2 }}>
+                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.25, mb: 2, alignItems: "stretch" }}>
                       {KPIS.map((kpi) => (
                         <Box
                           key={kpi.label}
@@ -275,6 +275,8 @@ export default function LandingHero() {
                             borderRadius: "10px",
                             p:            1.25,
                             border:       "1px solid rgba(255,255,255,0.08)",
+                            display:      "flex",
+                            flexDirection:"column",
                           }}
                         >
                           <Typography sx={{ color: kpi.color, fontWeight: 900, fontSize: "1.15rem", lineHeight: 1 }}>
@@ -354,30 +356,6 @@ export default function LandingHero() {
                   </Box>
                 </Box>
 
-                {/* Badge flotante */}
-                <Box
-                  sx={{
-                    position:     "absolute",
-                    bottom:       -14,
-                    right:        16,
-                    bgcolor:      C.white,
-                    borderRadius: "10px",
-                    px:           1.5,
-                    py:           0.75,
-                    boxShadow:    "0 4px 16px rgba(0,0,0,0.2)",
-                    display:      "flex",
-                    alignItems:   "center",
-                    gap:          0.75,
-                    zIndex:       2,
-                  }}
-                >
-                  <motion.div {...pulseAnim}>
-                    <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#4CAF50", boxShadow: "0 0 6px #4CAF50" }} />
-                  </motion.div>
-                  <Typography sx={{ color: C.primary, fontSize: "0.72rem", fontWeight: 700 }}>
-                    +124 empresas activas
-                  </Typography>
-                </Box>
               </motion.div>
             </Box>
           </motion.div>

@@ -3,12 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { C, fadeInUp, stagger, pulseAnim } from "./landingTokens";
+import { C, fadeInUp, stagger } from "./landingTokens";
 
 const HIGHLIGHTS = [
   "Sin compromiso de contrato",
   "Demo personalizada en 24 h",
-  "Punto de equilibrio en el mes 3",
   "50% más barato que la competencia",
 ];
 
@@ -80,31 +79,6 @@ export default function LandingCTA() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.3 }}
         >
-          {/* Badge de actividad */}
-          <motion.div variants={fadeInUp}>
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-              <Box
-                sx={{
-                  display:      "flex",
-                  alignItems:   "center",
-                  gap:          0.75,
-                  bgcolor:      "rgba(255,255,255,0.1)",
-                  border:       "1px solid rgba(255,255,255,0.18)",
-                  borderRadius: "20px",
-                  px:           2,
-                  py:           0.75,
-                }}
-              >
-                <motion.div {...pulseAnim}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: "50%", bgcolor: "#4CAF50", boxShadow: "0 0 8px #4CAF50" }} />
-                </motion.div>
-                <Typography sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.78rem", fontWeight: 600 }}>
-                  +124 empresas activas este mes
-                </Typography>
-              </Box>
-            </Box>
-          </motion.div>
-
           {/* Headline animado por palabras */}
           <motion.div variants={fadeInUp}>
             <Box sx={{ textAlign: "center", mb: 2 }}>

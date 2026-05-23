@@ -118,7 +118,7 @@ export default function LandingHowItWorks() {
                 variants={fadeInUp}
                 transition={{ delay: i * 0.15 }}
               >
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", height: "100%" }}>
                   {/* Ícono con ring */}
                   <Box
                     sx={{
@@ -166,7 +166,7 @@ export default function LandingHowItWorks() {
                   >
                     {step.title}
                   </Typography>
-                  <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", lineHeight: 1.7, mb: 1.5 }}>
+                  <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", lineHeight: 1.7, mb: 1.5, flex: 1 }}>
                     {step.desc}
                   </Typography>
 
