@@ -28,9 +28,6 @@ dist-ssr
 
 .mcp.json
 .claude
-*.md
 *.pid
-*.html
-*.txt
-.gitignore
 *-stopped
+run_sql.cjs

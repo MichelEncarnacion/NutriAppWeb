@@ -27,8 +27,6 @@ const PILLARS = [
     Icon:        BarChart3,
     title:       "ROI medible desde el día uno",
     desc:        "KPIs de productividad, ausentismo y retorno de inversión en tiempo real. Reportes NOM-030 y NOM-035 con un clic, sin trabajo extra para RR.HH.",
-    metric:      "3.2×",
-    metricLabel: "retorno promedio de inversión",
     color:       C.gold,
     iconBg:      "#FFF8E1",
   },
@@ -138,22 +136,24 @@ export default function LandingBenefits() {
                       <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.75, mb: 2 }}>
                         {desc}
                       </Typography>
-                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.75 }}>
-                        <Typography
-                          sx={{
-                            color:      color,
-                            fontFamily: "Plus Jakarta Sans, sans-serif",
-                            fontWeight: 900,
-                            fontSize:   "1.6rem",
-                            lineHeight: 1,
-                          }}
-                        >
-                          {metric}
-                        </Typography>
-                        <Typography sx={{ color: C.textMuted, fontSize: "0.78rem", fontWeight: 600 }}>
-                          {metricLabel}
-                        </Typography>
-                      </Box>
+                      {metric && (
+                        <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.75 }}>
+                          <Typography
+                            sx={{
+                              color:      color,
+                              fontFamily: "Plus Jakarta Sans, sans-serif",
+                              fontWeight: 900,
+                              fontSize:   "1.6rem",
+                              lineHeight: 1,
+                            }}
+                          >
+                            {metric}
+                          </Typography>
+                          <Typography sx={{ color: C.textMuted, fontSize: "0.78rem", fontWeight: 600 }}>
+                            {metricLabel}
+                          </Typography>
+                        </Box>
+                      )}
                     </Box>
                   </Box>
                 </motion.div>

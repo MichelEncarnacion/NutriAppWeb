@@ -20,7 +20,6 @@ const EMPLOYEES = [
 const KPIS = [
   { label: "Ausentismo",    value: "−38%", sub: "vs. año ant.", color: "#A5D6A7" },
   { label: "Productividad", value: "+24%", sub: "índice gral.", color: "#81C784" },
-  { label: "ROI acum.",     value: "3.2×", sub: "mes 7",       color: "#66BB6A" },
 ];
 
 export default function LandingHero() {
