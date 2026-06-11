@@ -32,19 +32,7 @@ export const stagger = {
   visible: { transition: { staggerChildren: 0.18 } },
 };
 
-export const cardHover = {
-  transition: "transform 0.25s ease, box-shadow 0.25s ease",
-  "&:hover": {
-    transform: "translateY(-4px)",
-  },
-};
-
 export const floatAnim = {
   animate:    { y: [0, -10, 0] },
   transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
-};
-
-export const pulseAnim = {
-  animate:    { scale: [1, 1.4, 1] },
-  transition: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
 };
