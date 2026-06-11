@@ -29,6 +29,7 @@ export default function LandingNavbar() {
   }, []);
 
   const textColor     = (scrolled || !onHero) ? C.textPrimary : C.white;
+  const hoverBg       = (scrolled || !onHero) ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.12)";
   const navBg         = (scrolled || !onHero)
     ? "rgba(255,255,255,0.96)"
     : "transparent";
@@ -71,7 +72,7 @@ export default function LandingNavbar() {
                   px:            2,
                   borderRadius:  "8px",
                   opacity:       location.pathname === link.to ? 1 : 0.85,
-                  "&:hover":     { bgcolor: "rgba(255,255,255,0.12)", opacity: 1 },
+                  "&:hover":     { bgcolor: hoverBg, opacity: 1 },
                 }}
               >
                 {link.label}
@@ -90,7 +91,7 @@ export default function LandingNavbar() {
                 py:            0.9,
                 fontSize:      "0.9rem",
                 border:        `1px solid ${scrolled || !onHero ? C.border : "rgba(255,255,255,0.3)"}`,
-                "&:hover":     { bgcolor: "rgba(255,255,255,0.12)" },
+                "&:hover":     { bgcolor: hoverBg },
               }}
             >
               Acceso colaboradores

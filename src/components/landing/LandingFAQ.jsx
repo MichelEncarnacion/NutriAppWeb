@@ -69,7 +69,13 @@ export default function LandingFAQ() {
               </Typography>
               <Typography sx={{ color: C.textMuted, fontSize: "0.95rem", lineHeight: 1.7 }}>
                 Si tienes otra pregunta, escríbenos a{" "}
-                <Box component="span" sx={{ color: C.primary, fontWeight: 600 }}>hola@nutriiapp.mx</Box>
+                <Box
+                  component="a"
+                  href="mailto:hola@nutriiapp.mx"
+                  sx={{ color: C.primary, fontWeight: 600, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
+                >
+                  hola@nutriiapp.mx
+                </Box>
               </Typography>
             </Box>
           </motion.div>

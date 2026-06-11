@@ -1,7 +1,7 @@
 // src/components/landing/LandingFooter.jsx
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { Box, Container, Typography, IconButton } from "@mui/material";
-import { Instagram, Facebook, Linkedin, Mail } from "lucide-react";
+import { Mail } from "lucide-react";
 import { C } from "./landingTokens";
 import Logo from "../Logo";
 
@@ -17,8 +17,6 @@ const LEGAL_LINKS = [
 ];
 
 export default function LandingFooter() {
-  const navigate = useNavigate();
-
   return (
     <Box
       sx={{
@@ -55,28 +53,22 @@ export default function LandingFooter() {
               IoT + IA clínica + ROI medible desde el día uno.
             </Typography>
             <Box sx={{ display: "flex", gap: 0.5 }}>
-              {[
-                { Icon: Instagram, label: "Instagram" },
-                { Icon: Facebook,  label: "Facebook"  },
-                { Icon: Linkedin,  label: "LinkedIn"  },
-                { Icon: Mail,      label: "Email"     },
-              ].map(({ Icon, label }) => (
-                <IconButton
-                  key={label}
-                  size="small"
-                  aria-label={label}
-                  sx={{
-                    color:     C.textLight,
-                    border:    `1px solid ${C.border}`,
-                    borderRadius: "8px",
-                    width:     34,
-                    height:    34,
-                    "&:hover": { color: C.primary, borderColor: C.accent, bgcolor: "#E8F5E9" },
-                  }}
-                >
-                  <Icon size={15} />
-                </IconButton>
-              ))}
+              <IconButton
+                component="a"
+                href="mailto:hola@nutriiapp.mx"
+                size="small"
+                aria-label="Email"
+                sx={{
+                  color:     C.textLight,
+                  border:    `1px solid ${C.border}`,
+                  borderRadius: "8px",
+                  width:     34,
+                  height:    34,
+                  "&:hover": { color: C.primary, borderColor: C.accent, bgcolor: "#E8F5E9" },
+                }}
+              >
+                <Mail size={15} />
+              </IconButton>
             </Box>
           </Box>
 
@@ -97,13 +89,14 @@ export default function LandingFooter() {
             {COMPANY_LINKS.map((link) => (
               <Box
                 key={link.label}
-                onClick={() => navigate(link.to)}
+                component={RouterLink}
+                to={link.to}
                 sx={{
                   color:    C.textMuted,
                   fontSize: "0.875rem",
                   mb:       1.5,
-                  cursor:   "pointer",
                   display:  "block",
+                  textDecoration: "none",
                   transition: "color 0.2s",
                   "&:hover": { color: C.primary },
                 }}
@@ -130,13 +123,14 @@ export default function LandingFooter() {
             {LEGAL_LINKS.map((link) => (
               <Box
                 key={link.label}
-                onClick={() => navigate(link.to)}
+                component={RouterLink}
+                to={link.to}
                 sx={{
                   color:    C.textMuted,
                   fontSize: "0.875rem",
                   mb:       1.5,
-                  cursor:   "pointer",
                   display:  "block",
+                  textDecoration: "none",
                   transition: "color 0.2s",
                   "&:hover": { color: C.primary },
                 }}
