@@ -1,42 +1,42 @@
 ---
 name: frontend-design
-description: Create distinctive, production-grade frontend interfaces with high design quality. Use this skill when the user asks to build web components, pages, artifacts, posters, or applications (examples include websites, landing pages, dashboards, React components, HTML/CSS layouts, or when styling/beautifying any web UI). Generates creative, polished code and UI design that avoids generic AI aesthetics.
-license: Complete terms in LICENSE.txt
+description: Crea interfaces frontend distintivas, accesibles y de nivel de producción con una calidad de diseño excepcional. Diseñado para componentes web, landing pages, dashboards y aplicaciones interactivas. Evita estéticas genéricas de IA y genera interfaces memorables con código moderno y optimizado.
 ---
 
-This skill guides creation of distinctive, production-grade frontend interfaces that avoid generic "AI slop" aesthetics. Implement real working code with exceptional attention to aesthetic details and creative choices.
+Esta habilidad guía la creación de interfaces frontend de vanguardia y listas para producción. El objetivo es romper con el diseño genérico automatizado ("AI slop") mediante la implementación de código real, funcional, meticulosamente detallado y estéticamente superior.
 
-The user provides frontend requirements: a component, page, application, or interface to build. They may include context about the purpose, audience, or technical constraints.
+## 1. Pensamiento de Diseño y Contexto
 
-## Design Thinking
+Antes de escribir la primera línea de código, analiza los requisitos del usuario bajo este marco conceptual:
+- **Propósito y Audiencia**: ¿Qué problema resuelve este componente/página y quién interactúa con él?
+- **Dirección Estética Extrema**: Elige un enfoque de diseño claro y magnifícalo (ej. minimalismo sofisticado, brutalismo tecnológico, editorial de alta costura, retro-futurismo analógico, neomorfismo refinado o UI orgánica). No te quedes a medias.
+- **Diferenciación Crucial**: Define el elemento "firma" (signature element) que hará que la interfaz sea inolvidable (una transición inesperada, una disposición de rejilla asimétrica, un micro-detalle visual).
 
-Before coding, understand the context and commit to a BOLD aesthetic direction:
-- **Purpose**: What problem does this interface solve? Who uses it?
-- **Tone**: Pick an extreme: brutally minimal, maximalist chaos, retro-futuristic, organic/natural, luxury/refined, playful/toy-like, editorial/magazine, brutalist/raw, art deco/geometric, soft/pastel, industrial/utilitarian, etc. There are so many flavors to choose from. Use these for inspiration but design one that is true to the aesthetic direction.
-- **Constraints**: Technical requirements (framework, performance, accessibility).
-- **Differentiation**: What makes this UNFORGETTABLE? What's the one thing someone will remember?
+## 2. Directrices de Estética y Desarrollo
 
-**CRITICAL**: Choose a clear conceptual direction and execute it with precision. Bold maximalism and refined minimalism both work - the key is intentionality, not intensity.
+### A. Tipografía y Composición Espacial
+- **Jerarquía Tipográfica**: Evita fuentes genéricas del sistema si se permiten recursos externos. Combina fuentes de exhibición (display) con alta personalidad para encabezados y fuentes ultra-legibles para texto corrido.
+- **Layouts Rompedores**: Utiliza CSS Grid y Flexbox de forma avanzada. Experimenta con asimetrías controladas, elementos que desbordan sus contenedores (grid-breaking), superposiciones elegantes y un uso estratégico del espacio negativo.
 
-Then implement working code (HTML/CSS/JS, React, Vue, etc.) that is:
-- Production-grade and functional
-- Visually striking and memorable
-- Cohesive with a clear aesthetic point-of-view
-- Meticulously refined in every detail
+### B. Color, Texturas y Profundidad
+- **Paletas con Intención**: Usa variables de entorno o clases de Tailwind con un contraste fuerte y un color de acento dominante. Evita los degradados lavanda/morados genéricos de la IA.
+- **Capas Visuales**: Añade profundidad sutil mediante texturas de grano (noise overlays), mallas de gradiente (gradient meshes), efectos de desenfoque de fondo (backdrop-blur), sombras arquitectónicas y bordes de un solo píxel altamente definidos.
 
-## Frontend Aesthetics Guidelines
+### C. Animación y Movimiento Responsivo
+- **Micro-interacciones**: Diseña estados hover, focus y active que se sientan orgánicos y responsivos (usa curvas Bézier personalizadas en lugar de transiciones lineales).
+- **Coreografía de Carga**: Implementa animaciones de entrada escalonadas (staggered entrance) utilizando CSS puro o librerías de movimiento (como Framer Motion / Motion para React) cuando el entorno lo permita.
 
-Focus on:
-- **Typography**: Choose fonts that are beautiful, unique, and interesting. Avoid generic fonts like Arial and Inter; opt instead for distinctive choices that elevate the frontend's aesthetics; unexpected, characterful font choices. Pair a distinctive display font with a refined body font.
-- **Color & Theme**: Commit to a cohesive aesthetic. Use CSS variables for consistency. Dominant colors with sharp accents outperform timid, evenly-distributed palettes.
-- **Motion**: Use animations for effects and micro-interactions. Prioritize CSS-only solutions for HTML. Use Motion library for React when available. Focus on high-impact moments: one well-orchestrated page load with staggered reveals (animation-delay) creates more delight than scattered micro-interactions. Use scroll-triggering and hover states that surprise.
-- **Spatial Composition**: Unexpected layouts. Asymmetry. Overlap. Diagonal flow. Grid-breaking elements. Generous negative space OR controlled density.
-- **Backgrounds & Visual Details**: Create atmosphere and depth rather than defaulting to solid colors. Add contextual effects and textures that match the overall aesthetic. Apply creative forms like gradient meshes, noise textures, geometric patterns, layered transparencies, dramatic shadows, decorative borders, custom cursors, and grain overlays.
+### D. Restricciones Técnicas y Calidad de Código
+- **Accesibilidad (WCAG)**: La audacia visual NUNCA debe comprometer la legibilidad. Asegura contrastes correctos, etiquetas ARIA semánticas y navegabilidad por teclado completa.
+- **Clean Code & Frameworks**: Genera código modular, semántico y fácil de integrar. Si se solicita Tailwind CSS, utiliza clases limpias, configuraciones extendidas si es necesario y evita la redundancia.
 
-NEVER use generic AI-generated aesthetics like overused font families (Inter, Roboto, Arial, system fonts), cliched color schemes (particularly purple gradients on white backgrounds), predictable layouts and component patterns, and cookie-cutter design that lacks context-specific character.
+## 3. Lo que NUNCA debes hacer
+- *Nunca* generes componentes clonados con la típica estética de plantilla Bootstrap antigua.
+- *Nunca* abuses de los mismos recursos en cada generación (ej. no uses siempre la fuente "Space Grotesk" o temas oscuros con luces de neón por defecto). Varía drásticamente tu portafolio de estilos.
 
-Interpret creatively and make unexpected choices that feel genuinely designed for the context. No design should be the same. Vary between light and dark themes, different fonts, different aesthetics. NEVER converge on common choices (Space Grotesk, for example) across generations.
+## 4. Estructura de la Respuesta
 
-**IMPORTANT**: Match implementation complexity to the aesthetic vision. Maximalist designs need elaborate code with extensive animations and effects. Minimalist or refined designs need restraint, precision, and careful attention to spacing, typography, and subtle details. Elegance comes from executing the vision well.
-
-Remember: Claude is capable of extraordinary creative work. Don't hold back, show what can truly be created when thinking outside the box and committing fully to a distinctive vision.
+Para mantener la claridad técnica, responde estructurando tu salida de la siguiente manera:
+1. **El Concepto (Breve)**: Explica en 2 o 3 líneas la dirección estética elegida y el elemento diferenciador.
+2. **Código de Producción**: Entrega los bloques de código (HTML/CSS, React + Tailwind, etc.) limpios, comentados en sus puntos críticos y listos para usar.
+3. **Notas de Implementación**: Detalles breves sobre dependencias necesarias o consideraciones de accesibilidad.
