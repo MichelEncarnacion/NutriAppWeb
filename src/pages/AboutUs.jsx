@@ -32,7 +32,7 @@ const MILESTONES = [
   {
     year:  "2025",
     title: "NutriiPoint: hardware propio",
-    desc:  "Desarrollamos nuestro dispositivo IoT para medir 16+ indicadores corporales por colaborador — medir lo que otros solo estiman — y el modelo de IA que convierte esos datos en planes de nutrición realmente personalizados.",
+    desc:  "Desarrollamos nuestro dispositivo IoT que mide 16+ indicadores corporales por colaborador, lo que otros solo estiman, y el modelo de IA que convierte esos datos en planes de nutrición realmente personalizados.",
   },
   {
     year:  "2026",

@@ -121,7 +121,7 @@ export default function RequestDemo() {
             </Typography>
             <Typography sx={{ color: "rgba(255,255,255,0.78)", fontSize: { xs: "0.95rem", md: "1.05rem" }, lineHeight: 1.75 }}>
               Te mostramos cómo NutriiApp transforma la salud de tus colaboradores
-              en productividad medible — adaptado a tu empresa.
+              en productividad medible, adaptado a tu empresa.
             </Typography>
           </motion.div>
         </Container>
@@ -203,7 +203,7 @@ export default function RequestDemo() {
                     Cuéntanos sobre tu empresa
                   </Typography>
                   <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", mb: 3.5 }}>
-                    Completamos la demo en 30 minutos — enfocada en tu industria y tamaño de empresa.
+                    Completamos la demo en 30 minutos, enfocada en tu industria y tamaño de empresa.
                   </Typography>
                 </motion.div>
 
