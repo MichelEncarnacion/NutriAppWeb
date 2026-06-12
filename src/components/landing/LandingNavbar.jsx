@@ -19,7 +19,8 @@ export default function LandingNavbar() {
   const [scrolled,    setScrolled]    = useState(false);
   const [mobileOpen,  setMobileOpen]  = useState(false);
 
-  const onHero = location.pathname === "/" || location.pathname === "/nosotros";
+  // Solo el home tiene hero oscuro; /nosotros ahora abre con fondo claro
+  const onHero = location.pathname === "/";
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
