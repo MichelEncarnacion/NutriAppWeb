@@ -3,7 +3,8 @@ import { Box, Container, Typography } from "@mui/material";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Wifi, Sparkles, Smartphone, TrendingUp } from "lucide-react";
-import { C, fadeInUp, stagger } from "./landingTokens";
+import { C } from "./landingTokens";
+import { useMotionSafe } from "../../hooks/useMotionSafe";
 
 const STEPS = [
   {
@@ -63,6 +64,7 @@ function AnimatedConnector() {
 }
 
 export default function LandingHowItWorks() {
+  const { fadeInUp, stagger } = useMotionSafe();
   return (
     <Box id="como-funciona" sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 12 }, borderTop: `1px solid ${C.border}` }}>
       <Container maxWidth="lg">

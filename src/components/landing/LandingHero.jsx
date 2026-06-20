@@ -4,7 +4,8 @@ import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import { ArrowRight, PlayCircle, ShieldCheck } from "lucide-react";
-import { C, fadeInUp, stagger, floatAnim } from "./landingTokens";
+import { C } from "./landingTokens";
+import { useMotionSafe } from "../../hooks/useMotionSafe";
 
 const TRUST_BADGES = [
   "NOM-030 / NOM-035",
@@ -25,6 +26,7 @@ const KPIS = [
 
 export default function LandingHero() {
   const navigate = useNavigate();
+  const { fadeInUp, stagger, floatAnim, shouldAnimate } = useMotionSafe();
 
   return (
     <Box
@@ -52,38 +54,42 @@ export default function LandingHero() {
       />
 
       {/* Orbe top-right */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.65, 0.4] }}
-        transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position:     "absolute",
-          top:          "-10%",
-          right:        "3%",
-          width:        "38%",
-          aspectRatio:  "1",
-          borderRadius: "50%",
-          background:   "radial-gradient(circle, rgba(165,214,167,0.18), transparent 70%)",
-          filter:       "blur(50px)",
-          pointerEvents:"none",
-        }}
-      />
+      {shouldAnimate && (
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.65, 0.4] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position:     "absolute",
+            top:          "-10%",
+            right:        "3%",
+            width:        "38%",
+            aspectRatio:  "1",
+            borderRadius: "50%",
+            background:   "radial-gradient(circle, rgba(165,214,167,0.18), transparent 70%)",
+            filter:       "blur(50px)",
+            pointerEvents:"none",
+          }}
+        />
+      )}
 
       {/* Orbe bottom-left */}
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-        style={{
-          position:     "absolute",
-          bottom:       "5%",
-          left:         "-5%",
-          width:        "30%",
-          aspectRatio:  "1",
-          borderRadius: "50%",
-          background:   "radial-gradient(circle, rgba(67,160,71,0.14), transparent 70%)",
-          filter:       "blur(60px)",
-          pointerEvents:"none",
-        }}
-      />
+      {shouldAnimate && (
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          style={{
+            position:     "absolute",
+            bottom:       "5%",
+            left:         "-5%",
+            width:        "30%",
+            aspectRatio:  "1",
+            borderRadius: "50%",
+            background:   "radial-gradient(circle, rgba(67,160,71,0.14), transparent 70%)",
+            filter:       "blur(60px)",
+            pointerEvents:"none",
+          }}
+        />
+      )}
 
       <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
         <Box
@@ -119,7 +125,7 @@ export default function LandingHero() {
                     backgroundSize:       "200% auto",
                     WebkitBackgroundClip: "text",
                     backgroundClip:       "text",
-                    animation:            "shimmerText 4s linear infinite",
+                    animation:            shouldAnimate ? "shimmerText 4s linear infinite" : "none",
                     "@keyframes shimmerText": {
                       "0%":   { backgroundPosition: "0% center" },
                       "100%": { backgroundPosition: "200% center" },
@@ -212,7 +218,7 @@ export default function LandingHero() {
 
           {/* Right column — dashboard mockup 3D */}
           <motion.div
-            initial={{ opacity: 0, x: 40, scale: 0.97 }}
+            initial={{ opacity: 0, x: shouldAnimate ? 40 : 0, scale: 0.97 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
           >

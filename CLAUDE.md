@@ -66,7 +66,7 @@ Tailwind v4 uses CSS-first configuration in `src/index.css`. Theme tokens are de
 - Text: `#E6EDF3`
 - Brand: Green `#3DDC84`, Blue `#58A6FF`, Orange `#F0A500`, Red `#FF6B6B`, Purple `#A855F7`
 
-**Fonts:** Syne (display/headings), DM Sans (body)
+**Fonts:** Plus Jakarta Sans (display + body, weights 300-900)
 
 ### User Tier Access
 

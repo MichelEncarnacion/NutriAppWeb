@@ -8,7 +8,8 @@ import { motion } from "framer-motion";
 import { CheckCircle2, Clock, Users, Shield } from "lucide-react";
 import LandingNavbar from "../components/landing/LandingNavbar";
 import LandingFooter from "../components/landing/LandingFooter";
-import { C, fadeInUp, stagger } from "../components/landing/landingTokens";
+import { C } from "../components/landing/landingTokens";
+import { useMotionSafe } from "../hooks/useMotionSafe";
 import { supabase } from "../lib/supabase";
 
 const COLLABORATOR_RANGES = [
@@ -38,6 +39,7 @@ const FIELD_SX = {
 };
 
 export default function RequestDemo() {
+  const { fadeInUp, stagger } = useMotionSafe();
   const [form, setForm]         = useState({
     nombre:        "",
     empresa:       "",
