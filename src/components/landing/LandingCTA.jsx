@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
-import { C, fadeInUp, stagger } from "./landingTokens";
+import { C } from "./landingTokens";
+import { useMotionSafe } from "../../hooks/useMotionSafe";
 
 const HIGHLIGHTS = [
   "Sin compromiso de contrato",
@@ -16,6 +17,7 @@ const HEADLINE_WORDS2 = ["de", "tu", "inversión", "en", "salud?"];
 
 export default function LandingCTA() {
   const navigate = useNavigate();
+  const { fadeInUp, stagger, shouldAnimate } = useMotionSafe();
 
   return (
     <Box
@@ -39,38 +41,42 @@ export default function LandingCTA() {
       />
 
       {/* Orbe izquierda */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.55, 0.35] }}
-        transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        style={{
-          position:     "absolute",
-          top:          "-20%",
-          left:         "-10%",
-          width:        "45%",
-          aspectRatio:  "1",
-          borderRadius: "50%",
-          background:   "radial-gradient(circle, rgba(165,214,167,0.15), transparent 70%)",
-          filter:       "blur(50px)",
-          pointerEvents:"none",
-        }}
-      />
+      {shouldAnimate && (
+        <motion.div
+          animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.55, 0.35] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            position:     "absolute",
+            top:          "-20%",
+            left:         "-10%",
+            width:        "45%",
+            aspectRatio:  "1",
+            borderRadius: "50%",
+            background:   "radial-gradient(circle, rgba(165,214,167,0.15), transparent 70%)",
+            filter:       "blur(50px)",
+            pointerEvents:"none",
+          }}
+        />
+      )}
 
       {/* Orbe derecha */}
-      <motion.div
-        animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.45, 0.25] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-        style={{
-          position:     "absolute",
-          bottom:       "-15%",
-          right:        "-8%",
-          width:        "40%",
-          aspectRatio:  "1",
-          borderRadius: "50%",
-          background:   "radial-gradient(circle, rgba(67,160,71,0.12), transparent 70%)",
-          filter:       "blur(60px)",
-          pointerEvents:"none",
-        }}
-      />
+      {shouldAnimate && (
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.45, 0.25] }}
+          transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
+          style={{
+            position:     "absolute",
+            bottom:       "-15%",
+            right:        "-8%",
+            width:        "40%",
+            aspectRatio:  "1",
+            borderRadius: "50%",
+            background:   "radial-gradient(circle, rgba(67,160,71,0.12), transparent 70%)",
+            filter:       "blur(60px)",
+            pointerEvents:"none",
+          }}
+        />
+      )}
 
       <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
         <motion.div
@@ -166,21 +172,23 @@ export default function LandingCTA() {
                   Agendar mi demo gratuita
                 </Button>
                 {/* Shimmer sweep */}
-                <motion.div
-                  animate={{ x: ["-100%", "200%"] }}
-                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
-                  style={{
-                    position:    "absolute",
-                    top:         0,
-                    left:        0,
-                    width:       "40%",
-                    height:      "100%",
-                    background:  "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)",
-                    transform:   "skewX(-15deg)",
-                    pointerEvents: "none",
-                    zIndex:      2,
-                  }}
-                />
+                {shouldAnimate && (
+                  <motion.div
+                    animate={{ x: ["-100%", "200%"] }}
+                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
+                    style={{
+                      position:    "absolute",
+                      top:         0,
+                      left:        0,
+                      width:       "40%",
+                      height:      "100%",
+                      background:  "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)",
+                      transform:   "skewX(-15deg)",
+                      pointerEvents: "none",
+                      zIndex:      2,
+                    }}
+                  />
+                )}
               </Box>
             </Box>
           </motion.div>

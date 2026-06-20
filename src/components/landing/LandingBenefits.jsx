@@ -3,7 +3,8 @@ import { useRef } from "react";
 import { Box, Container, Typography } from "@mui/material";
 import { motion, useInView } from "framer-motion";
 import { Stethoscope, BrainCircuit, BarChart3 } from "lucide-react";
-import { C, fadeInUp, stagger } from "./landingTokens";
+import { C } from "./landingTokens";
+import { useMotionSafe } from "../../hooks/useMotionSafe";
 
 const PILLARS = [
   {
@@ -68,6 +69,7 @@ function ProgressBar({ progress, color }) {
 }
 
 export default function LandingBenefits() {
+  const { fadeInUp, stagger } = useMotionSafe();
   return (
     <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 12 } }}>
       <Container maxWidth="lg">

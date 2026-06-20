@@ -1,7 +1,8 @@
 // src/components/landing/LandingCredBand.jsx
 import { Box, Container, Typography } from "@mui/material";
 import { motion } from "framer-motion";
-import { C, fadeInUp, stagger } from "./landingTokens";
+import { C } from "./landingTokens";
+import { useMotionSafe } from "../../hooks/useMotionSafe";
 
 const STATS = [
   { value: "75%",     label: "de adultos mexicanos vive con sobrepeso u obesidad", source: "ENSANUT 2022" },
@@ -10,6 +11,7 @@ const STATS = [
 ];
 
 export default function LandingCredBand() {
+  const { fadeInUp, stagger } = useMotionSafe();
   return (
     <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 10 }, borderTop: `1px solid ${C.border}` }}>
       <Container maxWidth="lg">

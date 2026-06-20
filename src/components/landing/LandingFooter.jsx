@@ -154,7 +154,7 @@ export default function LandingFooter() {
           }}
         >
           <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
-            © 2025 NutriiApp · Todos los derechos reservados · Ciudad de México
+            © 2025-2026 NutriiApp · Todos los derechos reservados · Puebla, México
           </Typography>
           <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
             Hecho en{" "}

@@ -3,7 +3,8 @@ import { useState } from "react";
 import { Box, Container, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Plus, Minus } from "lucide-react";
 import { motion } from "framer-motion";
-import { C, fadeInUp, stagger } from "./landingTokens";
+import { C } from "./landingTokens";
+import { useMotionSafe } from "../../hooks/useMotionSafe";
 
 const FAQS = [
   {
@@ -34,6 +35,7 @@ const FAQS = [
 
 export default function LandingFAQ() {
   const [expanded, setExpanded] = useState(null);
+  const { fadeInUp, stagger } = useMotionSafe();
 
   return (
     <Box id="faq" sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 12 } }}>

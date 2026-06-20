@@ -1,4 +1,8 @@
 // src/components/landing/landingTokens.js — B2B Light Theme
+//
+// Landing uses a corporate green palette (#1B5E20 forest) for B2B positioning.
+// App uses a vibrant palette (#3DDC84 neon) defined in index.css @theme tokens.
+// Both are intentional — the landing targets decision-makers, the app targets end-users.
 
 export const C = {
   bgMain:      "#FFFFFF",
@@ -35,4 +39,14 @@ export const stagger = {
 export const floatAnim = {
   animate:    { y: [0, -10, 0] },
   transition: { duration: 4, repeat: Infinity, ease: "easeInOut" },
+};
+
+export const fadeInUpSafe = {
+  hidden:  { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+};
+
+export const staggerSafe = {
+  hidden:  {},
+  visible: { transition: { staggerChildren: 0.05 } },
 };

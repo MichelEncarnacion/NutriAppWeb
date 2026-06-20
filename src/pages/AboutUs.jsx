@@ -6,7 +6,8 @@ import { Award, ArrowRight, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import LandingNavbar from "../components/landing/LandingNavbar";
 import LandingFooter from "../components/landing/LandingFooter";
-import { C, fadeInUp, stagger } from "../components/landing/landingTokens";
+import { C } from "../components/landing/landingTokens";
+import { useMotionSafe } from "../hooks/useMotionSafe";
 import { supabase } from "../lib/supabase";
 
 const CATEGORY_COLORS = {
@@ -55,6 +56,7 @@ function SectionLabel({ children }) {
 
 export default function AboutUs() {
   const navigate = useNavigate();
+  const { fadeInUp, stagger } = useMotionSafe();
   const [news,            setNews]            = useState([]);
   const [awards,          setAwards]          = useState([]);
   const [founders,        setFounders]        = useState([]);
