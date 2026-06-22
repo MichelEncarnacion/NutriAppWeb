@@ -40,14 +40,14 @@ export default function AuthCallback() {
         <div
             style={{
                 minHeight: "100vh",
-                background: "#0D1117",
+                background: "#FFFFFF",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
             }}
         >
-            <div style={{ textAlign: "center", color: "#7D8590" }}>
+            <div style={{ textAlign: "center", color: "#4A5568" }}>
                 <div style={{ fontSize: 32, marginBottom: 12 }}>⏳</div>
                 <p>Verificando sesión…</p>
             </div>

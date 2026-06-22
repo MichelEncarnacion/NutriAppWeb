@@ -93,16 +93,16 @@ export default function GenerandoPlan() {
 
     // ── Sin estado (recarga de página) ──────────────────────────────────
     if (sinEstado) return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4">
-            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5">
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
+            <div className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5 shadow-sm">
                 <span className="text-5xl">🔄</span>
-                <h2 className="text-white text-xl font-bold font-display">Sesión interrumpida</h2>
-                <p className="text-[#7D8590] text-sm leading-relaxed">
+                <h2 className="text-text-primary text-xl font-bold font-display">Sesión interrumpida</h2>
+                <p className="text-text-muted text-sm leading-relaxed">
                     Parece que la página se recargó durante la generación de tu plan. Por favor regresa al diagnóstico para continuar.
                 </p>
                 <button
                     onClick={() => navigate("/diagnostico", { replace: true })}
-                    className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
+                    className="w-full py-3 bg-brand-green text-white font-bold font-display rounded-xl hover:bg-brand-greenL transition-all text-sm"
                 >
                     Ir al diagnóstico →
                 </button>
@@ -112,21 +112,21 @@ export default function GenerandoPlan() {
 
     // ── Aviso médico ──────────────────────────────────────────────────────
     if (mostrarAviso) return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4">
-            <div className="bg-[#161B22] border border-[#F0A500]/30 rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5">
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
+            <div className="bg-dark-800 border border-brand-orange/30 rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5 shadow-sm">
                 <span className="text-5xl">⚕️</span>
-                <h2 className="text-white text-xl font-bold font-display">Aviso importante de salud</h2>
-                <p className="text-[#7D8590] text-sm leading-relaxed">
+                <h2 className="text-text-primary text-xl font-bold font-display">Aviso importante de salud</h2>
+                <p className="text-text-muted text-sm leading-relaxed">
                     Notamos que mencionaste tener una condición médica. Por tu seguridad y bienestar,
-                    <strong className="text-white"> te recomendamos consultar a un médico o nutriólogo certificado</strong> antes
+                    <strong className="text-text-primary"> te recomendamos consultar a un médico o nutriólogo certificado</strong> antes
                     de iniciar cualquier plan nutricional.
                 </p>
-                <p className="text-[#7D8590] text-sm leading-relaxed">
+                <p className="text-text-muted text-sm leading-relaxed">
                     NutriiApp puede complementar tu tratamiento, pero no sustituye la orientación de un profesional de la salud.
                 </p>
                 <button
                     onClick={() => navigate("/panel", { replace: true })}
-                    className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
+                    className="w-full py-3 bg-brand-green text-white font-bold font-display rounded-xl hover:bg-brand-greenL transition-all text-sm"
                 >
                     Entendido, ver mi plan →
                 </button>
@@ -136,23 +136,23 @@ export default function GenerandoPlan() {
 
     // ── Error ─────────────────────────────────────────────────────────────
     if (error) return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4">
-            <div className="bg-[#161B22] border border-[#FF6B6B]/30 rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5">
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4">
+            <div className="bg-dark-800 border border-brand-red/30 rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5 shadow-sm">
                 <span className="text-5xl">⚠️</span>
-                <h2 className="text-white text-xl font-bold font-display">Algo salió mal</h2>
-                <p className="text-[#7D8590] text-sm">{error}</p>
+                <h2 className="text-text-primary text-xl font-bold font-display">Algo salió mal</h2>
+                <p className="text-text-muted text-sm">{error}</p>
                 <button
                     onClick={() => regenerar
                         ? navigate("/mi-plan", { state: { regenerar: true }, replace: true })
                         : navigate("/generando-plan", { state: { respuestas, tieneEnfermedad }, replace: true })
                     }
-                    className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
+                    className="w-full py-3 bg-brand-green text-white font-bold font-display rounded-xl hover:bg-brand-greenL transition-all text-sm"
                 >
                     Reintentar
                 </button>
                 <button
                     onClick={() => navigate(regenerar ? "/mi-plan" : "/panel", { replace: true })}
-                    className="w-full py-3 bg-transparent border border-[#2D3748] text-[#7D8590] font-display rounded-xl hover:border-[#7D8590] transition-all text-sm"
+                    className="w-full py-3 bg-transparent border border-dark-600 text-text-muted font-display rounded-xl hover:border-text-muted transition-all text-sm"
                 >
                     {regenerar ? "Volver a mi plan" : "Ir al panel de todas formas"}
                 </button>
@@ -165,13 +165,13 @@ export default function GenerandoPlan() {
     const idxActivo = pasoActual === -1 ? PASOS.length - 1 : pasoActual;
 
     return (
-        <div className="min-h-screen bg-[#0D1117] flex flex-col items-center justify-center px-4 gap-8">
+        <div className="min-h-screen bg-dark-900 flex flex-col items-center justify-center px-4 gap-8">
 
             {/* Icono */}
             <div className="relative w-24 h-24">
                 <svg className="absolute inset-0 animate-spin" style={{ animationDuration: "3s" }} viewBox="0 0 100 100">
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="#1C2330" strokeWidth="6" />
-                    <circle cx="50" cy="50" r="44" fill="none" stroke="#3DDC84" strokeWidth="6"
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#e2e8f0" strokeWidth="6" />
+                    <circle cx="50" cy="50" r="44" fill="none" stroke="#1b5e20" strokeWidth="6"
                         strokeLinecap="round" strokeDasharray="276" strokeDashoffset="207"
                     />
                 </svg>
@@ -180,23 +180,23 @@ export default function GenerandoPlan() {
 
             {/* Título + mensaje activo */}
             <div className="text-center">
-                <h2 className="text-white text-2xl font-bold font-display mb-2">
+                <h2 className="text-text-primary text-2xl font-bold font-display mb-2">
                     Generando tu plan nutricional
                 </h2>
-                <p className="text-[#3DDC84] text-sm font-medium h-5">
+                <p className="text-brand-green text-sm font-medium h-5">
                     {PASOS[idxActivo].label}...
                 </p>
             </div>
 
             {/* Barra de progreso */}
             <div className="w-full max-w-sm">
-                <div className="flex justify-between text-xs text-[#7D8590] mb-2">
+                <div className="flex justify-between text-xs text-text-muted mb-2">
                     <span>Progreso</span>
                     <span>{progreso}%</span>
                 </div>
-                <div className="w-full h-2 bg-[#1C2330] rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-dark-600 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-[#3DDC84] rounded-full transition-all duration-300"
+                        className="h-full bg-brand-green rounded-full transition-all duration-300"
                         style={{ width: `${progreso}%` }}
                     />
                 </div>
@@ -210,13 +210,13 @@ export default function GenerandoPlan() {
                     return (
                         <div key={i} className="flex items-center gap-3">
                             <div className={`w-5 h-5 rounded-full flex items-center justify-center text-xs flex-shrink-0 transition-all duration-300 ${
-                                completado ? "bg-[#3DDC84] text-black font-bold"
-                                : activo    ? "bg-[rgba(61,220,132,0.2)] border border-[#3DDC84] text-[#3DDC84]"
-                                :             "bg-[#1C2330] border border-[#2D3748] text-[#7D8590]"
+                                completado ? "bg-brand-green text-white font-bold"
+                                : activo    ? "bg-[rgba(27,94,32,0.12)] border border-brand-green text-brand-green"
+                                :             "bg-dark-700 border border-dark-600 text-text-muted"
                             }`}>
                                 {completado ? "✓" : i + 1}
                             </div>
-                            <span className={`text-xs transition-colors duration-300 ${completado || activo ? "text-[#E6EDF3]" : "text-[#7D8590]"}`}>
+                            <span className={`text-xs transition-colors duration-300 ${completado || activo ? "text-text-primary" : "text-text-muted"}`}>
                                 {p.label}
                             </span>
                         </div>
@@ -224,7 +224,7 @@ export default function GenerandoPlan() {
                 })}
             </div>
 
-            <p className="text-[#7D8590] text-xs">Esto toma aproximadamente 30 segundos</p>
+            <p className="text-text-muted text-xs">Esto toma aproximadamente 30 segundos</p>
         </div>
     );
 }

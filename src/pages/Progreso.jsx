@@ -36,10 +36,10 @@ function ImcGauge({ imc, clasificacion }) {
     const toDeg = (v) => startAngle + ((v - minImc) / (maxImc - minImc)) * totalAngle;
 
     const zones = [
-        { from: minImc, to: 18.5, color: "#58A6FF" },
-        { from: 18.5,   to: 25,   color: "#3DDC84" },
-        { from: 25,     to: 30,   color: "#F0A500" },
-        { from: 30,     to: maxImc, color: "#FF6B6B" },
+        { from: minImc, to: 18.5, color: "#2563EB" },
+        { from: 18.5,   to: 25,   color: "#1B5E20" },
+        { from: 25,     to: 30,   color: "#BF9000" },
+        { from: 30,     to: maxImc, color: "#D64545" },
     ];
 
     const needleDeg = toDeg(Math.min(Math.max(imc, minImc), maxImc));
@@ -49,7 +49,7 @@ function ImcGauge({ imc, clasificacion }) {
         <svg viewBox="0 0 100 100" width={120} height={120}>
             <path
                 d={arc(startAngle, startAngle + totalAngle)}
-                fill="none" stroke="#1C2330" strokeWidth={10} strokeLinecap="butt"
+                fill="none" stroke="#E2E8F0" strokeWidth={10} strokeLinecap="butt"
             />
             {zones.map((z, i) => (
                 <path
@@ -58,9 +58,9 @@ function ImcGauge({ imc, clasificacion }) {
                     fill="none" stroke={z.color} strokeWidth={10} strokeLinecap="butt" opacity={0.85}
                 />
             ))}
-            <circle cx={needle.x} cy={needle.y} r={4} fill="white" />
-            <text x={cx} y={cy - 2} textAnchor="middle" fill="white" fontSize={16} fontWeight="900">{Number.isFinite(imc) ? imc : "—"}</text>
-            <text x={cx} y={cy + 12} textAnchor="middle" fill={clasificacion?.color ?? "#7D8590"} fontSize={8} fontWeight="bold">{clasificacion?.label ?? ""}</text>
+            <circle cx={needle.x} cy={needle.y} r={4} fill="#1A1A1A" />
+            <text x={cx} y={cy - 2} textAnchor="middle" fill="#1A1A1A" fontSize={16} fontWeight="900">{Number.isFinite(imc) ? imc : "—"}</text>
+            <text x={cx} y={cy + 12} textAnchor="middle" fill={clasificacion?.color ?? "#4A5568"} fontSize={8} fontWeight="bold">{clasificacion?.label ?? ""}</text>
         </svg>
     );
 }
@@ -69,7 +69,7 @@ function PesoTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
         <Card className="p-3 text-xs">
-            <p className="text-[#7D8590] mb-1">{label}</p>
+            <p className="text-[#4A5568] mb-1">{label}</p>
             {payload.map((p) => p.value != null && (
                 <p key={p.dataKey} style={{ color: p.color }}>
                     {p.dataKey === "peso" ? "Peso real" : "Proyección"}: {p.value} kg
@@ -80,9 +80,9 @@ function PesoTooltip({ active, payload, label }) {
 }
 
 const STAT_PILLS = [
-    { key: "peso",              label: "Peso",      unit: "kg", color: "#3DDC84", bueno: false },
-    { key: "porcentaje_grasa",  label: "% Grasa",   unit: "%",  color: "#FF6B6B", bueno: false },
-    { key: "porcentaje_musculo",label: "% Músculo", unit: "%",  color: "#58A6FF", bueno: true  },
+    { key: "peso",              label: "Peso",      unit: "kg", color: "#1B5E20", bueno: false },
+    { key: "porcentaje_grasa",  label: "% Grasa",   unit: "%",  color: "#D64545", bueno: false },
+    { key: "porcentaje_musculo",label: "% Músculo", unit: "%",  color: "#2563EB", bueno: true  },
 ];
 
 
@@ -90,7 +90,7 @@ function ComposicionTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
         <Card className="p-3 text-xs">
-            <p className="text-[#7D8590] mb-1">{label}</p>
+            <p className="text-[#4A5568] mb-1">{label}</p>
             {payload.map((p) => {
                 const labels = { porcentaje_grasa: "Grasa", porcentaje_musculo: "Músculo" };
                 return (
@@ -162,10 +162,10 @@ export default function Progreso() {
 
     const imcClasificacion = (() => {
         if (imc === null) return null;
-        if (imc < 18.5) return { label: "Bajo peso", color: "#58A6FF" };
-        if (imc < 25)   return { label: "Normal",    color: "#3DDC84" };
-        if (imc < 30)   return { label: "Sobrepeso", color: "#F0A500" };
-        return              { label: "Obesidad",   color: "#FF6B6B" };
+        if (imc < 18.5) return { label: "Bajo peso", color: "#2563EB" };
+        if (imc < 25)   return { label: "Normal",    color: "#1B5E20" };
+        if (imc < 30)   return { label: "Sobrepeso", color: "#BF9000" };
+        return              { label: "Obesidad",   color: "#D64545" };
     })();
 
     const pesoProgreso = (() => {
@@ -210,10 +210,10 @@ export default function Progreso() {
         const kgPorSemana = parseFloat((slope * 7).toFixed(2));
         const tendencia =
             Math.abs(kgPorSemana) < 0.1
-                ? { label: "→ Estable",                                color: "#7D8590" }
+                ? { label: "→ Estable",                                color: "#4A5568" }
                 : kgPorSemana < 0
-                ? { label: `↓ Bajando ${Math.abs(kgPorSemana)} kg/semana`, color: "#3DDC84" }
-                : { label: `↑ Subiendo ${kgPorSemana} kg/semana`,      color: "#F0A500" };
+                ? { label: `↓ Bajando ${Math.abs(kgPorSemana)} kg/semana`, color: "#1B5E20" }
+                : { label: `↑ Subiendo ${kgPorSemana} kg/semana`,      color: "#BF9000" };
 
         const data = puntos.map((m, i) => ({
             fecha: new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
@@ -286,8 +286,8 @@ export default function Progreso() {
 
                 {/* Header */}
                 <div>
-                    <h1 className="text-white text-2xl font-black font-display mb-1">Progreso</h1>
-                    <p className="text-[#7D8590] text-xs">
+                    <h1 className="text-text-primary text-2xl font-black font-display mb-1">Progreso</h1>
+                    <p className="text-[#4A5568] text-xs">
                         Seguimiento de tus métricas corporales a lo largo del tiempo
                     </p>
                 </div>
@@ -307,8 +307,8 @@ export default function Progreso() {
                 ) : !ultima ? (
                     <Card className="p-8 text-center">
                         <span className="text-4xl block mb-3">📊</span>
-                        <p className="text-white font-bold mb-2">Sin métricas registradas</p>
-                        <p className="text-[#7D8590] text-sm">
+                        <p className="text-text-primary font-bold mb-2">Sin métricas registradas</p>
+                        <p className="text-[#4A5568] text-sm">
                             Completa tu primer formulario de seguimiento para ver tu progreso.
                         </p>
                     </Card>
@@ -325,15 +325,15 @@ export default function Progreso() {
                                     : null;
                                 return (
                                     <Card key={s.key} className="flex-1 p-3 text-center">
-                                        <p className="text-[9px] text-[#7D8590] font-bold tracking-widest mb-1">
+                                        <p className="text-[9px] text-[#4A5568] font-bold tracking-widest mb-1">
                                             {s.label.toUpperCase()}
                                         </p>
                                         <p className="font-display font-black text-lg" style={{ color: s.color }}>
                                             {ultima[s.key]}
-                                            <span className="text-xs font-normal text-[#7D8590]"> {s.unit}</span>
+                                            <span className="text-xs font-normal text-[#4A5568]"> {s.unit}</span>
                                         </p>
                                         {d && (
-                                            <p className={`text-xs font-bold mt-0.5 ${mejora ? "text-[#3DDC84]" : "text-[#FF6B6B]"}`}>
+                                            <p className={`text-xs font-bold mt-0.5 ${mejora ? "text-[#1B5E20]" : "text-[#D64545]"}`}>
                                                 {Number(d.valor) > 0 ? "▲" : "▼"} {Math.abs(d.valor)}
                                             </p>
                                         )}
@@ -347,18 +347,18 @@ export default function Progreso() {
                             <div className="flex gap-3">
                                 {imc !== null && (
                                     <Card className="flex-1 flex flex-col items-center">
-                                        <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3 self-start">IMC</p>
+                                        <p className="text-[#4A5568] text-xs font-bold tracking-widest mb-3 self-start">IMC</p>
                                         <ImcGauge imc={imc} clasificacion={imcClasificacion} />
                                         <div className="flex gap-3 mt-2 flex-wrap justify-center">
                                             {[
-                                                { label: "Bajo", color: "#58A6FF" },
-                                                { label: "Normal", color: "#3DDC84" },
-                                                { label: "Sobre", color: "#F0A500" },
-                                                { label: "Obeso", color: "#FF6B6B" },
+                                                { label: "Bajo", color: "#2563EB" },
+                                                { label: "Normal", color: "#1B5E20" },
+                                                { label: "Sobre", color: "#BF9000" },
+                                                { label: "Obeso", color: "#D64545" },
                                             ].map((z) => (
                                                 <div key={z.label} className="flex items-center gap-1">
                                                     <div className="w-2 h-2 rounded-full" style={{ background: z.color }} />
-                                                    <span className="text-[9px] text-[#7D8590]">{z.label}</span>
+                                                    <span className="text-[9px] text-[#4A5568]">{z.label}</span>
                                                 </div>
                                             ))}
                                         </div>
@@ -366,15 +366,15 @@ export default function Progreso() {
                                 )}
                                 {radarData && (
                                     <Card className="flex-1 flex flex-col">
-                                        <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-1">SALUD GLOBAL</p>
+                                        <p className="text-[#4A5568] text-xs font-bold tracking-widest mb-1">SALUD GLOBAL</p>
                                         <ResponsiveContainer width="100%" height={160}>
                                             <RadarChart data={radarData} margin={{ top: 8, right: 16, bottom: 8, left: 16 }}>
-                                                <PolarGrid stroke="#2D3748" />
-                                                <PolarAngleAxis dataKey="dim" tick={{ fill: "#7D8590", fontSize: 9 }} />
+                                                <PolarGrid stroke="#E2E8F0" />
+                                                <PolarAngleAxis dataKey="dim" tick={{ fill: "#4A5568", fontSize: 9 }} />
                                                 <Radar
                                                     dataKey="val"
-                                                    stroke="#3DDC84"
-                                                    fill="#3DDC84"
+                                                    stroke="#1B5E20"
+                                                    fill="#1B5E20"
                                                     fillOpacity={0.2}
                                                     strokeWidth={2}
                                                 />
@@ -389,15 +389,15 @@ export default function Progreso() {
                         {composicionData && (
                             <Card>
                                 <div className="flex items-center justify-between mb-3">
-                                    <p className="text-[#7D8590] text-xs font-bold tracking-widest">COMPOSICIÓN CORPORAL</p>
+                                    <p className="text-[#4A5568] text-xs font-bold tracking-widest">COMPOSICIÓN CORPORAL</p>
                                     <div className="flex gap-4">
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-3 h-3 rounded-sm" style={{ background: "#FF6B6B" }} />
-                                            <span className="text-[10px] text-[#7D8590]">Grasa %</span>
+                                            <div className="w-3 h-3 rounded-sm" style={{ background: "#D64545" }} />
+                                            <span className="text-[10px] text-[#4A5568]">Grasa %</span>
                                         </div>
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-3 h-3 rounded-sm" style={{ background: "#58A6FF" }} />
-                                            <span className="text-[10px] text-[#7D8590]">Músculo %</span>
+                                            <div className="w-3 h-3 rounded-sm" style={{ background: "#2563EB" }} />
+                                            <span className="text-[10px] text-[#4A5568]">Músculo %</span>
                                         </div>
                                     </div>
                                 </div>
@@ -405,7 +405,7 @@ export default function Progreso() {
                                     <BarChart data={composicionData} margin={{ top: 4, right: 4, left: -24, bottom: 0 }}>
                                         <XAxis
                                             dataKey="fecha"
-                                            tick={{ fontSize: 10, fill: "#7D8590" }}
+                                            tick={{ fontSize: 10, fill: "#4A5568" }}
                                             axisLine={false}
                                             tickLine={false}
                                         />
@@ -413,21 +413,21 @@ export default function Progreso() {
                                         <Bar
                                             dataKey="porcentaje_grasa"
                                             stackId="composicion"
-                                            fill="#FF6B6B"
+                                            fill="#D64545"
                                             fillOpacity={0.8}
                                             radius={[0, 0, 4, 4]}
                                         />
                                         <Bar
                                             dataKey="porcentaje_musculo"
                                             stackId="composicion"
-                                            fill="#58A6FF"
+                                            fill="#2563EB"
                                             fillOpacity={0.8}
                                             radius={[4, 4, 0, 0]}
                                         >
                                             {composicionData.map((_, i) => (
                                                 <Cell
                                                     key={i}
-                                                    fill="#58A6FF"
+                                                    fill="#2563EB"
                                                     fillOpacity={i === composicionData.length - 1 ? 1 : 0.7}
                                                 />
                                             ))}
@@ -440,26 +440,26 @@ export default function Progreso() {
                         {/* Progress towards weight goal */}
                         {pesoProgreso !== null ? (
                             <Card>
-                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
-                                <div className="flex justify-between text-xs text-[#7D8590] mb-1">
-                                    <span>Inicio: <strong className="text-white">{pesoProgreso.pesoInicial} kg</strong></span>
-                                    <span className="font-bold text-[#3DDC84]">{pesoProgreso.pct}% completado</span>
-                                    <span>Meta: <strong className="text-white">{pesoProgreso.pesoMeta} kg</strong></span>
+                                <p className="text-[#4A5568] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
+                                <div className="flex justify-between text-xs text-[#4A5568] mb-1">
+                                    <span>Inicio: <strong className="text-text-primary">{pesoProgreso.pesoInicial} kg</strong></span>
+                                    <span className="font-bold text-[#1B5E20]">{pesoProgreso.pct}% completado</span>
+                                    <span>Meta: <strong className="text-text-primary">{pesoProgreso.pesoMeta} kg</strong></span>
                                 </div>
-                                <div className="relative h-3 bg-[#0D1117] rounded-full overflow-hidden">
+                                <div className="relative h-3 bg-[#F8F9FA] rounded-full overflow-hidden">
                                     <div
                                         className="absolute left-0 top-0 h-full rounded-full transition-all"
-                                        style={{ width: `${pesoProgreso.pct}%`, background: "#3DDC84" }}
+                                        style={{ width: `${pesoProgreso.pct}%`, background: "#1B5E20" }}
                                     />
                                 </div>
-                                <p className="text-center text-xs text-[#7D8590] mt-2">
-                                    Peso actual: <strong className="text-white">{pesoProgreso.pesoActual} kg</strong>
+                                <p className="text-center text-xs text-[#4A5568] mt-2">
+                                    Peso actual: <strong className="text-text-primary">{pesoProgreso.pesoActual} kg</strong>
                                 </p>
                             </Card>
                         ) : diag && !diag.peso_meta ? (
                             <Card className="text-center">
-                                <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
-                                <p className="text-[#7D8590] text-sm mb-3">Actualiza tu diagnóstico para ver tu progreso hacia tu meta</p>
+                                <p className="text-[#4A5568] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
+                                <p className="text-[#4A5568] text-sm mb-3">Actualiza tu diagnóstico para ver tu progreso hacia tu meta</p>
                                 <Button variant="secondary" onClick={() => navigate("/diagnostico")}>
                                     Actualizar diagnóstico →
                                 </Button>
@@ -469,9 +469,9 @@ export default function Progreso() {
                         {pesoChartData && (
                             <Card>
                                 <div className="flex items-center justify-between mb-3">
-                                    <p className="text-[#7D8590] text-xs font-bold tracking-widest">TENDENCIA DE PESO</p>
+                                    <p className="text-[#4A5568] text-xs font-bold tracking-widest">TENDENCIA DE PESO</p>
                                     <span
-                                        className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#0D1117]"
+                                        className="text-xs font-bold px-2 py-0.5 rounded-full bg-[#F8F9FA]"
                                         style={{ color: pesoChartData.tendencia.color }}
                                     >
                                         {pesoChartData.tendencia.label}
@@ -484,13 +484,13 @@ export default function Progreso() {
                                     >
                                         <defs>
                                             <linearGradient id="gradientPeso" x1="0" y1="0" x2="0" y2="1">
-                                                <stop offset="5%" stopColor="#3DDC84" stopOpacity={0.35} />
-                                                <stop offset="95%" stopColor="#3DDC84" stopOpacity={0.02} />
+                                                <stop offset="5%" stopColor="#1B5E20" stopOpacity={0.35} />
+                                                <stop offset="95%" stopColor="#1B5E20" stopOpacity={0.02} />
                                             </linearGradient>
                                         </defs>
                                         <XAxis
                                             dataKey="fecha"
-                                            tick={{ fontSize: 10, fill: "#7D8590" }}
+                                            tick={{ fontSize: 10, fill: "#4A5568" }}
                                             axisLine={false}
                                             tickLine={false}
                                         />
@@ -498,7 +498,7 @@ export default function Progreso() {
                                         <Area
                                             type="monotone"
                                             dataKey="peso"
-                                            stroke="#3DDC84"
+                                            stroke="#1B5E20"
                                             strokeWidth={2}
                                             fill="url(#gradientPeso)"
                                             dot={false}
@@ -507,7 +507,7 @@ export default function Progreso() {
                                         <Line
                                             type="monotone"
                                             dataKey="proyeccion"
-                                            stroke="#3DDC84"
+                                            stroke="#1B5E20"
                                             strokeWidth={1.5}
                                             strokeDasharray="5 5"
                                             dot={false}
@@ -517,12 +517,12 @@ export default function Progreso() {
                                 </ResponsiveContainer>
                                 <div className="flex gap-4 mt-2">
                                     <div className="flex items-center gap-1.5">
-                                        <div className="w-4 h-0.5 rounded-full" style={{ background: "#3DDC84" }} />
-                                        <span className="text-[10px] text-[#7D8590]">Peso real</span>
+                                        <div className="w-4 h-0.5 rounded-full" style={{ background: "#1B5E20" }} />
+                                        <span className="text-[10px] text-[#4A5568]">Peso real</span>
                                     </div>
                                     <div className="flex items-center gap-1.5">
-                                        <div className="w-4 h-0.5" style={{ background: "repeating-linear-gradient(90deg,#3DDC84 0,#3DDC84 4px,transparent 4px,transparent 8px)" }} />
-                                        <span className="text-[10px] text-[#7D8590]">Proyección</span>
+                                        <div className="w-4 h-0.5" style={{ background: "repeating-linear-gradient(90deg,#1B5E20 0,#1B5E20 4px,transparent 4px,transparent 8px)" }} />
+                                        <span className="text-[10px] text-[#4A5568]">Proyección</span>
                                     </div>
                                 </div>
                             </Card>
@@ -533,23 +533,23 @@ export default function Progreso() {
                 {/* History list — unchanged */}
                 {metricas.length > 0 && (
                     <Card>
-                        <h3 className="text-white font-bold font-display text-sm mb-4">Historial de registros</h3>
-                        <div className="flex flex-col divide-y divide-[#2D3748]">
+                        <h3 className="text-text-primary font-bold font-display text-sm mb-4">Historial de registros</h3>
+                        <div className="flex flex-col divide-y divide-[#E2E8F0]">
                             {metricas.map((m, i) => (
                                 <div key={m.fecha} className="flex items-center gap-4 py-3 text-sm flex-wrap">
-                                    <span className="text-[#7D8590] text-xs w-20 flex-shrink-0">
+                                    <span className="text-[#4A5568] text-xs w-20 flex-shrink-0">
                                         {new Date(m.fecha + "T00:00:00").toLocaleDateString("es-MX", {
                                             day: "numeric", month: "short",
                                         })}
                                     </span>
                                     {m.peso != null && (
-                                        <span className="text-white font-semibold">{m.peso} kg</span>
+                                        <span className="text-text-primary font-semibold">{m.peso} kg</span>
                                     )}
                                     {m.porcentaje_grasa != null && (
-                                        <span className="text-[#7D8590]">Grasa: {m.porcentaje_grasa}%</span>
+                                        <span className="text-[#4A5568]">Grasa: {m.porcentaje_grasa}%</span>
                                     )}
                                     {m.porcentaje_musculo != null && (
-                                        <span className="text-[#7D8590]">Músculo: {m.porcentaje_musculo}%</span>
+                                        <span className="text-[#4A5568]">Músculo: {m.porcentaje_musculo}%</span>
                                     )}
                                     {i === 0 && (
                                         <Badge tone="green" className="ml-auto">Actual</Badge>

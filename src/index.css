@@ -15,23 +15,23 @@
   --font-display: "Plus Jakarta Sans", sans-serif;
   --font-sans: "Plus Jakarta Sans", sans-serif;
 
-  /* Brand colors */
-  --color-brand-green: #3ddc84;
-  --color-brand-greenL: #5ef0a0;
-  --color-brand-blue: #58a6ff;
-  --color-brand-orange: #f0a500;
-  --color-brand-red: #ff6b6b;
-  --color-brand-purple: #a855f7;
+  /* Brand colors — matches landing's corporate green palette */
+  --color-brand-green: #1b5e20;
+  --color-brand-greenL: #2e7d32;
+  --color-brand-blue: #2563eb;
+  --color-brand-orange: #bf9000;
+  --color-brand-red: #d64545;
+  --color-brand-purple: #7c3aed;
 
-  /* Dark palette */
-  --color-dark-900: #0d1117;
-  --color-dark-800: #161b22;
-  --color-dark-700: #1c2330;
-  --color-dark-600: #2d3748;
+  /* Light palette (named dark-* for class-name compatibility; values are light) */
+  --color-dark-900: #ffffff;
+  --color-dark-800: #ffffff;
+  --color-dark-700: #f8f9fa;
+  --color-dark-600: #e2e8f0;
 
   /* Semantic text colors */
-  --color-text-primary: #e6edf3;
-  --color-text-muted: #7d8590;
+  --color-text-primary: #1a1a1a;
+  --color-text-muted: #4a5568;
   --color-text-white: #ffffff;
 
   /* Custom animations */
@@ -42,17 +42,17 @@
 
 /* ── Variables globales ──────────────────────────────────── */
 :root {
-  --color-bg: #0d1117;
-  --color-surface: #161b22;
-  --color-card: #1c2330;
-  --color-border: #2d3748;
-  --color-accent: #3ddc84;
-  --color-blue: #58a6ff;
-  --color-orange: #f0a500;
-  --color-red: #ff6b6b;
-  --color-purple: #a855f7;
-  --color-text: #e6edf3;
-  --color-muted: #7d8590;
+  --color-bg: #ffffff;
+  --color-surface: #ffffff;
+  --color-card: #f8f9fa;
+  --color-border: #e2e8f0;
+  --color-accent: #1b5e20;
+  --color-blue: #2563eb;
+  --color-orange: #bf9000;
+  --color-red: #d64545;
+  --color-purple: #7c3aed;
+  --color-text: #1a1a1a;
+  --color-muted: #4a5568;
 }
 
 /* ── Reset base ──────────────────────────────────────────── */

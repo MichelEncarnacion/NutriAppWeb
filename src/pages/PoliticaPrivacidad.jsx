@@ -89,47 +89,47 @@ export default function PoliticaPrivacidad() {
     const navigate = useNavigate();
 
     return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4 py-10 font-sans">
-            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-2xl flex flex-col gap-6 overflow-hidden">
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4 py-10 font-sans">
+            <div className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-2xl flex flex-col gap-6 overflow-hidden shadow-sm">
 
                 {/* Header */}
-                <div className="bg-[#1C2330] px-8 py-6 border-b border-[#2D3748]">
+                <div className="bg-dark-700 px-8 py-6 border-b border-dark-600">
                     <div className="mb-3"><Logo size="sm" /></div>
-                    <h1 className="text-white text-xl font-bold">Política de Privacidad</h1>
-                    <p className="text-[#7D8590] text-sm mt-1">
+                    <h1 className="text-text-primary text-xl font-bold">Política de Privacidad</h1>
+                    <p className="text-text-muted text-sm mt-1">
                         Última actualización: Marzo 2026 · Versión 1.0 · Conforme a LFPDPPP (México)
                     </p>
                 </div>
 
                 {/* Contenido scrolleable */}
-                <div className="px-8 max-h-[60vh] overflow-y-auto flex flex-col gap-5 text-sm text-[#7D8590] leading-relaxed">
+                <div className="px-8 max-h-[60vh] overflow-y-auto flex flex-col gap-5 text-sm text-text-muted leading-relaxed">
 
-                    <p className="text-[#7D8590] text-xs italic">
+                    <p className="text-text-muted text-xs italic">
                         Este aviso de privacidad describe cómo NutriiApp recopila, usa y protege sus datos personales.
                         Al usar NutriiApp, usted acepta las prácticas descritas en este documento.
                     </p>
 
                     {SECCIONES.map(({ titulo, texto, items, subtitulo, subtitulo2, items2 }) => (
                         <div key={titulo}>
-                            <h3 className="text-white font-semibold mb-2">{titulo}</h3>
+                            <h3 className="text-text-primary font-semibold mb-2">{titulo}</h3>
                             {texto && <p className="mb-2">{texto}</p>}
-                            {subtitulo && <p className="text-[#E6EDF3] text-xs font-semibold mb-1">{subtitulo}</p>}
+                            {subtitulo && <p className="text-text-primary text-xs font-semibold mb-1">{subtitulo}</p>}
                             {items && (
                                 <ul className="flex flex-col gap-1 mb-2">
                                     {items.map((item, i) => (
                                         <li key={i} className="flex gap-2">
-                                            <span className="text-[#3DDC84] mt-0.5 flex-shrink-0">•</span>
+                                            <span className="text-brand-green mt-0.5 flex-shrink-0">•</span>
                                             <span>{item}</span>
                                         </li>
                                     ))}
                                 </ul>
                             )}
-                            {subtitulo2 && <p className="text-[#E6EDF3] text-xs font-semibold mb-1 mt-2">{subtitulo2}</p>}
+                            {subtitulo2 && <p className="text-text-primary text-xs font-semibold mb-1 mt-2">{subtitulo2}</p>}
                             {items2 && (
                                 <ul className="flex flex-col gap-1">
                                     {items2.map((item, i) => (
                                         <li key={i} className="flex gap-2">
-                                            <span className="text-[#58A6FF] mt-0.5 flex-shrink-0">•</span>
+                                            <span className="text-brand-blue mt-0.5 flex-shrink-0">•</span>
                                             <span>{item}</span>
                                         </li>
                                     ))}
@@ -141,13 +141,13 @@ export default function PoliticaPrivacidad() {
 
                 {/* Footer */}
                 <div className="px-8 pb-8 flex flex-col gap-3">
-                    <div className="p-3 bg-[rgba(61,220,132,0.06)] border border-[rgba(61,220,132,0.15)] rounded-xl text-xs text-[#7D8590] text-center">
+                    <div className="p-3 bg-[rgba(27,94,32,0.06)] border border-[rgba(27,94,32,0.18)] rounded-xl text-xs text-text-muted text-center">
                         Para ejercer sus derechos o resolver dudas:{" "}
-                        <span className="text-[#3DDC84] font-medium">soporte@nutriiapp.mx</span>
+                        <span className="text-brand-green font-medium">soporte@nutriiapp.mx</span>
                     </div>
                     <button
                         onClick={() => navigate(-1)}
-                        className="w-full py-3 rounded-xl font-bold font-display text-sm transition-all bg-[#1C2330] text-[#7D8590] hover:text-white border border-[#2D3748] hover:border-[#3DDC84]"
+                        className="w-full py-3 rounded-xl font-bold font-display text-sm transition-all bg-dark-700 text-text-muted hover:text-text-primary border border-dark-600 hover:border-brand-green"
                     >
                         ← Volver
                     </button>

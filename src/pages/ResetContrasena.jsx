@@ -62,17 +62,17 @@ export default function ResetContrasena() {
                     <div style={{ display: "flex", flexDirection: "column", gap: 16, alignItems: "center", textAlign: "center" }}>
                         <div style={{ fontSize: 48 }}>✅</div>
                         <div>
-                            <p style={{ color: "#3DDC84", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
+                            <p style={{ color: "#1B5E20", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
                                 ¡Contraseña actualizada!
                             </p>
-                            <p style={{ color: "#7D8590", fontSize: 14, margin: 0 }}>
+                            <p style={{ color: "#4A5568", fontSize: 14, margin: 0 }}>
                                 Redirigiendo a tu panel…
                             </p>
                         </div>
                     </div>
                 ) : (
                     <>
-                        <p style={{ color: "#7D8590", fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                        <p style={{ color: "#4A5568", fontSize: 14, margin: 0, lineHeight: 1.6 }}>
                             Elige una contraseña nueva segura para tu cuenta.
                         </p>
 
@@ -104,7 +104,7 @@ export default function ResetContrasena() {
                                     required
                                     style={{
                                         ...styles.input,
-                                        borderColor: form.confirmar && form.confirmar !== form.password ? "rgba(255,107,107,.5)" : "#2D3748",
+                                        borderColor: form.confirmar && form.confirmar !== form.password ? "rgba(214,69,69,.6)" : "#E2E8F0",
                                     }}
                                 />
                             </div>
@@ -126,7 +126,7 @@ export default function ResetContrasena() {
 const styles = {
     page: {
         minHeight: "100vh",
-        background: "#0D1117",
+        background: "#FFFFFF",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -134,8 +134,8 @@ const styles = {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
     },
     card: {
-        background: "#161B22",
-        border: "1px solid #2D3748",
+        background: "#FFFFFF",
+        border: "1px solid #E2E8F0",
         borderRadius: 20,
         padding: "40px 36px",
         width: "100%",
@@ -143,42 +143,43 @@ const styles = {
         display: "flex",
         flexDirection: "column",
         gap: 20,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
     },
     logo: { textAlign: "center" },
     logoText: {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 800,
         fontSize: 28,
-        color: "#3DDC84",
+        color: "#1B5E20",
         display: "block",
         marginBottom: 6,
     },
-    logoSub: { color: "#7D8590", fontSize: 14, margin: 0 },
+    logoSub: { color: "#4A5568", fontSize: 14, margin: 0 },
     errorBanner: {
-        background: "rgba(255,107,107,.12)",
-        border: "1px solid rgba(255,107,107,.3)",
-        color: "#FF6B6B",
+        background: "rgba(214,69,69,.10)",
+        border: "1px solid rgba(214,69,69,.3)",
+        color: "#D64545",
         borderRadius: 10,
         padding: "12px 16px",
         fontSize: 13,
     },
     form: { display: "flex", flexDirection: "column", gap: 14 },
     field: { display: "flex", flexDirection: "column", gap: 6 },
-    label: { fontSize: 13, color: "#7D8590", fontWeight: 500 },
+    label: { fontSize: 13, color: "#4A5568", fontWeight: 500 },
     input: {
-        background: "#1C2330",
-        border: "1px solid #2D3748",
+        background: "#F8F9FA",
+        border: "1px solid #E2E8F0",
         borderRadius: 10,
         padding: "12px 14px",
-        color: "#E6EDF3",
+        color: "#1A1A1A",
         fontSize: 14,
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         outline: "none",
         transition: "border-color .2s",
     },
     btnPrimary: {
-        background: "#3DDC84",
-        color: "#000",
+        background: "#1B5E20",
+        color: "#FFFFFF",
         border: "none",
         borderRadius: 10,
         padding: "13px",
