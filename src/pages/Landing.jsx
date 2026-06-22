@@ -1,5 +1,4 @@
 // src/pages/Landing.jsx
-import { Box } from "@mui/material";
 import LandingNavbar       from "../components/landing/LandingNavbar";
 import LandingHero         from "../components/landing/LandingHero";
 import LandingCredBand     from "../components/landing/LandingCredBand";
@@ -11,7 +10,7 @@ import LandingFooter       from "../components/landing/LandingFooter";
 
 export default function Landing() {
   return (
-    <Box sx={{ bgcolor: "#FFFFFF", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-white">
       <LandingNavbar />
       <LandingHero />
       <LandingCredBand />
@@ -20,6 +19,6 @@ export default function Landing() {
       <LandingFAQ />
       <LandingCTA />
       <LandingFooter />
-    </Box>
+    </div>
   );
 }

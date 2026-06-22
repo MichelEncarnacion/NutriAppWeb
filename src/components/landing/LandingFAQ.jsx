@@ -1,6 +1,5 @@
 // src/components/landing/LandingFAQ.jsx
 import { useState } from "react";
-import { Box, Container, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import { Plus, Minus } from "lucide-react";
 import { motion } from "framer-motion";
 import { C } from "./landingTokens";
@@ -38,16 +37,9 @@ export default function LandingFAQ() {
   const { fadeInUp, stagger } = useMotionSafe();
 
   return (
-    <Box id="faq" sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 12 } }}>
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display:             "grid",
-            gridTemplateColumns: { xs: "1fr", md: "4fr 7fr" },
-            gap:                 { xs: 6, md: 10 },
-            alignItems:          "flex-start",
-          }}
-        >
+    <div id="faq" className="py-16 md:py-24" style={{ background: C.bgMain }}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-[4fr_7fr] md:gap-20">
           {/* Left — heading pegado */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -55,31 +47,24 @@ export default function LandingFAQ() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Box sx={{ position: { md: "sticky" }, top: { md: 100 } }}>
-              <Typography
-                component="h2"
-                sx={{
-                  color:      C.textPrimary,
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontWeight: 900,
-                  fontSize:   { xs: "1.9rem", md: "2.3rem" },
-                  lineHeight: 1.2,
-                  mb:         2,
-                }}
+            <div className="md:sticky md:top-[100px]">
+              <h2
+                className="mb-4 text-[1.9rem] font-black leading-[1.2] md:text-[2.3rem]"
+                style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
                 Todo lo que necesitas saber antes de agendar
-              </Typography>
-              <Typography sx={{ color: C.textMuted, fontSize: "0.95rem", lineHeight: 1.7 }}>
+              </h2>
+              <p className="text-[0.95rem] leading-[1.7]" style={{ color: C.textMuted }}>
                 Si tienes otra pregunta, escríbenos a{" "}
-                <Box
-                  component="a"
+                <a
                   href="mailto:hola@nutriiapp.mx"
-                  sx={{ color: C.primary, fontWeight: 600, textDecoration: "none", "&:hover": { textDecoration: "underline" } }}
+                  className="font-semibold hover:underline"
+                  style={{ color: C.primary }}
                 >
                   hola@nutriiapp.mx
-                </Box>
-              </Typography>
-            </Box>
+                </a>
+              </p>
+            </div>
           </motion.div>
 
           {/* Right — acordeón */}
@@ -89,54 +74,46 @@ export default function LandingFAQ() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5 }}>
-              {FAQS.map((faq, i) => (
-                <motion.div key={i} variants={fadeInUp}>
-                  <Accordion
-                    expanded={expanded === i}
-                    onChange={() => setExpanded(expanded === i ? null : i)}
-                    disableGutters
-                    elevation={0}
-                    sx={{
-                      bgcolor:     C.bgCard,
-                      border:      `1px solid ${expanded === i ? C.accent : C.border}`,
-                      borderRadius:"12px !important",
-                      boxShadow:   expanded === i ? C.shadow : "none",
-                      "&::before": { display: "none" },
-                      transition:  "border-color 0.2s, box-shadow 0.2s",
-                    }}
-                  >
-                    <AccordionSummary
-                      expandIcon={
-                        expanded === i
-                          ? <Minus size={16} color={C.primary} />
-                          : <Plus  size={16} color={C.textMuted} />
-                      }
-                      sx={{ px: 3, py: 1.25 }}
+            <div className="flex flex-col gap-3">
+              {FAQS.map((faq, i) => {
+                const isOpen = expanded === i;
+                return (
+                  <motion.div key={i} variants={fadeInUp}>
+                    <div
+                      className="overflow-hidden rounded-xl transition-[border-color,box-shadow] duration-200"
+                      style={{
+                        background: C.bgCard,
+                        border:     `1px solid ${isOpen ? C.accent : C.border}`,
+                        boxShadow:  isOpen ? C.shadow : "none",
+                      }}
                     >
-                      <Typography
-                        sx={{
-                          color:      expanded === i ? C.primary : C.textPrimary,
-                          fontWeight: 700,
-                          fontSize:   "0.95rem",
-                          transition: "color 0.2s",
-                        }}
+                      <button
+                        onClick={() => setExpanded(isOpen ? null : i)}
+                        className="flex w-full items-center justify-between gap-3 px-6 py-3 text-left"
                       >
-                        {faq.q}
-                      </Typography>
-                    </AccordionSummary>
-                    <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-                      <Typography sx={{ color: C.textMuted, fontSize: "0.9rem", lineHeight: 1.78 }}>
-                        {faq.a}
-                      </Typography>
-                    </AccordionDetails>
-                  </Accordion>
-                </motion.div>
-              ))}
-            </Box>
+                        <span
+                          className="text-[0.95rem] font-bold transition-colors duration-200"
+                          style={{ color: isOpen ? C.primary : C.textPrimary }}
+                        >
+                          {faq.q}
+                        </span>
+                        {isOpen ? <Minus size={16} color={C.primary} /> : <Plus size={16} color={C.textMuted} />}
+                      </button>
+                      {isOpen && (
+                        <div className="px-6 pb-6">
+                          <p className="text-[0.9rem] leading-[1.78]" style={{ color: C.textMuted }}>
+                            {faq.a}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
           </motion.div>
-        </Box>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

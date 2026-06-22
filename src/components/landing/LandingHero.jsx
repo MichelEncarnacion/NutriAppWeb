@@ -1,6 +1,5 @@
 // src/components/landing/LandingHero.jsx
 import { useNavigate } from "react-router-dom";
-import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import CountUp from "react-countup";
 import { ArrowRight, PlayCircle, ShieldCheck } from "lucide-react";
@@ -29,27 +28,17 @@ export default function LandingHero() {
   const { fadeInUp, stagger, floatAnim, shouldAnimate } = useMotionSafe();
 
   return (
-    <Box
-      sx={{
-        background: C.heroGrad,
-        minHeight:  "100vh",
-        display:    "flex",
-        alignItems: "center",
-        pt:         { xs: 11, md: 10 },
-        pb:         { xs: 8, md: 10 },
-        position:   "relative",
-        overflow:   "hidden",
-      }}
+    <div
+      className="relative flex min-h-screen items-center overflow-hidden pt-[88px] pb-16 md:pt-20 md:pb-20"
+      style={{ background: C.heroGrad }}
     >
       {/* Radial gradients base */}
-      <Box
-        sx={{
-          position:        "absolute",
-          inset:           0,
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
           backgroundImage:
             "radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 50%), " +
             "radial-gradient(circle at 80% 20%, rgba(255,255,255,0.06) 0%, transparent 50%)",
-          pointerEvents:   "none",
         }}
       />
 
@@ -58,16 +47,10 @@ export default function LandingHero() {
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.4, 0.65, 0.4] }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -top-[10%] right-[3%] aspect-square w-[38%] rounded-full"
           style={{
-            position:     "absolute",
-            top:          "-10%",
-            right:        "3%",
-            width:        "38%",
-            aspectRatio:  "1",
-            borderRadius: "50%",
-            background:   "radial-gradient(circle, rgba(165,214,167,0.18), transparent 70%)",
-            filter:       "blur(50px)",
-            pointerEvents:"none",
+            background: "radial-gradient(circle, rgba(165,214,167,0.18), transparent 70%)",
+            filter:     "blur(50px)",
           }}
         />
       )}
@@ -77,142 +60,92 @@ export default function LandingHero() {
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.3, 0.5, 0.3] }}
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+          className="pointer-events-none absolute bottom-[5%] -left-[5%] aspect-square w-[30%] rounded-full"
           style={{
-            position:     "absolute",
-            bottom:       "5%",
-            left:         "-5%",
-            width:        "30%",
-            aspectRatio:  "1",
-            borderRadius: "50%",
-            background:   "radial-gradient(circle, rgba(67,160,71,0.14), transparent 70%)",
-            filter:       "blur(60px)",
-            pointerEvents:"none",
+            background: "radial-gradient(circle, rgba(67,160,71,0.14), transparent 70%)",
+            filter:     "blur(60px)",
           }}
         />
       )}
 
-      <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-        <Box
-          sx={{
-            display:             "grid",
-            gridTemplateColumns: { xs: "1fr", lg: "1.1fr 0.9fr" },
-            gap:                 { xs: 6, lg: 8 },
-            alignItems:          "center",
-          }}
-        >
+      <div className="relative z-[1] mx-auto max-w-[1200px] px-4 sm:px-6 w-full">
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-16">
           {/* Left column */}
           <motion.div variants={stagger} initial="hidden" animate="visible">
 
             <motion.div variants={fadeInUp}>
-              <Typography
-                component="h1"
-                sx={{
-                  color:         C.white,
-                  fontFamily:    "Plus Jakarta Sans, sans-serif",
-                  fontWeight:    900,
-                  fontSize:      { xs: "2.3rem", md: "3rem", lg: "3.4rem" },
-                  lineHeight:    1.12,
-                  mb:            3,
-                  letterSpacing: "-0.01em",
-                }}
+              <h1
+                className="mb-6 text-[2.3rem] leading-[1.12] font-black tracking-[-0.01em] md:text-[3rem] lg:text-[3.4rem]"
+                style={{ color: C.white, fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
                 Tus colaboradores más sanos.{" "}
-                <Box
-                  component="span"
-                  sx={{
+                <span
+                  className={shouldAnimate ? "animate-[shimmerText_4s_linear_infinite]" : ""}
+                  style={{
                     color:                "transparent",
                     backgroundImage:      "linear-gradient(90deg, #A5D6A7, #E8F5E9, #A5D6A7)",
                     backgroundSize:       "200% auto",
                     WebkitBackgroundClip: "text",
                     backgroundClip:       "text",
-                    animation:            shouldAnimate ? "shimmerText 4s linear infinite" : "none",
-                    "@keyframes shimmerText": {
-                      "0%":   { backgroundPosition: "0% center" },
-                      "100%": { backgroundPosition: "200% center" },
-                    },
                   }}
                 >
                   Tu empresa más productiva.
-                </Box>
-              </Typography>
+                </span>
+              </h1>
             </motion.div>
 
             <motion.div variants={fadeInUp}>
-              <Typography
-                sx={{
-                  color:      "rgba(255,255,255,0.82)",
-                  fontSize:   { xs: "1rem", md: "1.1rem" },
-                  lineHeight: 1.78,
-                  mb:         4,
-                  maxWidth:   500,
-                }}
+              <p
+                className="mb-8 max-w-[500px] text-[1rem] leading-[1.78] md:text-[1.1rem]"
+                style={{ color: "rgba(255,255,255,0.82)" }}
               >
                 Medimos a cada colaborador con nuestro propio hardware, generamos un plan
                 nutricional con IA y entregamos a RR.HH. un dashboard con KPIs de
                 productividad y retorno de inversión reales.
-              </Typography>
+              </p>
             </motion.div>
 
             <motion.div variants={fadeInUp}>
-              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap", mb: 5 }}>
-                <Button
+              <div className="mb-10 flex flex-wrap gap-4">
+                <button
                   onClick={() => navigate("/demo")}
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowRight size={18} />}
-                  sx={{
-                    bgcolor:       C.white,
-                    color:         C.primary,
-                    fontWeight:    800,
-                    textTransform: "none",
-                    borderRadius:  "12px",
-                    px:            3.5,
-                    py:            1.5,
-                    fontSize:      "1rem",
-                    boxShadow:     "0 4px 24px rgba(0,0,0,0.18)",
-                    "&:hover":     { bgcolor: "#F0FFF4", boxShadow: "0 6px 32px rgba(0,0,0,0.22)" },
-                  }}
+                  className="flex items-center gap-2 rounded-xl px-7 py-3 text-base font-extrabold transition-shadow"
+                  style={{ background: C.white, color: C.primary, boxShadow: "0 4px 24px rgba(0,0,0,0.18)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#F0FFF4"; e.currentTarget.style.boxShadow = "0 6px 32px rgba(0,0,0,0.22)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = C.white; e.currentTarget.style.boxShadow = "0 4px 24px rgba(0,0,0,0.18)"; }}
                 >
                   Solicitar demo
-                </Button>
+                  <ArrowRight size={18} />
+                </button>
 
-                <Button
+                <a
                   href="#como-funciona"
-                  component="a"
-                  size="large"
-                  startIcon={<PlayCircle size={18} />}
-                  sx={{
-                    color:         C.white,
-                    border:        "1.5px solid rgba(255,255,255,0.4)",
-                    textTransform: "none",
-                    fontWeight:    600,
-                    borderRadius:  "12px",
-                    px:            3,
-                    py:            1.5,
-                    fontSize:      "1rem",
-                    "&:hover":     { bgcolor: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.7)" },
-                  }}
+                  className="flex items-center gap-2 rounded-xl px-6 py-3 text-base font-semibold"
+                  style={{ color: C.white, border: "1.5px solid rgba(255,255,255,0.4)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "rgba(255,255,255,0.1)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.7)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.4)"; }}
                 >
+                  <PlayCircle size={18} />
                   Ver cómo funciona
-                </Button>
-              </Box>
+                </a>
+              </div>
             </motion.div>
 
             {/* Trust badges */}
             <motion.div variants={fadeInUp}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexWrap: "wrap" }}>
+              <div className="flex flex-wrap items-center gap-2">
                 <ShieldCheck size={14} color="rgba(255,255,255,0.6)" style={{ marginRight: 4 }} />
                 {TRUST_BADGES.map((badge, i) => (
-                  <Box key={badge} sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <div key={badge} className="flex items-center gap-2">
                     {i > 0 && (
-                      <Box sx={{ width: 3, height: 3, borderRadius: "50%", bgcolor: "rgba(255,255,255,0.35)", mx: 0.5 }} />
+                      <span className="mx-1 inline-block h-[3px] w-[3px] rounded-full" style={{ background: "rgba(255,255,255,0.35)" }} />
                     )}
-                    <Typography sx={{ color: "rgba(255,255,255,0.65)", fontSize: "0.78rem", fontWeight: 600 }}>
+                    <span className="text-[0.78rem] font-semibold" style={{ color: "rgba(255,255,255,0.65)" }}>
                       {badge}
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
                 ))}
-              </Box>
+              </div>
             </motion.div>
           </motion.div>
 
@@ -222,16 +155,11 @@ export default function LandingHero() {
             animate={{ opacity: 1, x: 0, scale: 1 }}
             transition={{ duration: 0.7, delay: 0.25, ease: "easeOut" }}
           >
-            <Box sx={{ position: "relative", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <div className="relative flex items-center justify-center">
               {/* Glow detrás del mockup */}
-              <Box
-                sx={{
-                  position:      "absolute",
-                  inset:         "-10%",
-                  background:    "radial-gradient(ellipse, rgba(255,255,255,0.1), transparent 70%)",
-                  filter:        "blur(30px)",
-                  pointerEvents: "none",
-                }}
+              <div
+                className="pointer-events-none absolute -inset-[10%]"
+                style={{ background: "radial-gradient(ellipse, rgba(255,255,255,0.1), transparent 70%)", filter: "blur(30px)" }}
               />
 
               {/* Dashboard flotante con perspectiva 3D */}
@@ -239,53 +167,39 @@ export default function LandingHero() {
                 {...floatAnim}
                 style={{ width: "100%", maxWidth: 460, position: "relative", zIndex: 1 }}
               >
-                <Box
-                  sx={{
-                    borderRadius:   "20px",
-                    overflow:       "hidden",
+                <div
+                  className="overflow-hidden rounded-[20px]"
+                  style={{
                     border:         "1px solid rgba(255,255,255,0.15)",
                     boxShadow:      "0 32px 80px rgba(0,0,0,0.45)",
-                    bgcolor:        "rgba(255,255,255,0.06)",
+                    background:     "rgba(255,255,255,0.06)",
                     backdropFilter: "blur(10px)",
                     transform:      "perspective(800px) rotateX(3deg) rotateY(-4deg)",
                   }}
                 >
                   {/* App bar */}
-                  <Box
-                    sx={{
-                      bgcolor:        "rgba(255,255,255,0.08)",
-                      px:             2.5,
-                      py:             1.5,
-                      display:        "flex",
-                      alignItems:     "center",
-                      justifyContent: "space-between",
-                      borderBottom:   "1px solid rgba(255,255,255,0.1)",
-                    }}
+                  <div
+                    className="flex items-center justify-between px-5 py-3"
+                    style={{ background: "rgba(255,255,255,0.08)", borderBottom: "1px solid rgba(255,255,255,0.1)" }}
                   >
-                    <Typography sx={{ color: "rgba(255,255,255,0.9)", fontSize: "0.78rem", fontWeight: 700 }}>
+                    <span className="text-[0.78rem] font-bold" style={{ color: "rgba(255,255,255,0.9)" }}>
                       NutriiApp · Dashboard RR.HH.
-                    </Typography>
-                    <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.68rem" }}>
+                    </span>
+                    <span className="text-[0.68rem]" style={{ color: "rgba(255,255,255,0.4)" }}>
                       Mayo 2026
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
 
-                  <Box sx={{ p: 2.5 }}>
+                  <div className="p-5">
                     {/* KPI row con CountUp */}
-                    <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 1.25, mb: 2, alignItems: "stretch" }}>
+                    <div className="mb-4 grid grid-cols-2 items-stretch gap-[10px]">
                       {KPIS.map((kpi) => (
-                        <Box
+                        <div
                           key={kpi.label}
-                          sx={{
-                            bgcolor:      "rgba(255,255,255,0.07)",
-                            borderRadius: "10px",
-                            p:            1.25,
-                            border:       "1px solid rgba(255,255,255,0.08)",
-                            display:      "flex",
-                            flexDirection:"column",
-                          }}
+                          className="flex flex-col rounded-[10px] p-[10px]"
+                          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.08)" }}
                         >
-                          <Typography sx={{ color: kpi.color, fontWeight: 900, fontSize: "1.15rem", lineHeight: 1 }}>
+                          <span className="text-[1.15rem] font-black leading-none" style={{ color: kpi.color }}>
                             <CountUp
                               end={kpi.end}
                               prefix={kpi.prefix}
@@ -294,79 +208,62 @@ export default function LandingHero() {
                               enableScrollSpy
                               scrollSpyOnce
                             />
-                          </Typography>
-                          <Typography sx={{ color: "rgba(255,255,255,0.55)", fontSize: "0.6rem", mt: 0.4, fontWeight: 600 }}>
+                          </span>
+                          <span className="mt-1 text-[0.6rem] font-semibold" style={{ color: "rgba(255,255,255,0.55)" }}>
                             {kpi.label}
-                          </Typography>
-                          <Typography sx={{ color: "rgba(255,255,255,0.3)", fontSize: "0.56rem", mt: 0.2 }}>
+                          </span>
+                          <span className="mt-0.5 text-[0.56rem]" style={{ color: "rgba(255,255,255,0.3)" }}>
                             {kpi.sub}
-                          </Typography>
-                        </Box>
+                          </span>
+                        </div>
                       ))}
-                    </Box>
+                    </div>
 
                     {/* Employee list */}
-                    <Typography sx={{ color: "rgba(255,255,255,0.4)", fontSize: "0.62rem", fontWeight: 600, mb: 1 }}>
+                    <p className="mb-2 text-[0.62rem] font-semibold" style={{ color: "rgba(255,255,255,0.4)" }}>
                       Colaboradores · plan activo
-                    </Typography>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 0.75 }}>
+                    </p>
+                    <div className="flex flex-col gap-[6px]">
                       {EMPLOYEES.map((emp) => (
-                        <Box
+                        <div
                           key={emp.name}
-                          sx={{
-                            display:      "flex",
-                            alignItems:   "center",
-                            gap:          1.5,
-                            bgcolor:      "rgba(255,255,255,0.05)",
-                            borderRadius: "8px",
-                            px:           1.5,
-                            py:           0.85,
-                            border:       "1px solid rgba(255,255,255,0.06)",
-                          }}
+                          className="flex items-center gap-3 rounded-lg px-3 py-[7px]"
+                          style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.06)" }}
                         >
-                          <Box
-                            sx={{
-                              width:          28,
-                              height:         28,
-                              borderRadius:   "50%",
-                              bgcolor:        "rgba(165,214,167,0.25)",
-                              display:        "flex",
-                              alignItems:     "center",
-                              justifyContent: "center",
-                              flexShrink:     0,
-                            }}
+                          <div
+                            className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full"
+                            style={{ background: "rgba(165,214,167,0.25)" }}
                           >
-                            <Typography sx={{ color: "#A5D6A7", fontSize: "0.6rem", fontWeight: 800 }}>
+                            <span className="text-[0.6rem] font-extrabold" style={{ color: "#A5D6A7" }}>
                               {emp.name.split(" ").map(w => w[0]).join("")}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ flex: 1, minWidth: 0 }}>
-                            <Typography sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.7rem", fontWeight: 700, lineHeight: 1.2 }}>
+                            </span>
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[0.7rem] font-bold leading-tight" style={{ color: "rgba(255,255,255,0.85)" }}>
                               {emp.name}
-                            </Typography>
-                            <Typography sx={{ color: "rgba(255,255,255,0.38)", fontSize: "0.58rem" }}>
+                            </p>
+                            <p className="text-[0.58rem]" style={{ color: "rgba(255,255,255,0.38)" }}>
                               {emp.dept}
-                            </Typography>
-                          </Box>
-                          <Box sx={{ textAlign: "right", flexShrink: 0 }}>
-                            <Typography sx={{ color: "#81C784", fontSize: "0.7rem", fontWeight: 800, lineHeight: 1 }}>
+                            </p>
+                          </div>
+                          <div className="flex-shrink-0 text-right">
+                            <p className="text-[0.7rem] font-extrabold leading-none" style={{ color: "#81C784" }}>
                               {emp.score}
-                            </Typography>
-                            <Typography sx={{ color: "rgba(129,199,132,0.6)", fontSize: "0.56rem" }}>
+                            </p>
+                            <p className="text-[0.56rem]" style={{ color: "rgba(129,199,132,0.6)" }}>
                               {emp.trend}
-                            </Typography>
-                          </Box>
-                        </Box>
+                            </p>
+                          </div>
+                        </div>
                       ))}
-                    </Box>
-                  </Box>
-                </Box>
-
+                    </div>
+                  </div>
+                </div>
               </motion.div>
-            </Box>
+            </div>
           </motion.div>
-        </Box>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,5 @@
 // src/components/landing/LandingBenefits.jsx
 import { useRef } from "react";
-import { Box, Container, Typography } from "@mui/material";
 import { motion, useInView } from "framer-motion";
 import { Stethoscope, BrainCircuit, BarChart3 } from "lucide-react";
 import { C } from "./landingTokens";
@@ -41,16 +40,10 @@ function ProgressBar({ progress, color }) {
   const inView = useInView(ref, { once: true });
 
   return (
-    <Box
+    <div
       ref={ref}
-      sx={{
-        height:       4,
-        bgcolor:      "rgba(0,0,0,0.06)",
-        borderRadius: 2,
-        overflow:     "hidden",
-        mt:           1,
-        maxWidth:     180,
-      }}
+      className="mt-1 h-1 max-w-[180px] overflow-hidden rounded-full"
+      style={{ background: "rgba(0,0,0,0.06)" }}
     >
       <motion.div
         initial={{ width: 0 }}
@@ -64,23 +57,16 @@ function ProgressBar({ progress, color }) {
           borderRadius: 8,
         }}
       />
-    </Box>
+    </div>
   );
 }
 
 export default function LandingBenefits() {
   const { fadeInUp, stagger } = useMotionSafe();
   return (
-    <Box sx={{ bgcolor: C.bgMain, py: { xs: 8, md: 12 } }}>
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display:             "grid",
-            gridTemplateColumns: { xs: "1fr", md: "5fr 7fr" },
-            gap:                 { xs: 6, md: 10 },
-            alignItems:          "flex-start",
-          }}
-        >
+    <div className="py-16 md:py-24" style={{ background: C.bgMain }}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <div className="grid grid-cols-1 items-start gap-12 md:grid-cols-[5fr_7fr] md:gap-20">
           {/* Left — heading sticky en desktop */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -88,43 +74,28 @@ export default function LandingBenefits() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Box sx={{ position: { md: "sticky" }, top: { md: 100 } }}>
+            <div className="md:sticky md:top-[100px]">
               {/* Eyebrow label */}
-              <Box
-                sx={{
-                  display:      "inline-flex",
-                  alignItems:   "center",
-                  bgcolor:      "#E8F5E9",
-                  border:       "1px solid #C8E6C9",
-                  borderRadius: "20px",
-                  px:           1.5,
-                  py:           0.5,
-                  mb:           2,
-                }}
+              <div
+                className="mb-4 inline-flex items-center rounded-[20px] px-3 py-1"
+                style={{ background: "#E8F5E9", border: "1px solid #C8E6C9" }}
               >
-                <Typography sx={{ color: C.primary, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.05em" }}>
+                <span className="text-[0.75rem] font-bold" style={{ color: C.primary, letterSpacing: "0.05em" }}>
                   POR QUÉ NUTRIIAPP
-                </Typography>
-              </Box>
+                </span>
+              </div>
 
-              <Typography
-                component="h2"
-                sx={{
-                  color:      C.textPrimary,
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontWeight: 900,
-                  fontSize:   { xs: "1.9rem", md: "2.4rem" },
-                  lineHeight: 1.2,
-                  mb:         2.5,
-                }}
+              <h2
+                className="mb-5 text-[1.9rem] font-black leading-[1.2] md:text-[2.4rem]"
+                style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
                 Tres pilares que hacen única a NutriiApp en el mercado
-              </Typography>
-              <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.75, mb: 3 }}>
+              </h2>
+              <p className="mb-6 text-base leading-[1.75]" style={{ color: C.textMuted }}>
                 50% más barato que el competidor corporativo más cercano.
                 65% más barato que una consulta nutricional tradicional.
-              </Typography>
-            </Box>
+              </p>
+            </div>
           </motion.div>
 
           {/* Right — pilares */}
@@ -134,88 +105,65 @@ export default function LandingBenefits() {
             whileInView="visible"
             viewport={{ once: true, amount: 0.1 }}
           >
-            <Box sx={{ display: "flex", flexDirection: "column" }}>
+            <div className="flex flex-col">
               {PILLARS.map(({ Icon, title, desc, metric, metricLabel, progress, color, iconBg }, i) => (
                 <motion.div key={title} variants={fadeInUp}>
                   <motion.div whileHover={{ backgroundColor: "rgba(27,94,32,0.025)" }} style={{ borderRadius: 12 }}>
-                    <Box
-                      sx={{
-                        display:   "flex",
-                        gap:       3,
-                        py:        { xs: 3.5, md: 4 },
-                        px:        1,
-                        borderTop: i > 0 ? `1px solid ${C.border}` : "none",
-                      }}
+                    <div
+                      className="flex gap-6 px-1 py-7 md:py-8"
+                      style={{ borderTop: i > 0 ? `1px solid ${C.border}` : "none" }}
                     >
                       {/* Icon con hover */}
                       <motion.div whileHover={{ scale: 1.1, rotate: 5 }} transition={{ type: "spring", stiffness: 300 }}>
-                        <Box
-                          sx={{
-                            width:          52,
-                            height:         52,
-                            borderRadius:   "14px",
-                            bgcolor:        iconBg,
-                            display:        "flex",
-                            alignItems:     "center",
-                            justifyContent: "center",
-                            flexShrink:     0,
-                            mt:             0.25,
-                            boxShadow:      color === C.gold
+                        <div
+                          className="mt-1 flex h-[52px] w-[52px] flex-shrink-0 items-center justify-center rounded-2xl"
+                          style={{
+                            background: iconBg,
+                            boxShadow:  color === C.gold
                               ? "0 4px 14px rgba(191,144,0,0.2)"
                               : "0 4px 14px rgba(27,94,32,0.15)",
                           }}
                         >
                           <Icon size={24} color={color} />
-                        </Box>
+                        </div>
                       </motion.div>
 
-                      <Box sx={{ flex: 1 }}>
-                        <Typography
-                          sx={{
-                            color:      C.textPrimary,
-                            fontFamily: "Plus Jakarta Sans, sans-serif",
-                            fontWeight: 800,
-                            fontSize:   "1.05rem",
-                            mb:         1,
-                            lineHeight: 1.3,
-                          }}
+                      <div className="flex-1">
+                        <p
+                          className="mb-1 text-[1.05rem] font-extrabold leading-[1.3]"
+                          style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
                         >
                           {title}
-                        </Typography>
-                        <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", lineHeight: 1.75, mb: 2 }}>
+                        </p>
+                        <p className="mb-4 text-[0.875rem] leading-[1.75]" style={{ color: C.textMuted }}>
                           {desc}
-                        </Typography>
+                        </p>
 
                         {metric && (
                           <>
-                            <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.75 }}>
-                              <Typography
-                                sx={{
-                                  color:      color,
-                                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                                  fontWeight: 900,
-                                  fontSize:   "1.6rem",
-                                  lineHeight: 1,
-                                }}
+                            <div className="flex items-baseline gap-[6px]">
+                              <span
+                                className="text-[1.6rem] font-black leading-none"
+                                style={{ color, fontFamily: "Plus Jakarta Sans, sans-serif" }}
                               >
                                 {metric}
-                              </Typography>
-                              <Typography sx={{ color: C.textMuted, fontSize: "0.78rem", fontWeight: 600 }}>
+                              </span>
+                              <span className="text-[0.78rem] font-semibold" style={{ color: C.textMuted }}>
                                 {metricLabel}
-                              </Typography>
-                            </Box>
+                              </span>
+                            </div>
                             {progress && <ProgressBar progress={progress} color={color} />}
                           </>
                         )}
-                      </Box>
-                    </Box>
+                      </div>
+                    </div>
                   </motion.div>
                 </motion.div>
               ))}
-            </Box>
+            </div>
           </motion.div>
-        </Box>
-      </Container>
-    </Box>
+        </div>
+      </div>
+    </div>
   );
 }

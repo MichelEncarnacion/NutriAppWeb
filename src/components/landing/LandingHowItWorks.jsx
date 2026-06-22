@@ -1,5 +1,4 @@
 // src/components/landing/LandingHowItWorks.jsx
-import { Box, Container, Typography } from "@mui/material";
 import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 import { Wifi, Sparkles, Smartphone, TrendingUp } from "lucide-react";
@@ -49,9 +48,10 @@ function AnimatedConnector() {
   const ref = useRef(null);
   const inView = useInView(ref, { once: true });
   return (
-    <Box
+    <div
       ref={ref}
-      sx={{ position: "absolute", top: 26, left: "12.5%", right: "12.5%", height: 2, bgcolor: C.border, zIndex: 0, overflow: "hidden" }}
+      className="absolute top-[26px] left-[12.5%] right-[12.5%] z-0 h-0.5 overflow-hidden"
+      style={{ background: C.border }}
     >
       <motion.div
         initial={{ width: "0%" }}
@@ -59,43 +59,29 @@ function AnimatedConnector() {
         transition={{ duration: 1.2, ease: "easeInOut", delay: 0.3 }}
         style={{ height: "100%", background: `linear-gradient(90deg, ${C.primary}, ${C.accent})`, borderRadius: 2 }}
       />
-    </Box>
+    </div>
   );
 }
 
 export default function LandingHowItWorks() {
   const { fadeInUp, stagger } = useMotionSafe();
   return (
-    <Box id="como-funciona" sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 12 }, borderTop: `1px solid ${C.border}` }}>
-      <Container maxWidth="lg">
+    <div id="como-funciona" className="py-16 md:py-24" style={{ background: C.bgAlt, borderTop: `1px solid ${C.border}` }}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
 
-        <Box
-          sx={{
-            display:             "grid",
-            gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" },
-            gap:                 { xs: 3, md: 6 },
-            mb:                  { xs: 6, md: 8 },
-            alignItems:          "flex-end",
-          }}
-        >
-          <Typography
-            component="h2"
-            sx={{
-              color:      C.textPrimary,
-              fontFamily: "Plus Jakarta Sans, sans-serif",
-              fontWeight: 900,
-              fontSize:   { xs: "1.9rem", md: "2.6rem" },
-              lineHeight: 1.2,
-            }}
+        <div className="mb-12 grid grid-cols-1 items-end gap-6 md:grid-cols-2 md:mb-16">
+          <h2
+            className="text-[1.9rem] font-black leading-[1.2] md:text-[2.6rem]"
+            style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
           >
             De la medición al ROI
             en cuatro pasos
-          </Typography>
-          <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.7 }}>
+          </h2>
+          <p className="text-base leading-[1.7]" style={{ color: C.textMuted }}>
             Implementación completa en menos de una semana.
             Primeros resultados medibles desde el mes 1.
-          </Typography>
-        </Box>
+          </p>
+        </div>
 
         <motion.div
           variants={stagger}
@@ -104,14 +90,7 @@ export default function LandingHowItWorks() {
           viewport={{ once: true, amount: 0.1 }}
         >
           {/* Desktop: horizontal con línea conectora animada */}
-          <Box
-            sx={{
-              display:             { xs: "none", md: "grid" },
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap:                 3,
-              position:            "relative",
-            }}
-          >
+          <div className="relative hidden grid-cols-4 gap-6 md:grid">
             <AnimatedConnector />
 
             {STEPS.map((step, i) => (
@@ -120,142 +99,90 @@ export default function LandingHowItWorks() {
                 variants={fadeInUp}
                 transition={{ delay: i * 0.15 }}
               >
-                <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", height: "100%" }}>
+                <div className="flex h-full flex-col items-center text-center">
                   {/* Ícono con ring */}
-                  <Box
-                    sx={{
-                      width:          56,
-                      height:         56,
-                      borderRadius:   "50%",
-                      bgcolor:        C.primary,
-                      display:        "flex",
-                      alignItems:     "center",
-                      justifyContent: "center",
-                      mb:             2.5,
-                      position:       "relative",
-                      zIndex:         1,
-                      boxShadow:      `0 0 0 6px ${C.bgAlt}, 0 0 0 8px #C8E6C9, 0 8px 20px rgba(27,94,32,0.25)`,
-                      transition:     "box-shadow 0.3s ease",
+                  <div
+                    className="relative z-[1] mb-[10px] flex h-14 w-14 items-center justify-center rounded-full transition-shadow duration-300"
+                    style={{
+                      background: C.primary,
+                      boxShadow:  `0 0 0 6px ${C.bgAlt}, 0 0 0 8px #C8E6C9, 0 8px 20px rgba(27,94,32,0.25)`,
                     }}
                   >
                     <step.Icon size={22} color="#fff" />
-                  </Box>
+                  </div>
 
                   {/* Chip número */}
-                  <Box
-                    sx={{
-                      bgcolor:      "#E8F5E9",
-                      borderRadius: "6px",
-                      px:           0.75,
-                      py:           0.25,
-                      mb:           0.75,
-                    }}
-                  >
-                    <Typography sx={{ color: C.primary, fontSize: "0.7rem", fontWeight: 800 }}>
+                  <div className="mb-1 rounded-md px-[6px] py-1" style={{ background: "#E8F5E9" }}>
+                    <span className="text-[0.7rem] font-extrabold" style={{ color: C.primary }}>
                       {step.num}
-                    </Typography>
-                  </Box>
+                    </span>
+                  </div>
 
-                  <Typography
-                    sx={{
-                      color:      C.textPrimary,
-                      fontFamily: "Plus Jakarta Sans, sans-serif",
-                      fontWeight: 800,
-                      fontSize:   "0.95rem",
-                      mb:         1.25,
-                      lineHeight: 1.3,
-                    }}
+                  <p
+                    className="mb-[10px] text-[0.95rem] font-extrabold leading-[1.3]"
+                    style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
                   >
                     {step.title}
-                  </Typography>
-                  <Typography sx={{ color: C.textMuted, fontSize: "0.82rem", lineHeight: 1.7, mb: 1.5, flex: 1 }}>
+                  </p>
+                  <p className="mb-3 flex-1 text-[0.82rem] leading-[1.7]" style={{ color: C.textMuted }}>
                     {step.desc}
-                  </Typography>
+                  </p>
 
                   {/* Mini screenshot */}
-                  <Box
-                    sx={{
-                      width:        "100%",
-                      height:       52,
-                      borderRadius: "8px",
-                      background:   step.screenshotBg,
-                      display:      "flex",
-                      alignItems:   "center",
-                      justifyContent: "center",
-                      border:       "1px solid rgba(0,0,0,0.06)",
-                      boxShadow:    "0 2px 8px rgba(0,0,0,0.08)",
-                    }}
+                  <div
+                    className="flex h-[52px] w-full items-center justify-center rounded-lg"
+                    style={{ background: step.screenshotBg, border: "1px solid rgba(0,0,0,0.06)", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
                   >
-                    <Typography sx={{ color: step.screenshotColor, fontSize: "0.72rem", fontWeight: 700 }}>
+                    <span className="text-[0.72rem] font-bold" style={{ color: step.screenshotColor }}>
                       {step.screenshotLabel}
-                    </Typography>
-                  </Box>
-                </Box>
+                    </span>
+                  </div>
+                </div>
               </motion.div>
             ))}
-          </Box>
+          </div>
 
           {/* Mobile: filas */}
-          <Box sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column" }}>
+          <div className="flex flex-col md:hidden">
             {STEPS.map((step, i) => (
               <motion.div key={step.num} variants={fadeInUp}>
-                <Box
-                  sx={{
-                    display:    "flex",
-                    gap:        2.5,
-                    py:         3,
-                    borderTop:  i > 0 ? `1px solid ${C.border}` : "none",
-                    alignItems: "flex-start",
-                  }}
+                <div
+                  className="flex items-start gap-[10px] py-6"
+                  style={{ borderTop: i > 0 ? `1px solid ${C.border}` : "none" }}
                 >
-                  <Box
-                    sx={{
-                      width:          44,
-                      height:         44,
-                      borderRadius:   "50%",
-                      bgcolor:        C.primary,
-                      display:        "flex",
-                      alignItems:     "center",
-                      justifyContent: "center",
-                      flexShrink:     0,
-                      boxShadow:      "0 4px 14px rgba(27,94,32,0.25)",
-                    }}
+                  <div
+                    className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full"
+                    style={{ background: C.primary, boxShadow: "0 4px 14px rgba(27,94,32,0.25)" }}
                   >
                     <step.Icon size={19} color="#fff" />
-                  </Box>
-                  <Box sx={{ flex: 1 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>
-                      <Box sx={{ bgcolor: "#E8F5E9", borderRadius: "5px", px: 0.75, py: 0.2 }}>
-                        <Typography sx={{ color: C.primary, fontSize: "0.65rem", fontWeight: 800 }}>{step.num}</Typography>
-                      </Box>
-                    </Box>
-                    <Typography sx={{ color: C.textPrimary, fontWeight: 800, fontSize: "0.95rem", mb: 0.75 }}>
+                  </div>
+                  <div className="flex-1">
+                    <div className="mb-1 flex items-center gap-2">
+                      <div className="rounded px-[6px] py-[2px]" style={{ background: "#E8F5E9" }}>
+                        <span className="text-[0.65rem] font-extrabold" style={{ color: C.primary }}>{step.num}</span>
+                      </div>
+                    </div>
+                    <p className="mb-[6px] text-[0.95rem] font-extrabold" style={{ color: C.textPrimary }}>
                       {step.title}
-                    </Typography>
-                    <Typography sx={{ color: C.textMuted, fontSize: "0.83rem", lineHeight: 1.7, mb: 1 }}>
+                    </p>
+                    <p className="mb-2 text-[0.83rem] leading-[1.7]" style={{ color: C.textMuted }}>
                       {step.desc}
-                    </Typography>
-                    <Box
-                      sx={{
-                        height:       40,
-                        borderRadius: "7px",
-                        background:   step.screenshotBg,
-                        display:      "flex",
-                        alignItems:   "center",
-                        justifyContent: "center",
-                      }}
+                    </p>
+                    <div
+                      className="flex h-10 items-center justify-center rounded-md"
+                      style={{ background: step.screenshotBg }}
                     >
-                      <Typography sx={{ color: step.screenshotColor, fontSize: "0.7rem", fontWeight: 700 }}>
+                      <span className="text-[0.7rem] font-bold" style={{ color: step.screenshotColor }}>
                         {step.screenshotLabel}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Box>
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </motion.div>
             ))}
-          </Box>
+          </div>
         </motion.div>
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }

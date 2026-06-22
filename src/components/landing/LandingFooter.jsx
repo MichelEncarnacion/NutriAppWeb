@@ -1,6 +1,5 @@
 // src/components/landing/LandingFooter.jsx
 import { Link as RouterLink } from "react-router-dom";
-import { Box, Container, Typography, IconButton } from "@mui/material";
 import { Mail } from "lucide-react";
 import { C } from "./landingTokens";
 import Logo from "../Logo";
@@ -18,154 +17,95 @@ const LEGAL_LINKS = [
 
 export default function LandingFooter() {
   return (
-    <Box
-      sx={{
-        bgcolor:   C.bgAlt,
-        borderTop: `1px solid ${C.border}`,
-        pt:        { xs: 7, md: 9 },
-        pb:        4,
-      }}
-    >
-      <Container maxWidth="lg">
-        <Box
-          sx={{
-            display:               "grid",
-            gridTemplateColumns:   { xs: "1fr", sm: "2fr 1fr 1fr", md: "2.5fr 1fr 1fr" },
-            gap:                   { xs: 5, md: 6 },
-            mb:                    6,
-          }}
-        >
+    <div className="pt-14 pb-4 md:pt-[72px]" style={{ background: C.bgAlt, borderTop: `1px solid ${C.border}` }}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <div className="mb-12 grid grid-cols-1 gap-10 sm:grid-cols-[2fr_1fr_1fr] md:grid-cols-[2.5fr_1fr_1fr] md:gap-12">
           {/* Col 1 — Brand */}
-          <Box>
-            <Box sx={{ mb: 2 }}>
+          <div>
+            <div className="mb-4">
               <Logo size="sm" />
-            </Box>
-            <Typography
-              sx={{
-                color:     C.textMuted,
-                fontSize:  "0.875rem",
-                lineHeight: 1.78,
-                mb:        3,
-                maxWidth:  300,
-              }}
-            >
+            </div>
+            <p className="mb-6 max-w-[300px] text-[0.875rem] leading-[1.78]" style={{ color: C.textMuted }}>
               Plataforma SaaS de salud preventiva corporativa para empresas mexicanas.
               IoT + IA clínica + ROI medible desde el día uno.
-            </Typography>
-            <Box sx={{ display: "flex", gap: 0.5 }}>
-              <IconButton
-                component="a"
+            </p>
+            <div className="flex gap-1">
+              <a
                 href="mailto:hola@nutriiapp.mx"
-                size="small"
                 aria-label="Email"
-                sx={{
-                  color:     C.textLight,
-                  border:    `1px solid ${C.border}`,
-                  borderRadius: "8px",
-                  width:     34,
-                  height:    34,
-                  "&:hover": { color: C.primary, borderColor: C.accent, bgcolor: "#E8F5E9" },
-                }}
+                className="flex h-[34px] w-[34px] items-center justify-center rounded-lg transition-colors"
+                style={{ color: C.textLight, border: `1px solid ${C.border}` }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; e.currentTarget.style.borderColor = C.accent; e.currentTarget.style.background = "#E8F5E9"; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = C.textLight; e.currentTarget.style.borderColor = C.border; e.currentTarget.style.background = "transparent"; }}
               >
                 <Mail size={15} />
-              </IconButton>
-            </Box>
-          </Box>
+              </a>
+            </div>
+          </div>
 
           {/* Col 2 — Empresa */}
-          <Box>
-            <Typography
-              sx={{
-                color:         C.textPrimary,
-                fontWeight:    700,
-                fontSize:      "0.78rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                mb:            2.5,
-              }}
+          <div>
+            <p
+              className="mb-5 text-[0.78rem] font-bold uppercase"
+              style={{ color: C.textPrimary, letterSpacing: "0.08em" }}
             >
               Empresa
-            </Typography>
+            </p>
             {COMPANY_LINKS.map((link) => (
-              <Box
+              <RouterLink
                 key={link.label}
-                component={RouterLink}
                 to={link.to}
-                sx={{
-                  color:    C.textMuted,
-                  fontSize: "0.875rem",
-                  mb:       1.5,
-                  display:  "block",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                  "&:hover": { color: C.primary },
-                }}
+                className="mb-3 block text-[0.875rem] no-underline transition-colors"
+                style={{ color: C.textMuted }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; }}
               >
                 {link.label}
-              </Box>
+              </RouterLink>
             ))}
-          </Box>
+          </div>
 
           {/* Col 3 — Legal / Acceso */}
-          <Box>
-            <Typography
-              sx={{
-                color:         C.textPrimary,
-                fontWeight:    700,
-                fontSize:      "0.78rem",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
-                mb:            2.5,
-              }}
+          <div>
+            <p
+              className="mb-5 text-[0.78rem] font-bold uppercase"
+              style={{ color: C.textPrimary, letterSpacing: "0.08em" }}
             >
               Acceso
-            </Typography>
+            </p>
             {LEGAL_LINKS.map((link) => (
-              <Box
+              <RouterLink
                 key={link.label}
-                component={RouterLink}
                 to={link.to}
-                sx={{
-                  color:    C.textMuted,
-                  fontSize: "0.875rem",
-                  mb:       1.5,
-                  display:  "block",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                  "&:hover": { color: C.primary },
-                }}
+                className="mb-3 block text-[0.875rem] no-underline transition-colors"
+                style={{ color: C.textMuted }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = C.primary; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = C.textMuted; }}
               >
                 {link.label}
-              </Box>
+              </RouterLink>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
 
         {/* Bottom bar */}
-        <Box
-          sx={{
-            borderTop:     `1px solid ${C.border}`,
-            pt:            3,
-            display:       "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            alignItems:    "center",
-            justifyContent:"space-between",
-            gap:           1,
-          }}
+        <div
+          className="flex flex-col items-center justify-between gap-2 pt-6 sm:flex-row"
+          style={{ borderTop: `1px solid ${C.border}` }}
         >
-          <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+          <p className="text-[0.75rem]" style={{ color: C.textLight }}>
             © 2025-2026 NutriiApp · Todos los derechos reservados · Puebla, México
-          </Typography>
-          <Typography sx={{ color: C.textLight, fontSize: "0.75rem" }}>
+          </p>
+          <p className="text-[0.75rem]" style={{ color: C.textLight }}>
             Hecho en{" "}
-            <Box component="span" sx={{ color: C.primary, fontWeight: 700 }}>
+            <span className="font-bold" style={{ color: C.primary }}>
               México
-            </Box>
+            </span>
             {" · "}
             NOM-030 · NOM-035
-          </Typography>
-        </Box>
-      </Container>
-    </Box>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
