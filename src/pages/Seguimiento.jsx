@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Input, { Field } from "../components/ui/Input";
 
 export default function Seguimiento() {
     const { session } = useAuth();
@@ -88,19 +91,18 @@ export default function Seguimiento() {
                         { key: "pct_grasa", label: "% de grasa", unit: "%", placeholder: "18.4" },
                         { key: "pct_musculo", label: "% de músculo", unit: "%", placeholder: "42.1" },
                     ].map((f) => (
-                        <div key={f.key} className="flex flex-col gap-2">
-                            <label className="text-xs text-[#7D8590] font-semibold">{f.label}</label>
+                        <Field key={f.key} label={f.label}>
                             <div className="flex items-center gap-2">
-                                <input
+                                <Input
                                     type="number"
                                     placeholder={f.placeholder}
                                     value={form[f.key]}
                                     onChange={(e) => set(f.key, e.target.value)}
-                                    className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-36 outline-none focus:border-[#3DDC84] transition-colors"
+                                    className="w-36"
                                 />
-                                <span className="text-[#7D8590] text-sm">{f.unit}</span>
+                                <span className="text-text-muted text-sm">{f.unit}</span>
                             </div>
-                        </div>
+                        </Field>
                     ))}
                 </div>
             ),
@@ -110,23 +112,23 @@ export default function Seguimiento() {
             desc: "Tu opinión nos ayuda a mejorar el siguiente plan.",
             contenido: (
                 <div className="flex flex-col gap-4">
-                    <p className="text-[#7D8590] text-sm">Nivel de satisfacción con tu plan actual:</p>
+                    <p className="text-text-muted text-sm">Nivel de satisfacción con tu plan actual:</p>
                     <div className="flex gap-3">
                         {[1, 2, 3, 4, 5].map((n) => (
                             <button
                                 key={n}
                                 onClick={() => set("nivel_satisfaccion", n)}
-                                className={`w-12 h-12 rounded-xl font-display font-black text-lg border transition-all
+                                className={`w-12 h-12 rounded-lg font-display font-black text-lg border transition-colors
                   ${form.nivel_satisfaccion === n
-                                        ? "border-[#3DDC84] bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
-                                        : "border-[#2D3748] text-[#7D8590] hover:border-[#3DDC84]"
+                                        ? "border-brand-green bg-brand-green/12 text-brand-green"
+                                        : "border-dark-600 text-text-muted hover:border-brand-green"
                                     }`}
                             >
                                 {n}
                             </button>
                         ))}
                     </div>
-                    <p className="text-[#7D8590] text-xs">1 = muy insatisfecho · 5 = muy satisfecho</p>
+                    <p className="text-text-muted text-xs">1 = muy insatisfecho · 5 = muy satisfecho</p>
                 </div>
             ),
         },
@@ -135,16 +137,16 @@ export default function Seguimiento() {
             desc: "Cambios en tu salud, medicamentos o actividad física.",
             contenido: (
                 <div className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-2">
-                        <label className="text-xs text-[#7D8590] font-semibold">¿Algún cambio en tu salud o medicamentos?</label>
-                        <textarea
+                    <Field label="¿Algún cambio en tu salud o medicamentos?">
+                        <Input
+                            as="textarea"
                             placeholder="Ej: Empecé a tomar magnesio, me diagnosticaron hipotiroidismo... (escribe 'ninguno' si todo sigue igual)"
                             value={form.cambios_medicos}
                             onChange={(e) => set("cambios_medicos", e.target.value)}
                             rows={3}
-                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors resize-none"
+                            className="w-full resize-none"
                         />
-                    </div>
+                    </Field>
                 </div>
             ),
         },
@@ -156,48 +158,46 @@ export default function Seguimiento() {
         <Layout>
             <div className="flex flex-col gap-5 max-w-xl">
                 <div>
-                    <h1 className="text-white text-2xl font-black font-display mb-1">Formulario de seguimiento</h1>
-                    <p className="text-[#7D8590] text-xs">Cada 15 días · Nos ayuda a mejorar tu próximo plan</p>
+                    <h1 className="text-text-primary text-2xl font-black font-display mb-1">Formulario de seguimiento</h1>
+                    <p className="text-text-muted text-xs">Cada 15 días · Nos ayuda a mejorar tu próximo plan</p>
                 </div>
 
                 {/* Progreso */}
                 <div className="flex gap-2">
                     {PASOS_SEG.map((_, i) => (
-                        <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= paso ? "bg-[#3DDC84]" : "bg-[#1C2330]"}`} />
+                        <div key={i} className={`h-1 flex-1 rounded-full transition-all ${i <= paso ? "bg-brand-green" : "bg-dark-700"}`} />
                     ))}
                 </div>
 
                 {/* Tarjeta del paso */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-6 flex flex-col gap-5">
+                <Card className="flex flex-col gap-5 p-6">
                     <div>
-                        <h2 className="text-white font-bold font-display text-lg mb-1">{pasoActual.titulo}</h2>
-                        <p className="text-[#7D8590] text-xs">{pasoActual.desc}</p>
+                        <h2 className="text-text-primary font-bold font-display text-lg mb-1">{pasoActual.titulo}</h2>
+                        <p className="text-text-muted text-xs">{pasoActual.desc}</p>
                     </div>
                     {pasoActual.contenido}
-                </div>
+                </Card>
 
                 {/* Error */}
                 {errorMsg && (
-                    <p className="text-[#FF6B6B] text-sm text-center">{errorMsg}</p>
+                    <p className="text-brand-red text-sm text-center">{errorMsg}</p>
                 )}
 
                 {/* Navegación */}
                 <div className="flex gap-3">
                     {paso > 0 && (
-                        <button
-                            onClick={() => setPaso((p) => p - 1)}
-                            className="px-5 py-3 rounded-xl border border-[#2D3748] text-[#7D8590] text-sm hover:border-[#3DDC84] hover:text-white transition-all"
-                        >
+                        <Button variant="secondary" size="lg" onClick={() => setPaso((p) => p - 1)}>
                             ← Atrás
-                        </button>
+                        </Button>
                     )}
-                    <button
+                    <Button
+                        size="lg"
+                        className="flex-1"
                         onClick={() => paso < PASOS_SEG.length - 1 ? setPaso((p) => p + 1) : guardar()}
                         disabled={guardando}
-                        className="flex-1 py-3 rounded-xl bg-[#3DDC84] text-black font-bold font-display text-sm hover:bg-[#5EF0A0] transition-all disabled:opacity-60"
                     >
                         {guardando ? "Guardando..." : paso < PASOS_SEG.length - 1 ? "Continuar →" : "Enviar y generar nuevo plan 🚀"}
-                    </button>
+                    </Button>
                 </div>
             </div>
         </Layout>

@@ -5,6 +5,10 @@ import { useActivePlan } from "../hooks/useActivePlan"
 import { useAuth } from "../hooks/useAuth"
 import { supabase } from "../lib/supabase"
 import Layout from "../components/Layout"
+import Card from "../components/ui/Card"
+import Button from "../components/ui/Button"
+import Badge from "../components/ui/Badge"
+import Input from "../components/ui/Input"
 
 const TIPO_COLOR = {
   desayuno:    { border: "#F0A500", label: "Desayuno" },
@@ -88,12 +92,9 @@ export default function MiPlan() {
     <Layout>
       <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
         <p className="text-[#FF6B6B] text-sm">Error al cargar tu plan</p>
-        <button
-          onClick={refetch}
-          className="px-4 py-2 bg-[#161B22] border border-[#2D3748] text-white text-sm rounded-xl hover:border-[#3DDC84] transition-all"
-        >
+        <Button variant="secondary" onClick={refetch}>
           Reintentar
-        </button>
+        </Button>
       </div>
     </Layout>
   )
@@ -116,27 +117,18 @@ export default function MiPlan() {
           </div>
           {plan && !planVencido && (
             esPremium ? (
-              <button
-                onClick={irARegenerar}
-                className="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl transition-all"
-                style={{ background: "rgba(88,166,255,0.1)", color: "#58A6FF", border: "1px solid rgba(88,166,255,0.2)" }}
-              >
+              <Button variant="secondary" size="sm" className="flex-shrink-0" onClick={irARegenerar}>
                 Actualizar plan
-              </button>
+              </Button>
             ) : (
-              <span
-                className="flex-shrink-0 text-xs font-bold px-3 py-2 rounded-xl"
-                style={{ background: "rgba(240,165,0,0.08)", color: "#F0A500", border: "1px solid rgba(240,165,0,0.2)" }}
-              >
-                🔒 Solo Premium
-              </span>
+              <Badge tone="orange" className="flex-shrink-0">🔒 Solo Premium</Badge>
             )
           )}
         </div>
 
         {!plan ? (
           /* ── No-plan state ── */
-          <div className={`bg-[#161B22] rounded-2xl p-8 text-center flex flex-col items-center gap-4 border ${stuckGenerating ? "border-[rgba(240,165,0,0.3)]" : "border-[#2D3748]"}`}>
+          <Card className={`p-8 text-center flex flex-col items-center gap-4 ${stuckGenerating ? "border-brand-orange/30" : ""}`}>
             <span className="text-4xl">{stuckGenerating ? "⏳" : "🥗"}</span>
             <div>
               <p className="text-white font-bold font-display mb-1">
@@ -148,18 +140,18 @@ export default function MiPlan() {
                   : "Completa tu diagnóstico para generar tu plan nutricional"}
               </p>
             </div>
-            <button
+            <Button
+              size="lg"
               onClick={() => navigate(stuckGenerating ? "/generando-plan" : "/diagnostico", {
                 state: stuckGenerating ? { regenerar: true } : undefined,
               })}
-              className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
             >
               {stuckGenerating ? "Reintentar generación →" : "Generar mi plan"}
-            </button>
-          </div>
+            </Button>
+          </Card>
         ) : planVencido ? (
           /* ── Plan vencido ── */
-          <div className="bg-[#161B22] border border-[rgba(240,165,0,0.25)] rounded-2xl p-8 text-center flex flex-col items-center gap-4">
+          <Card className="p-8 text-center flex flex-col items-center gap-4 border-brand-orange/25">
             <span className="text-4xl">📅</span>
             <div>
               <p className="text-white font-bold font-display mb-1">Tu plan nutricional ha concluido</p>
@@ -172,25 +164,22 @@ export default function MiPlan() {
               </p>
             </div>
             {esPremium ? (
-              <button
-                onClick={irARegenerar}
-                className="px-6 py-2.5 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
-              >
+              <Button size="lg" onClick={irARegenerar}>
                 Generar nuevo plan →
-              </button>
+              </Button>
             ) : (
               <div className="flex flex-col items-center gap-2">
                 <span className="text-xs text-[#7D8590]">🔒 Función exclusiva Premium</span>
-                <button
+                <Button
+                  size="lg"
+                  className="!bg-brand-orange/15 !text-brand-orange border border-brand-orange/25 hover:!bg-brand-orange/25"
                   onClick={() => navigate("/panel?upgrade=true")}
-                  className="px-6 py-2.5 font-bold font-display rounded-xl transition-all text-sm"
-                  style={{ background: "rgba(240,165,0,0.12)", color: "#F0A500", border: "1px solid rgba(240,165,0,0.25)" }}
                 >
                   Ver planes Premium →
-                </button>
+                </Button>
               </div>
             )}
-          </div>
+          </Card>
         ) : (
           <>
             {/* ── Mini day bar ── */}
@@ -213,13 +202,7 @@ export default function MiPlan() {
 
             {/* ── Banner Día 15 ── */}
             {diaActual === 15 && (
-              <div
-                className="rounded-2xl p-5 flex flex-col items-center text-center gap-3"
-                style={{
-                  background: "linear-gradient(135deg, rgba(61,220,132,0.1), rgba(88,166,255,0.07))",
-                  border: "1px solid rgba(61,220,132,0.3)",
-                }}
-              >
+              <Card className="flex flex-col items-center text-center gap-3 border-brand-green/30">
                 <span className="text-3xl">🎉</span>
                 <div>
                   <p className="text-white font-black font-display text-base leading-tight">
@@ -231,50 +214,50 @@ export default function MiPlan() {
                       : "Completa tu seguimiento para continuar."}
                   </p>
                 </div>
-                <button
-                  onClick={() => navigate(esPremium ? "/diagnostico" : "/seguimiento")}
-                  className="px-5 py-2 rounded-xl font-bold font-display text-sm transition-all"
-                  style={{ background: "#3DDC84", color: "#0D1117" }}
-                >
+                <Button onClick={() => navigate(esPremium ? "/diagnostico" : "/seguimiento")}>
                   {esPremium ? "Nuevo plan →" : "Completar seguimiento →"}
-                </button>
-              </div>
+                </Button>
+              </Card>
             )}
 
             {/* ── Day navigator ── */}
-            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-4 flex items-center justify-between">
-              <button
+            <Card className="p-4 flex items-center justify-between">
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={irAnterior}
                 disabled={dia === 1}
-                className="w-10 h-10 rounded-xl border border-[#2D3748] flex items-center justify-center text-white text-xl hover:border-[#3DDC84] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="!w-10 !h-10 !p-0 flex items-center justify-center text-xl"
                 aria-label="Día anterior"
               >
                 ‹
-              </button>
+              </Button>
 
               <div className="text-center">
                 <p className="text-[#3DDC84] font-black font-display text-lg">Día {dia} de 15</p>
                 <p className="text-[#7D8590] text-xs capitalize">{fechaDia}</p>
               </div>
 
-              <button
+              <Button
+                variant="secondary"
+                size="sm"
                 onClick={irSiguiente}
                 disabled={dia === 15}
-                className="w-10 h-10 rounded-xl border border-[#2D3748] flex items-center justify-center text-white text-xl hover:border-[#3DDC84] disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+                className="!w-10 !h-10 !p-0 flex items-center justify-center text-xl"
                 aria-label="Día siguiente"
               >
                 ›
-              </button>
-            </div>
+              </Button>
+            </Card>
 
             {/* ── Meals list ── */}
             <div className="flex flex-col gap-3">
               {comidasDelDia.map((c, idx) => {
                 const tc = TIPO_COLOR[c.tipo] ?? TIPO_COLOR.comida
                 return (
-                  <div
+                  <Card
                     key={idx}
-                    className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-4"
+                    className="p-4"
                     style={{ borderLeftColor: tc.border, borderLeftWidth: 3 }}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -313,7 +296,7 @@ export default function MiPlan() {
                         <p className="text-[#7D8590] text-xs">kcal</p>
                       </div>
                     </div>
-                  </div>
+                  </Card>
                 )
               })}
             </div>
@@ -330,20 +313,20 @@ export default function MiPlan() {
               );
               return (
                 <>
-                  <div className="bg-[rgba(61,220,132,.06)] border border-[rgba(61,220,132,.18)] rounded-2xl p-4 flex justify-between items-center">
+                  <Card className="bg-brand-green/[0.06] border-brand-green/20 flex justify-between items-center">
                     <span className="text-sm text-[#7D8590]">Total del día {dia}</span>
                     <span className="font-display font-black text-[#3DDC84] text-lg">{kcalTotal} kcal</span>
-                  </div>
+                  </Card>
                   <div className="grid grid-cols-3 gap-2">
                     {[
                       { label: "Proteína", value: macros.prot, color: "#58A6FF" },
                       { label: "Carbos", value: macros.carbs, color: "#F0A500" },
                       { label: "Grasas", value: macros.grasas, color: "#A855F7" },
                     ].map(({ label, value, color }) => (
-                      <div key={label} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-center">
+                      <Card key={label} className="p-3 text-center">
                         <p className="font-display font-black text-lg" style={{ color }}>{value}g</p>
                         <p className="text-[10px] text-[#7D8590] mt-0.5">{label}</p>
-                      </div>
+                      </Card>
                     ))}
                   </div>
                 </>
@@ -354,10 +337,7 @@ export default function MiPlan() {
 
         {/* ── Card de Feedback ── */}
         {plan && feedback !== null && (
-          <div
-            className="rounded-2xl p-5 flex flex-col gap-4"
-            style={{ background: "#161B22", border: "1px solid #2D3748" }}
-          >
+          <Card className="flex flex-col gap-4">
             {feedback === false ? (
               <>
                 <div>
@@ -379,23 +359,23 @@ export default function MiPlan() {
                 </div>
 
                 {feedbackForm.estrellas > 0 && (
-                  <textarea
+                  <Input
+                    as="textarea"
                     placeholder="¿Qué mejorarías? (opcional)"
                     value={feedbackForm.comentario}
                     onChange={(e) => setFeedbackForm(f => ({ ...f, comentario: e.target.value }))}
                     rows={2}
-                    className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors resize-none"
+                    className="w-full resize-none"
                   />
                 )}
 
-                <button
+                <Button
                   onClick={enviarFeedback}
                   disabled={feedbackForm.estrellas === 0 || enviandoFeedback}
-                  className="py-2.5 rounded-xl font-bold font-display text-sm transition-all disabled:opacity-40"
-                  style={{ background: "#3DDC84", color: "#0D1117" }}
+                  fullWidth
                 >
                   {enviandoFeedback ? "Enviando..." : "Enviar feedback"}
-                </button>
+                </Button>
               </>
             ) : (
               <div className="flex items-center gap-3">
@@ -408,7 +388,7 @@ export default function MiPlan() {
                 </div>
               </div>
             )}
-          </div>
+          </Card>
         )}
       </div>
     </Layout>

@@ -2,6 +2,8 @@
 import { useNavigate } from "react-router-dom";
 import { useActivePlan } from "../hooks/useActivePlan";
 import Layout from "../components/Layout";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
 
 const CATEGORIA_META = {
     "Proteínas": { icon: "🥩", color: "#FF6B6B", bg: "rgba(255,107,107,0.08)", border: "rgba(255,107,107,0.2)" },
@@ -43,16 +45,16 @@ export default function ListaCompras() {
                 {/* Header */}
                 <div className="flex items-end justify-between">
                     <div>
-                        <p className="text-[10px] font-bold tracking-[0.2em] text-[#3DDC84] mb-1 font-display">MI PLAN</p>
-                        <h1 className="text-white text-3xl font-black font-display leading-none">Lista de Compras</h1>
+                        <p className="text-[10px] font-bold tracking-[0.2em] text-brand-green mb-1 font-display">MI PLAN</p>
+                        <h1 className="text-text-primary text-3xl font-black font-display leading-none">Lista de Compras</h1>
                     </div>
                     {!isLoading && lista && costoTotal > 0 && (
                         <div className="text-right">
-                            <p className="text-[10px] text-[#7D8590] mb-0.5">Costo estimado</p>
-                            <span className="text-3xl font-black font-display text-[#3DDC84] leading-none">
+                            <p className="text-[10px] text-text-muted mb-0.5">Costo estimado</p>
+                            <span className="text-3xl font-black font-display text-brand-green leading-none">
                                 ${costoTotal.toLocaleString("es-MX")}
                             </span>
-                            <p className="text-[10px] text-[#7D8590] mt-0.5">MXN quincena</p>
+                            <p className="text-[10px] text-text-muted mt-0.5">MXN quincena</p>
                         </div>
                     )}
                 </div>
@@ -61,50 +63,42 @@ export default function ListaCompras() {
                 {isLoading && (
                     <div className="flex flex-col gap-4">
                         {[...Array(4)].map((_, i) => (
-                            <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-4 animate-pulse">
-                                <div className="h-4 bg-[#2D3748] rounded w-32 mb-3" />
+                            <Card key={i} className="animate-pulse">
+                                <div className="h-4 bg-dark-600 rounded w-32 mb-3" />
                                 <div className="flex flex-col gap-2">
-                                    {[...Array(3)].map((_, j) => <div key={j} className="h-3 bg-[#2D3748] rounded w-full" />)}
+                                    {[...Array(3)].map((_, j) => <div key={j} className="h-3 bg-dark-600 rounded w-full" />)}
                                 </div>
-                            </div>
+                            </Card>
                         ))}
                     </div>
                 )}
 
                 {/* Sin plan */}
                 {!isLoading && !plan && (
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-10 text-center flex flex-col items-center gap-4">
+                    <Card className="p-10 text-center flex flex-col items-center gap-4">
                         <span className="text-5xl">🛒</span>
                         <div>
-                            <p className="text-white font-bold font-display mb-1">Sin plan activo</p>
-                            <p className="text-[#7D8590] text-sm">Genera tu plan nutricional para ver tu lista de compras personalizada.</p>
+                            <p className="text-text-primary font-bold font-display mb-1">Sin plan activo</p>
+                            <p className="text-text-muted text-sm">Genera tu plan nutricional para ver tu lista de compras personalizada.</p>
                         </div>
-                        <button
-                            onClick={() => navigate("/diagnostico")}
-                            className="px-5 py-2.5 rounded-xl text-sm font-bold font-display transition-all"
-                            style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)" }}
-                        >
+                        <Button variant="secondary" onClick={() => navigate("/diagnostico")}>
                             Generar mi plan →
-                        </button>
-                    </div>
+                        </Button>
+                    </Card>
                 )}
 
                 {/* Plan sin lista_compras (plan viejo sin el campo) */}
                 {!isLoading && plan && !lista && (
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-10 text-center flex flex-col items-center gap-4">
+                    <Card className="p-10 text-center flex flex-col items-center gap-4">
                         <span className="text-5xl">🔄</span>
                         <div>
-                            <p className="text-white font-bold font-display mb-1">Lista no disponible</p>
-                            <p className="text-[#7D8590] text-sm leading-relaxed">Tu plan actual fue generado antes de esta función.<br />Regenera tu plan para obtener la lista de compras.</p>
+                            <p className="text-text-primary font-bold font-display mb-1">Lista no disponible</p>
+                            <p className="text-text-muted text-sm leading-relaxed">Tu plan actual fue generado antes de esta función.<br />Regenera tu plan para obtener la lista de compras.</p>
                         </div>
-                        <button
-                            onClick={() => navigate("/mi-plan")}
-                            className="px-5 py-2.5 rounded-xl text-sm font-bold font-display transition-all"
-                            style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)" }}
-                        >
+                        <Button variant="secondary" onClick={() => navigate("/mi-plan")}>
                             Ver mi plan →
-                        </button>
-                    </div>
+                        </Button>
+                    </Card>
                 )}
 
                 {/* Lista de compras */}
@@ -122,7 +116,7 @@ export default function ListaCompras() {
                                         <p className="text-[10px] font-bold leading-tight" style={{ color: meta.color }}>
                                             {cat}
                                         </p>
-                                        <p className="text-white font-black text-sm font-display">
+                                        <p className="text-text-primary font-black text-sm font-display">
                                             ${subtotal.toLocaleString("es-MX")}
                                         </p>
                                     </div>
@@ -137,65 +131,61 @@ export default function ListaCompras() {
                                 const catItems = porCategoria[cat];
                                 const subtotal = catItems.reduce((s, i) => s + (i.costo_aproximado ?? 0), 0);
                                 return (
-                                    <div key={cat} className="bg-[#161B22] border border-[#2D3748] rounded-2xl overflow-hidden">
+                                    <Card key={cat} className="p-0 overflow-hidden">
                                         {/* Header categoría */}
-                                        <div className="flex items-center justify-between px-4 py-3"
-                                            style={{ background: meta.bg, borderBottom: `1px solid ${meta.border}` }}>
+                                        <div className="flex items-center justify-between px-4 py-3 bg-dark-700 border-b border-dark-600">
                                             <div className="flex items-center gap-2">
                                                 <span className="text-base">{meta.icon}</span>
-                                                <span className="text-xs font-black font-display tracking-wide" style={{ color: meta.color }}>
+                                                <span className="text-xs font-black font-display tracking-wide text-text-primary">
                                                     {cat.toUpperCase()}
                                                 </span>
-                                                <span className="text-[10px] font-medium" style={{ color: meta.color, opacity: 0.7 }}>
+                                                <span className="text-[10px] font-medium text-text-muted">
                                                     ({catItems.length} {catItems.length === 1 ? "producto" : "productos"})
                                                 </span>
                                             </div>
-                                            <span className="text-xs font-bold font-display" style={{ color: meta.color }}>
+                                            <span className="text-xs font-bold font-display text-text-primary">
                                                 ${subtotal.toLocaleString("es-MX")} MXN
                                             </span>
                                         </div>
 
                                         {/* Items */}
-                                        <div className="divide-y divide-[#1C2330]">
+                                        <div className="divide-y divide-dark-700">
                                             {catItems.map((item, i) => (
-                                                <div key={i} className="flex items-center justify-between px-4 py-3 hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+                                                <div key={i} className="flex items-center justify-between px-4 py-3 hover:bg-dark-700/40 transition-colors">
                                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                                         {/* Checkbox decorativo */}
-                                                        <div className="w-4 h-4 rounded flex-shrink-0 flex items-center justify-center"
-                                                            style={{ border: `1.5px solid ${meta.border}`, background: meta.bg }}>
-                                                            <div className="w-1.5 h-1.5 rounded-full" style={{ background: meta.color, opacity: 0.4 }} />
+                                                        <div className="w-4 h-4 rounded flex-shrink-0 flex items-center justify-center border border-dark-600 bg-dark-700">
+                                                            <div className="w-1.5 h-1.5 rounded-full bg-text-muted" />
                                                         </div>
                                                         <div className="min-w-0">
-                                                            <p className="text-white text-sm font-medium truncate">{item.nombre}</p>
-                                                            <p className="text-[#7D8590] text-[11px] mt-0.5">{item.cantidad}</p>
+                                                            <p className="text-text-primary text-sm font-medium truncate">{item.nombre}</p>
+                                                            <p className="text-text-muted text-[11px] mt-0.5">{item.cantidad}</p>
                                                         </div>
                                                     </div>
-                                                    <span className="text-xs font-bold font-display ml-3 flex-shrink-0"
-                                                        style={{ color: item.costo_aproximado > 0 ? meta.color : "#4A5568" }}>
+                                                    <span className={`text-xs font-bold font-display ml-3 flex-shrink-0 ${item.costo_aproximado > 0 ? "text-text-primary" : "text-text-muted"}`}>
                                                         {item.costo_aproximado > 0 ? `~$${item.costo_aproximado.toLocaleString("es-MX")}` : "—"}
                                                     </span>
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </Card>
                                 );
                             })}
                         </div>
 
                         {/* Total final */}
-                        <div className="rounded-2xl p-5 flex items-center justify-between"
-                            style={{ background: "rgba(61,220,132,0.07)", border: "1px solid rgba(61,220,132,0.2)" }}>
+                        <Card className="flex items-center justify-between border-brand-green/20">
                             <div>
-                                <p className="text-[10px] font-black font-display tracking-widest text-[#3DDC84]">TOTAL ESTIMADO</p>
-                                <p className="text-[#7D8590] text-xs mt-0.5">{items.length} productos para 15 días</p>
+                                <p className="text-[10px] font-black font-display tracking-widest text-brand-green">TOTAL ESTIMADO</p>
+                                <p className="text-text-muted text-xs mt-0.5">{items.length} productos para 15 días</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-3xl font-black font-display text-white">
+                                <p className="text-3xl font-black font-display text-text-primary">
                                     ${costoTotal.toLocaleString("es-MX")}
                                 </p>
-                                <p className="text-[10px] text-[#7D8590]">MXN</p>
+                                <p className="text-[10px] text-text-muted">MXN</p>
                             </div>
-                        </div>
+                        </Card>
                     </>
                 )}
             </div>

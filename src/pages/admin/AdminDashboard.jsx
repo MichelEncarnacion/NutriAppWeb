@@ -3,6 +3,9 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminLayout from "../../components/AdminLayout";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Badge from "../../components/ui/Badge";
 
 export default function AdminDashboard() {
     const [stats, setStats] = useState(null);
@@ -39,17 +42,17 @@ export default function AdminDashboard() {
     }, []);
 
     const KPIS_ROW1 = [
-        { label: "Usuarios totales", value: stats?.totalUsers ?? "—", icon: "👥", color: "#58A6FF" },
-        { label: "Premium activos", value: stats?.premium ?? "—", icon: "✦", color: "#F0A500" },
-        { label: "Planes generados", value: stats?.planesTotal ?? "—", icon: "🥗", color: "#3DDC84" },
-        { label: "Lecciones activas", value: stats?.lecciones ?? "—", icon: "📖", color: "#A855F7" },
+        { label: "Usuarios totales", value: stats?.totalUsers ?? "—", icon: "👥", colorVar: "var(--color-brand-blue)" },
+        { label: "Premium activos", value: stats?.premium ?? "—", icon: "✦", colorVar: "var(--color-brand-orange)" },
+        { label: "Planes generados", value: stats?.planesTotal ?? "—", icon: "🥗", colorVar: "var(--color-brand-green)" },
+        { label: "Lecciones activas", value: stats?.lecciones ?? "—", icon: "📖", colorVar: "var(--color-brand-purple)" },
     ];
 
     const KPIS_ROW2 = [
-        { label: "Planes listos", value: stats?.planesListos ?? "—", icon: "✅", color: "#3DDC84" },
-        { label: "Planes con error", value: stats?.planesError ?? "—", icon: "⚠️", color: "#FF6B6B" },
-        { label: "Activos (7 días)", value: stats?.activos7d ?? "—", icon: "🔥", color: "#F0A500" },
-        { label: "Tasa premium", value: stats ? `${stats.tasaPremium}%` : "—", icon: "📈", color: "#58A6FF" },
+        { label: "Planes listos", value: stats?.planesListos ?? "—", icon: "✅", colorVar: "var(--color-brand-green)" },
+        { label: "Planes con error", value: stats?.planesError ?? "—", icon: "⚠️", colorVar: "var(--color-brand-red)" },
+        { label: "Activos (7 días)", value: stats?.activos7d ?? "—", icon: "🔥", colorVar: "var(--color-brand-orange)" },
+        { label: "Tasa premium", value: stats ? `${stats.tasaPremium}%` : "—", icon: "📈", colorVar: "var(--color-brand-blue)" },
     ];
 
     return (
@@ -59,38 +62,38 @@ export default function AdminDashboard() {
                 {/* KPIs fila 1 */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {KPIS_ROW1.map((k, i) => (
-                        <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 relative overflow-hidden">
+                        <Card key={i} className="relative overflow-hidden">
                             <div className="text-2xl mb-3">{k.icon}</div>
-                            <div className="font-display font-black text-3xl" style={{ color: k.color }}>{k.value}</div>
-                            <div className="text-xs text-[#7D8590] mt-1">{k.label}</div>
-                            <div className="absolute top-0 right-0 w-16 h-16 rounded-full opacity-10" style={{ background: k.color, filter: "blur(20px)" }} />
-                        </div>
+                            <div className="font-display font-black text-3xl" style={{ color: k.colorVar }}>{k.value}</div>
+                            <div className="text-xs text-text-muted mt-1">{k.label}</div>
+                            <div className="absolute top-0 right-0 w-16 h-16 rounded-full opacity-10" style={{ background: k.colorVar, filter: "blur(20px)" }} />
+                        </Card>
                     ))}
                 </div>
 
                 {/* KPIs fila 2 */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
                     {KPIS_ROW2.map((k, i) => (
-                        <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 relative overflow-hidden">
+                        <Card key={i} className="relative overflow-hidden">
                             <div className="text-2xl mb-3">{k.icon}</div>
-                            <div className="font-display font-black text-3xl" style={{ color: k.color }}>{k.value}</div>
-                            <div className="text-xs text-[#7D8590] mt-1">{k.label}</div>
-                            <div className="absolute top-0 right-0 w-16 h-16 rounded-full opacity-10" style={{ background: k.color, filter: "blur(20px)" }} />
-                        </div>
+                            <div className="font-display font-black text-3xl" style={{ color: k.colorVar }}>{k.value}</div>
+                            <div className="text-xs text-text-muted mt-1">{k.label}</div>
+                            <div className="absolute top-0 right-0 w-16 h-16 rounded-full opacity-10" style={{ background: k.colorVar, filter: "blur(20px)" }} />
+                        </Card>
                     ))}
                 </div>
 
                 {/* Tabla resumen reciente */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
-                    <h3 className="text-white font-bold font-display text-sm mb-4">Usuarios recientes</h3>
+                <Card>
+                    <h3 className="text-text-primary font-bold font-display text-sm mb-4">Usuarios recientes</h3>
                     <RecentUsers />
-                </div>
+                </Card>
 
                 {/* Planes con error */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
-                    <h3 className="text-white font-bold font-display text-sm mb-4">Planes con error ⚠️</h3>
+                <Card>
+                    <h3 className="text-text-primary font-bold font-display text-sm mb-4">Planes con error ⚠️</h3>
                     <ErrorPlanes />
-                </div>
+                </Card>
             </div>
         </AdminLayout>
     );
@@ -105,36 +108,36 @@ function RecentUsers() {
     }, []);
 
     const ROL_BADGE = {
-        demo: { bg: "rgba(240,165,0,.12)", color: "#F0A500", label: "Demo" },
-        freemium: { bg: "rgba(88,166,255,.12)", color: "#58A6FF", label: "Freemium" },
-        premium: { bg: "rgba(61,220,132,.12)", color: "#3DDC84", label: "Premium" },
+        demo: { tone: "orange", label: "Demo" },
+        freemium: { tone: "blue", label: "Freemium" },
+        premium: { tone: "green", label: "Premium" },
     };
 
     return (
         <div className="overflow-x-auto">
             <table className="w-full text-sm min-w-[480px]">
                 <thead>
-                    <tr className="text-[#7D8590] text-left border-b border-[#2D3748]">
+                    <tr className="text-text-muted text-left border-b border-dark-600">
                         {["Nombre", "Email", "Tipo", "Registro"].map((h) => (
                             <th key={h} className="pb-3 pr-4 text-xs font-bold tracking-wide">{h}</th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-[#2D3748]">
+                <tbody className="divide-y divide-dark-600">
                     {users.map((u) => {
                         const b = ROL_BADGE[u.tipo_usuario] ?? ROL_BADGE.freemium;
                         return (
                             <tr key={u.id} className="hover:bg-[rgba(255,255,255,.02)] transition-colors">
-                                <td className="py-3 pr-4 text-white font-semibold">{u.nombre ?? "Sin nombre"}</td>
-                                <td className="py-3 pr-4 text-[#7D8590] text-xs">{u.email}</td>
+                                <td className="py-3 pr-4 text-text-primary font-semibold">{u.nombre ?? "Sin nombre"}</td>
+                                <td className="py-3 pr-4 text-text-muted text-xs">{u.email}</td>
                                 <td className="py-3 pr-4">
-                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: b.bg, color: b.color }}>{b.label}</span>
+                                    <Badge tone={b.tone}>{b.label}</Badge>
                                 </td>
-                                <td className="py-3 pr-4 text-[#7D8590] text-xs">
+                                <td className="py-3 pr-4 text-text-muted text-xs">
                                     {new Date(u.fecha_registro).toLocaleDateString("es-MX")}
                                 </td>
                                 <td className="py-3">
-                                    <span className="text-[10px] font-bold text-[#3DDC84]">● Activo</span>
+                                    <Badge tone="green">● Activo</Badge>
                                 </td>
                             </tr>
                         );
@@ -183,31 +186,27 @@ function ErrorPlanes() {
     };
 
     if (planes.length === 0)
-        return <p className="text-[#7D8590] text-sm">✅ No hay planes con error actualmente.</p>;
+        return <p className="text-text-muted text-sm">✅ No hay planes con error actualmente.</p>;
 
     return (
         <div className="flex flex-col gap-2">
             {planes.map((p) => {
                 const estado = regenerando[p.id];
                 return (
-                    <div key={p.id} className="flex items-center justify-between bg-[rgba(255,107,107,.06)] border border-[rgba(255,107,107,.2)] rounded-xl p-3">
+                    <div key={p.id} className="flex items-center justify-between bg-brand-red/[.06] border border-brand-red/20 rounded-xl p-3">
                         <div>
-                            <p className="text-white text-xs font-semibold">Plan {p.id.slice(0, 8)}…</p>
-                            <p className="text-[#7D8590] text-[11px]">{new Date(p.created_at).toLocaleString("es-MX")}</p>
+                            <p className="text-text-primary text-xs font-semibold">Plan {p.id.slice(0, 8)}…</p>
+                            <p className="text-text-muted text-[11px]">{new Date(p.created_at).toLocaleString("es-MX")}</p>
                         </div>
-                        <button
+                        <Button
+                            variant={estado === "ok" ? "secondary" : "danger"}
+                            size="sm"
+                            className={estado === "ok" ? "bg-brand-green text-black border-0 hover:bg-brand-green/85" : ""}
                             onClick={() => regenerar(p)}
                             disabled={estado === "loading" || estado === "ok"}
-                            className={`text-xs px-3 py-1.5 rounded-lg font-bold transition-all disabled:opacity-60
-                                ${estado === "ok"
-                                    ? "bg-[#3DDC84] text-black"
-                                    : estado === "error"
-                                        ? "bg-[rgba(255,107,107,.3)] text-[#FF6B6B]"
-                                        : "bg-[#FF6B6B] text-white hover:bg-[#ff8585]"
-                                }`}
                         >
                             {estado === "loading" ? "Generando…" : estado === "ok" ? "✓ Listo" : estado === "error" ? "Reintentar" : "Regenerar"}
-                        </button>
+                        </Button>
                     </div>
                 );
             })}
