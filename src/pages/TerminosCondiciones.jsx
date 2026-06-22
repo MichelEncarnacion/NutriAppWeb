@@ -32,20 +32,20 @@ export default function TerminosCondiciones() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4 py-10 font-sans">
-            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-2xl flex flex-col gap-6 overflow-hidden">
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4 py-10 font-sans">
+            <div className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-2xl flex flex-col gap-6 overflow-hidden shadow-sm">
 
                 {/* Header */}
-                <div className="bg-[#1C2330] px-8 py-6 border-b border-[#2D3748]">
+                <div className="bg-dark-700 px-8 py-6 border-b border-dark-600">
                     <div className="mb-3"><Logo size="sm" /></div>
-                    <h1 className="text-white text-xl font-bold">Términos y Condiciones de Uso</h1>
-                    <p className="text-[#7D8590] text-sm mt-1">Última actualización: Marzo 2026 · Versión 1.0</p>
+                    <h1 className="text-text-primary text-xl font-bold">Términos y Condiciones de Uso</h1>
+                    <p className="text-text-muted text-sm mt-1">Última actualización: Marzo 2026 · Versión 1.0</p>
                 </div>
 
                 {/* Contenido scrolleable */}
-                <div className="px-8 max-h-[50vh] overflow-y-auto flex flex-col gap-5 text-sm text-[#7D8590] leading-relaxed scrollbar-thin">
+                <div className="px-8 max-h-[50vh] overflow-y-auto flex flex-col gap-5 text-sm text-text-muted leading-relaxed scrollbar-thin">
 
-                    <p className="text-[#7D8590] text-xs italic">
+                    <p className="text-text-muted text-xs italic">
                         Por favor lee con atención estos Términos y Condiciones antes de usar NutriiApp. Al acceder o usar el servicio, aceptas quedar vinculado por estos términos.
                     </p>
 
@@ -74,7 +74,7 @@ export default function TerminosCondiciones() {
                             "Para cualquier consulta, queja o ejercicio de derechos, puedes contactarnos en: soporte@nutriiapp.mx. Tiempo de respuesta estimado: 5 días hábiles."],
                     ].map(([titulo, texto]) => (
                         <div key={titulo}>
-                            <h3 className="text-white font-semibold mb-1">{titulo}</h3>
+                            <h3 className="text-text-primary font-semibold mb-1">{titulo}</h3>
                             <p>{texto}</p>
                         </div>
                     ))}
@@ -87,11 +87,11 @@ export default function TerminosCondiciones() {
                             type="checkbox"
                             checked={aceptado}
                             onChange={(e) => setAceptado(e.target.checked)}
-                            className="mt-0.5 w-4 h-4 accent-[#3DDC84] cursor-pointer"
+                            className="mt-0.5 w-4 h-4 accent-brand-green cursor-pointer"
                         />
-                        <span className="text-sm text-[#7D8590] group-hover:text-[#E6EDF3] transition-colors">
+                        <span className="text-sm text-text-muted group-hover:text-text-primary transition-colors">
                             He leído y acepto los Términos y Condiciones y la{" "}
-                            <Link to="/privacidad" target="_blank" className="text-[#58A6FF] hover:underline">
+                            <Link to="/privacidad" target="_blank" className="text-brand-blue hover:underline">
                                 Política de Privacidad
                             </Link>{" "}
                             de NutriiApp.
@@ -99,7 +99,7 @@ export default function TerminosCondiciones() {
                     </label>
 
                     {error && (
-                        <p className="text-[#FF6B6B] text-sm text-center">{error}</p>
+                        <p className="text-brand-red text-sm text-center">{error}</p>
                     )}
 
                     <button
@@ -107,8 +107,8 @@ export default function TerminosCondiciones() {
                         disabled={!aceptado || guardando}
                         className={`w-full py-3 rounded-xl font-bold font-display text-sm tracking-wide transition-all
               ${aceptado && !guardando
-                                ? "bg-[#3DDC84] text-black hover:bg-[#5EF0A0] cursor-pointer"
-                                : "bg-[#1C2330] text-[#7D8590] cursor-not-allowed border border-[#2D3748]"
+                                ? "bg-brand-green text-white hover:bg-brand-greenL cursor-pointer"
+                                : "bg-dark-700 text-text-muted cursor-not-allowed border border-dark-600"
                             }`}
                     >
                         {guardando ? "Guardando..." : "Aceptar y continuar →"}

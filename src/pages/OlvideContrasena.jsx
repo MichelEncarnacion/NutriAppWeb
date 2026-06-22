@@ -49,19 +49,19 @@ export default function OlvideContrasena() {
                     <div style={{ display: "flex", flexDirection: "column", gap: 20, alignItems: "center", textAlign: "center" }}>
                         <div style={{ fontSize: 48 }}>📬</div>
                         <div>
-                            <p style={{ color: "#E6EDF3", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
+                            <p style={{ color: "#1A1A1A", fontWeight: 700, fontSize: 16, marginBottom: 8 }}>
                                 ¡Correo enviado!
                             </p>
-                            <p style={{ color: "#7D8590", fontSize: 14, lineHeight: 1.6, margin: 0 }}>
-                                Revisa tu bandeja de entrada en <strong style={{ color: "#E6EDF3" }}>{email}</strong>.
+                            <p style={{ color: "#4A5568", fontSize: 14, lineHeight: 1.6, margin: 0 }}>
+                                Revisa tu bandeja de entrada en <strong style={{ color: "#1A1A1A" }}>{email}</strong>.
                                 El enlace expira en 1 hora.
                             </p>
                         </div>
-                        <p style={{ color: "#7D8590", fontSize: 13, margin: 0 }}>
+                        <p style={{ color: "#4A5568", fontSize: 13, margin: 0 }}>
                             ¿No llegó?{" "}
                             <button
                                 onClick={() => setEnviado(false)}
-                                style={{ background: "none", border: "none", color: "#3DDC84", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: 0 }}
+                                style={{ background: "none", border: "none", color: "#1B5E20", cursor: "pointer", fontSize: 13, fontWeight: 600, padding: 0 }}
                             >
                                 Reenviar
                             </button>
@@ -71,7 +71,7 @@ export default function OlvideContrasena() {
                 ) : (
                     /* ── Formulario ── */
                     <>
-                        <p style={{ color: "#7D8590", fontSize: 14, margin: 0, lineHeight: 1.6 }}>
+                        <p style={{ color: "#4A5568", fontSize: 14, margin: 0, lineHeight: 1.6 }}>
                             Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
                         </p>
 
@@ -114,7 +114,7 @@ export default function OlvideContrasena() {
 const styles = {
     page: {
         minHeight: "100vh",
-        background: "#0D1117",
+        background: "#FFFFFF",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -122,8 +122,8 @@ const styles = {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
     },
     card: {
-        background: "#161B22",
-        border: "1px solid #2D3748",
+        background: "#FFFFFF",
+        border: "1px solid #E2E8F0",
         borderRadius: 20,
         padding: "40px 36px",
         width: "100%",
@@ -131,41 +131,42 @@ const styles = {
         display: "flex",
         flexDirection: "column",
         gap: 20,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
     },
     logo: { textAlign: "center" },
     logoText: {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 800,
         fontSize: 28,
-        color: "#3DDC84",
+        color: "#1B5E20",
         display: "block",
         marginBottom: 6,
     },
-    logoSub: { color: "#7D8590", fontSize: 14, margin: 0 },
+    logoSub: { color: "#4A5568", fontSize: 14, margin: 0 },
     errorBanner: {
-        background: "rgba(255,107,107,.12)",
-        border: "1px solid rgba(255,107,107,.3)",
-        color: "#FF6B6B",
+        background: "rgba(214,69,69,.10)",
+        border: "1px solid rgba(214,69,69,.3)",
+        color: "#D64545",
         borderRadius: 10,
         padding: "12px 16px",
         fontSize: 13,
     },
     form: { display: "flex", flexDirection: "column", gap: 14 },
     field: { display: "flex", flexDirection: "column", gap: 6 },
-    label: { fontSize: 13, color: "#7D8590", fontWeight: 500 },
+    label: { fontSize: 13, color: "#4A5568", fontWeight: 500 },
     input: {
-        background: "#1C2330",
-        border: "1px solid #2D3748",
+        background: "#F8F9FA",
+        border: "1px solid #E2E8F0",
         borderRadius: 10,
         padding: "12px 14px",
-        color: "#E6EDF3",
+        color: "#1A1A1A",
         fontSize: 14,
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         outline: "none",
     },
     btnPrimary: {
-        background: "#3DDC84",
-        color: "#000",
+        background: "#1B5E20",
+        color: "#FFFFFF",
         border: "none",
         borderRadius: 10,
         padding: "13px",
@@ -175,6 +176,6 @@ const styles = {
         cursor: "pointer",
         marginTop: 4,
     },
-    footerText: { textAlign: "center", color: "#7D8590", fontSize: 13, margin: 0 },
-    link: { color: "#3DDC84", textDecoration: "none", fontWeight: 600 },
+    footerText: { textAlign: "center", color: "#4A5568", fontSize: 13, margin: 0 },
+    link: { color: "#1B5E20", textDecoration: "none", fontWeight: 600 },
 };

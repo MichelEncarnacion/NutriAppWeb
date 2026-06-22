@@ -431,15 +431,15 @@ export default function Diagnostico() {
     const bloqueActualIdx = BLOQUES.indexOf(pregunta.bloque);
 
     return (
-        <div className="min-h-screen bg-[#0D1117] flex flex-col items-center justify-center px-4 py-8 font-sans">
+        <div className="min-h-screen bg-dark-900 flex flex-col items-center justify-center px-4 py-8 font-sans">
 
             {/* Barra de progreso segmentada por bloques */}
             <div className="w-full max-w-xl mb-6">
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-xs text-[#7D8590] font-semibold tracking-wide">
+                    <span className="text-xs text-text-muted font-semibold tracking-wide">
                         {pregunta.bloque.toUpperCase()}
                     </span>
-                    <span className="text-xs text-[#3DDC84] font-bold font-display">
+                    <span className="text-xs text-brand-green font-bold font-display">
                         Bloque {bloqueActualIdx + 1} de {BLOQUES.length}
                     </span>
                 </div>
@@ -449,9 +449,9 @@ export default function Diagnostico() {
                         const isCurrent = i === bloqueActualIdx;
                         const fraction = isPast ? 1 : isCurrent ? (paso - b.inicio + 1) / b.count : 0;
                         return (
-                            <div key={b.nombre} className="flex-1 h-1.5 bg-[#1C2330] rounded-full overflow-hidden">
+                            <div key={b.nombre} className="flex-1 h-1.5 bg-dark-600 rounded-full overflow-hidden">
                                 <div
-                                    className="h-full bg-gradient-to-r from-[#3DDC84] to-[#58A6FF] rounded-full transition-all duration-500"
+                                    className="h-full bg-gradient-to-r from-brand-green to-brand-blue rounded-full transition-all duration-500"
                                     style={{ width: `${fraction * 100}%` }}
                                 />
                             </div>
@@ -463,16 +463,16 @@ export default function Diagnostico() {
             {/* Splash de bloque */}
             {splashInfo && (
                 <div
-                    className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-xl p-10 flex flex-col items-center gap-4 text-center"
+                    className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-xl p-10 flex flex-col items-center gap-4 text-center shadow-sm"
                     style={{ animation: "fadeInQuestion 0.3s ease-out" }}
                 >
                     <span className="text-5xl">{splashInfo.emoji}</span>
                     <div>
-                        <p className="text-[10px] text-[#3DDC84] font-bold tracking-widest mb-1">
+                        <p className="text-[10px] text-brand-green font-bold tracking-widest mb-1">
                             BLOQUE {splashInfo.numero} DE {BLOQUES.length}
                         </p>
-                        <h2 className="text-white text-2xl font-black font-display">{splashInfo.nombre}</h2>
-                        <p className="text-[#7D8590] text-sm mt-1">{splashInfo.totalEnBloque} preguntas</p>
+                        <h2 className="text-text-primary text-2xl font-black font-display">{splashInfo.nombre}</h2>
+                        <p className="text-text-muted text-sm mt-1">{splashInfo.totalEnBloque} preguntas</p>
                     </div>
                 </div>
             )}
@@ -481,13 +481,13 @@ export default function Diagnostico() {
             {!splashInfo && (
                 <div
                     key={paso}
-                    className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-xl p-8 flex flex-col gap-6"
+                    className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-xl p-8 flex flex-col gap-6 shadow-sm"
                     style={{ animation: "fadeInQuestion 0.22s ease-out" }}
                 >
                     {/* Pregunta */}
                     <div>
                         <span className="text-4xl block mb-3">{pregunta.emoji}</span>
-                        <h2 className="text-white text-xl font-bold leading-snug font-display">
+                        <h2 className="text-text-primary text-xl font-bold leading-snug font-display">
                             {pregunta.pregunta}
                         </h2>
                     </div>
@@ -502,10 +502,10 @@ export default function Diagnostico() {
                                 placeholder={pregunta.placeholder}
                                 value={valor ?? ""}
                                 onChange={(e) => setValor(e.target.value)}
-                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-lg w-40 outline-none focus:border-[#3DDC84] transition-colors"
+                                className="bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-text-primary text-lg w-40 outline-none focus:border-brand-green transition-colors"
                             />
                             {pregunta.sufijo && (
-                                <span className="text-[#7D8590] text-base">{pregunta.sufijo}</span>
+                                <span className="text-text-muted text-base">{pregunta.sufijo}</span>
                             )}
                         </div>
                     )}
@@ -516,7 +516,7 @@ export default function Diagnostico() {
                             placeholder={pregunta.placeholder}
                             value={valor ?? ""}
                             onChange={(e) => setValor(e.target.value)}
-                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors"
+                            className="bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-text-primary text-sm w-full outline-none focus:border-brand-green transition-colors"
                         />
                     )}
 
@@ -526,7 +526,7 @@ export default function Diagnostico() {
                             value={valor ?? ""}
                             onChange={(e) => setValor(e.target.value)}
                             rows={3}
-                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm w-full outline-none focus:border-[#3DDC84] transition-colors resize-none"
+                            className="bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-text-primary text-sm w-full outline-none focus:border-brand-green transition-colors resize-none"
                         />
                     )}
 
@@ -535,15 +535,15 @@ export default function Diagnostico() {
                             type="time"
                             value={valor ?? ""}
                             onChange={(e) => setValor(e.target.value)}
-                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-lg w-40 outline-none focus:border-[#3DDC84] transition-colors"
+                            className="bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-text-primary text-lg w-40 outline-none focus:border-brand-green transition-colors"
                         />
                     )}
 
                     {pregunta.tipo === "slider" && (
                         <div className="flex flex-col gap-3">
-                            <div className="flex justify-between text-xs text-[#7D8590]">
+                            <div className="flex justify-between text-xs text-text-muted">
                                 <span>{pregunta.min} días</span>
-                                <span className="text-[#3DDC84] font-bold text-base">
+                                <span className="text-brand-green font-bold text-base">
                                     {valor ?? pregunta.min} días
                                 </span>
                                 <span>{pregunta.max} días</span>
@@ -554,7 +554,7 @@ export default function Diagnostico() {
                                 max={pregunta.max}
                                 value={valor ?? pregunta.min}
                                 onChange={(e) => setValor(Number(e.target.value))}
-                                className="w-full accent-[#3DDC84] cursor-pointer"
+                                className="w-full accent-brand-green cursor-pointer"
                             />
                         </div>
                     )}
@@ -567,14 +567,14 @@ export default function Diagnostico() {
                                     onClick={() => setValor(op.valor)}
                                     className={`flex items-center gap-3 p-3.5 rounded-xl border text-left transition-all
                       ${valor === op.valor
-                                            ? "border-[#3DDC84] bg-[rgba(61,220,132,0.12)] text-white"
-                                            : "border-[#2D3748] bg-[#1C2330] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
+                                            ? "border-brand-green bg-[rgba(27,94,32,0.08)] text-text-primary"
+                                            : "border-dark-600 bg-dark-700 text-text-muted hover:border-brand-green hover:text-text-primary"
                                         }`}
                                 >
                                     <span className="text-xl">{op.emoji}</span>
                                     <div>
                                         <div className="text-sm font-semibold">{op.etiqueta}</div>
-                                        {op.desc && <div className="text-xs text-[#7D8590] mt-0.5">{op.desc}</div>}
+                                        {op.desc && <div className="text-xs text-text-muted mt-0.5">{op.desc}</div>}
                                     </div>
                                 </button>
                             ))}
@@ -591,13 +591,13 @@ export default function Diagnostico() {
                                         onClick={() => toggleMulti(op.valor)}
                                         className={`flex items-center gap-2 p-3 rounded-xl border text-left transition-all
                         ${sel
-                                                ? "border-[#3DDC84] bg-[rgba(61,220,132,0.12)] text-white"
-                                                : "border-[#2D3748] bg-[#1C2330] text-[#7D8590] hover:border-[#3DDC84] hover:text-white"
+                                                ? "border-brand-green bg-[rgba(27,94,32,0.08)] text-text-primary"
+                                                : "border-dark-600 bg-dark-700 text-text-muted hover:border-brand-green hover:text-text-primary"
                                             }`}
                                     >
                                         <span>{op.emoji}</span>
                                         <span className="text-sm">{op.etiqueta}</span>
-                                        {sel && <span className="ml-auto text-[#3DDC84] text-xs">✓</span>}
+                                        {sel && <span className="ml-auto text-brand-green text-xs">✓</span>}
                                     </button>
                                 );
                             })}
@@ -605,14 +605,14 @@ export default function Diagnostico() {
                     )}
 
                     {/* Error */}
-                    {error && <p className="text-[#FF6B6B] text-sm">⚠️ {error}</p>}
+                    {error && <p className="text-brand-red text-sm">⚠️ {error}</p>}
 
                     {/* Navegación */}
                     <div className="flex gap-3 pt-2">
                         {paso > 0 && (
                             <button
                                 onClick={retroceder}
-                                className="px-5 py-3 rounded-xl border border-[#2D3748] text-[#7D8590] text-sm hover:border-[#3DDC84] hover:text-white transition-all"
+                                className="px-5 py-3 rounded-xl border border-dark-600 text-text-muted text-sm hover:border-brand-green hover:text-text-primary transition-all"
                             >
                                 ← Atrás
                             </button>
@@ -620,7 +620,7 @@ export default function Diagnostico() {
                         <button
                             onClick={avanzar}
                             disabled={guardando}
-                            className="flex-1 py-3 rounded-xl bg-[#3DDC84] text-black font-bold font-display text-sm tracking-wide hover:bg-[#5EF0A0] transition-all disabled:opacity-60"
+                            className="flex-1 py-3 rounded-xl bg-brand-green text-white font-bold font-display text-sm tracking-wide hover:bg-brand-greenL transition-all disabled:opacity-60"
                         >
                             {guardando
                                 ? "Guardando..."

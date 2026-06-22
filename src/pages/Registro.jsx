@@ -71,15 +71,15 @@ export default function Registro() {
             <div style={styles.card}>
                 <div style={{ textAlign: "center" }}>
                     <div style={{ fontSize: 48, marginBottom: 16 }}>📬</div>
-                    <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#E6EDF3", marginBottom: 8 }}>
+                    <h2 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#1A1A1A", marginBottom: 8 }}>
                         Revisa tu correo
                     </h2>
-                    <p style={{ color: "#7D8590", fontSize: 14, lineHeight: 1.6 }}>
+                    <p style={{ color: "#4A5568", fontSize: 14, lineHeight: 1.6 }}>
                         Te enviamos un enlace de confirmación a{" "}
-                        <strong style={{ color: "#E6EDF3" }}>{form.email}</strong>.
+                        <strong style={{ color: "#1A1A1A" }}>{form.email}</strong>.
                         Haz clic en el enlace para activar tu cuenta.
                     </p>
-                    <p style={{ color: "#7D8590", fontSize: 12, marginTop: 8, lineHeight: 1.5 }}>
+                    <p style={{ color: "#4A5568", fontSize: 12, marginTop: 8, lineHeight: 1.5 }}>
                         Si no lo ves en unos minutos, revisa tu carpeta de spam.
                     </p>
 
@@ -89,9 +89,9 @@ export default function Registro() {
                             padding: "10px 14px",
                             borderRadius: 10,
                             fontSize: 13,
-                            background: reenvioMsg.tipo === "ok" ? "rgba(61,220,132,.1)" : "rgba(255,107,107,.1)",
-                            color: reenvioMsg.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
-                            border: `1px solid ${reenvioMsg.tipo === "ok" ? "rgba(61,220,132,.25)" : "rgba(255,107,107,.25)"}`,
+                            background: reenvioMsg.tipo === "ok" ? "rgba(27,94,32,.08)" : "rgba(214,69,69,.10)",
+                            color: reenvioMsg.tipo === "ok" ? "#1B5E20" : "#D64545",
+                            border: `1px solid ${reenvioMsg.tipo === "ok" ? "rgba(27,94,32,.25)" : "rgba(214,69,69,.25)"}`,
                         }}>
                             {reenvioMsg.texto}
                         </div>
@@ -103,10 +103,10 @@ export default function Registro() {
                         style={{
                             marginTop: 20,
                             background: "transparent",
-                            border: "1px solid #2D3748",
+                            border: "1px solid #E2E8F0",
                             borderRadius: 10,
                             padding: "11px 20px",
-                            color: "#7D8590",
+                            color: "#4A5568",
                             fontSize: 13,
                             cursor: reenviando ? "not-allowed" : "pointer",
                             fontFamily: "'Plus Jakarta Sans', sans-serif",
@@ -187,7 +187,7 @@ function traducirError(msg) {
 const styles = {
     page: {
         minHeight: "100vh",
-        background: "#0D1117",
+        background: "#FFFFFF",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -195,8 +195,8 @@ const styles = {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
     },
     card: {
-        background: "#161B22",
-        border: "1px solid #2D3748",
+        background: "#FFFFFF",
+        border: "1px solid #E2E8F0",
         borderRadius: 20,
         padding: "40px 36px",
         width: "100%",
@@ -204,41 +204,42 @@ const styles = {
         display: "flex",
         flexDirection: "column",
         gap: 18,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.06)",
     },
     logo: { textAlign: "center" },
     logoText: {
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontWeight: 800,
         fontSize: 28,
-        color: "#3DDC84",
+        color: "#1B5E20",
         display: "block",
         marginBottom: 6,
     },
-    logoSub: { color: "#7D8590", fontSize: 14, margin: 0 },
+    logoSub: { color: "#4A5568", fontSize: 14, margin: 0 },
     errorBanner: {
-        background: "rgba(255,107,107,.12)",
-        border: "1px solid rgba(255,107,107,.3)",
-        color: "#FF6B6B",
+        background: "rgba(214,69,69,.10)",
+        border: "1px solid rgba(214,69,69,.3)",
+        color: "#D64545",
         borderRadius: 10,
         padding: "12px 16px",
         fontSize: 13,
     },
     form: { display: "flex", flexDirection: "column", gap: 13 },
     field: { display: "flex", flexDirection: "column", gap: 6 },
-    label: { fontSize: 13, color: "#7D8590", fontWeight: 500 },
+    label: { fontSize: 13, color: "#4A5568", fontWeight: 500 },
     input: {
-        background: "#1C2330",
-        border: "1px solid #2D3748",
+        background: "#F8F9FA",
+        border: "1px solid #E2E8F0",
         borderRadius: 10,
         padding: "12px 14px",
-        color: "#E6EDF3",
+        color: "#1A1A1A",
         fontSize: 14,
         fontFamily: "'Plus Jakarta Sans', sans-serif",
         outline: "none",
     },
     btnPrimary: {
-        background: "#3DDC84",
-        color: "#000",
+        background: "#1B5E20",
+        color: "#FFFFFF",
         border: "none",
         borderRadius: 10,
         padding: "13px",
@@ -248,6 +249,6 @@ const styles = {
         cursor: "pointer",
         marginTop: 4,
     },
-    footerText: { textAlign: "center", color: "#7D8590", fontSize: 13, margin: 0 },
-    link: { color: "#3DDC84", textDecoration: "none", fontWeight: 600 },
+    footerText: { textAlign: "center", color: "#4A5568", fontSize: 13, margin: 0 },
+    link: { color: "#1B5E20", textDecoration: "none", fontWeight: 600 },
 };

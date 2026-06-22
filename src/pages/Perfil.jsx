@@ -16,9 +16,9 @@ const ROL_TONE = {
 };
 
 const ROL_LABEL = {
-    premium: { label: "✦ Premium", color: "#F0A500", bg: "rgba(240,165,0,0.1)", border: "rgba(240,165,0,0.2)" },
-    demo:    { label: "🔬 Demo",   color: "#A855F7", bg: "rgba(168,85,247,0.1)", border: "rgba(168,85,247,0.2)" },
-    freemium:{ label: "Freemium", color: "#58A6FF", bg: "rgba(88,166,255,0.1)",  border: "rgba(88,166,255,0.2)" },
+    premium: { label: "✦ Premium", color: "#BF9000", bg: "rgba(191,144,0,0.1)", border: "rgba(191,144,0,0.2)" },
+    demo:    { label: "🔬 Demo",   color: "#7C3AED", bg: "rgba(124,58,237,0.1)", border: "rgba(124,58,237,0.2)" },
+    freemium:{ label: "Freemium", color: "#2563EB", bg: "rgba(37,99,235,0.1)",  border: "rgba(37,99,235,0.2)" },
 };
 
 export default function Perfil() {
@@ -128,8 +128,8 @@ export default function Perfil() {
 
                 {/* Header */}
                 <div>
-                    <p className="text-[10px] font-bold tracking-[0.2em] text-[#3DDC84] mb-1 font-display">CUENTA</p>
-                    <h1 className="text-white text-3xl font-black font-display leading-none">Mi Perfil</h1>
+                    <p className="text-[10px] font-bold tracking-[0.2em] text-[#1B5E20] mb-1 font-display">CUENTA</p>
+                    <h1 className="text-text-primary text-3xl font-black font-display leading-none">Mi Perfil</h1>
                 </div>
 
                 {/* Avatar + info */}
@@ -138,15 +138,15 @@ export default function Perfil() {
                         {iniciales}
                     </div>
                     <div className="min-w-0 flex-1">
-                        <p className="text-white font-bold text-lg leading-tight truncate">{perfil?.nombre ?? "Sin nombre"}</p>
-                        <p className="text-[#7D8590] text-xs mt-0.5 truncate">{email}</p>
+                        <p className="text-text-primary font-bold text-lg leading-tight truncate">{perfil?.nombre ?? "Sin nombre"}</p>
+                        <p className="text-[#4A5568] text-xs mt-0.5 truncate">{email}</p>
                         <Badge tone={ROL_TONE[rol] ?? "blue"} className="mt-2">{rolMeta.label}</Badge>
                     </div>
                 </Card>
 
                 {/* Editar nombre */}
                 <Card className="flex flex-col gap-4">
-                    <p className="text-white font-bold text-sm font-display">Editar nombre</p>
+                    <p className="text-text-primary font-bold text-sm font-display">Editar nombre</p>
 
                     {feedback && (
                         <div className={`text-xs px-3 py-2.5 rounded-lg font-medium border ${feedback.tipo === "ok" ? "bg-brand-green/10 text-brand-green border-brand-green/20" : "bg-brand-red/10 text-brand-red border-brand-red/20"}`}>
@@ -176,15 +176,15 @@ export default function Perfil() {
 
                 {/* Info de cuenta */}
                 <Card className="flex flex-col gap-3">
-                    <p className="text-white font-bold text-sm font-display mb-1">Información de cuenta</p>
+                    <p className="text-text-primary font-bold text-sm font-display mb-1">Información de cuenta</p>
                     {[
                         { label: "Correo electrónico", value: email },
                         { label: "Tipo de cuenta", value: rolMeta.label },
                         { label: "Miembro desde", value: fechaRegistro },
                     ].map(({ label, value }) => (
                         <div key={label} className="flex justify-between items-center py-2 border-b border-dark-700 last:border-0">
-                            <span className="text-[#7D8590] text-xs">{label}</span>
-                            <span className="text-white text-xs font-medium">{value}</span>
+                            <span className="text-[#4A5568] text-xs">{label}</span>
+                            <span className="text-text-primary text-xs font-medium">{value}</span>
                         </div>
                     ))}
                 </Card>
@@ -192,8 +192,8 @@ export default function Perfil() {
                 {/* Registrar métricas */}
                 <Card className="flex flex-col gap-4">
                     <div>
-                        <p className="text-white font-bold text-sm font-display">Registrar métricas corporales</p>
-                        <p className="text-[#7D8590] text-xs mt-0.5">Se guarda con la fecha de hoy. Puedes actualizar una vez por día.</p>
+                        <p className="text-text-primary font-bold text-sm font-display">Registrar métricas corporales</p>
+                        <p className="text-[#4A5568] text-xs mt-0.5">Se guarda con la fecha de hoy. Puedes actualizar una vez por día.</p>
                     </div>
 
                     {feedbackMetr && (
@@ -209,7 +209,7 @@ export default function Perfil() {
                             { key: "porcentaje_musculo", label: "% Músculo", unit: "%", placeholder: "42.1" },
                         ].map((f) => (
                             <div key={f.key} className="flex items-center gap-3">
-                                <label className="text-xs text-[#7D8590] w-36 flex-shrink-0">{f.label}</label>
+                                <label className="text-xs text-[#4A5568] w-36 flex-shrink-0">{f.label}</label>
                                 <div className="flex items-center gap-2 flex-1">
                                     <Input
                                         type="number"
@@ -219,7 +219,7 @@ export default function Perfil() {
                                         onChange={(e) => setMetrForm(fm => ({ ...fm, [f.key]: e.target.value }))}
                                         className="w-28"
                                     />
-                                    <span className="text-[#7D8590] text-xs">{f.unit}</span>
+                                    <span className="text-[#4A5568] text-xs">{f.unit}</span>
                                 </div>
                             </div>
                         ))}
@@ -237,7 +237,7 @@ export default function Perfil() {
 
                 {/* Acciones */}
                 <Card className="flex flex-col gap-2">
-                    <p className="text-white font-bold text-sm font-display mb-1">Acciones</p>
+                    <p className="text-text-primary font-bold text-sm font-display mb-1">Acciones</p>
 
                     {esPremium ? (
                         <button
@@ -245,16 +245,16 @@ export default function Perfil() {
                             className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm text-left transition-all border border-brand-green/15 hover:bg-brand-green/5"
                         >
                             <div>
-                                <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
-                                <p className="text-[#7D8590] text-xs mt-0.5">Re-hacer el cuestionario y generar un nuevo plan</p>
+                                <p className="text-text-primary font-medium text-sm">Actualizar mis datos físicos</p>
+                                <p className="text-[#4A5568] text-xs mt-0.5">Re-hacer el cuestionario y generar un nuevo plan</p>
                             </div>
-                            <span className="text-[#3DDC84] text-lg ml-3">→</span>
+                            <span className="text-[#1B5E20] text-lg ml-3">→</span>
                         </button>
                     ) : (
                         <div className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm border border-brand-orange/15 opacity-70">
                             <div>
-                                <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
-                                <p className="text-[#7D8590] text-xs mt-0.5">🔒 Disponible solo en Premium</p>
+                                <p className="text-text-primary font-medium text-sm">Actualizar mis datos físicos</p>
+                                <p className="text-[#4A5568] text-xs mt-0.5">🔒 Disponible solo en Premium</p>
                             </div>
                             <button onClick={() => navigate("/panel?upgrade=true")} className="flex-shrink-0 ml-3">
                                 <Badge tone="orange">✦ Premium</Badge>
@@ -264,7 +264,7 @@ export default function Perfil() {
 
                     {/* Cambiar contraseña inline */}
                     <div className="flex flex-col gap-3 px-4 py-3 rounded-lg border border-brand-blue/15">
-                        <p className="text-white font-medium text-sm">Cambiar contraseña</p>
+                        <p className="text-text-primary font-medium text-sm">Cambiar contraseña</p>
 
                         {feedbackPass && (
                             <div className={`text-xs px-3 py-2 rounded-lg font-medium border ${feedbackPass.tipo === "ok" ? "bg-brand-green/10 text-brand-green border-brand-green/20" : "bg-brand-red/10 text-brand-red border-brand-red/20"}`}>
@@ -286,7 +286,7 @@ export default function Perfil() {
                                 value={passForm.confirmar}
                                 onChange={(e) => setPassForm(f => ({ ...f, confirmar: e.target.value }))}
                                 required
-                                style={{ borderColor: passForm.confirmar && passForm.confirmar !== passForm.nueva ? "#FF6B6B" : undefined }}
+                                style={{ borderColor: passForm.confirmar && passForm.confirmar !== passForm.nueva ? "#D64545" : undefined }}
                             />
                             <Button
                                 type="submit"

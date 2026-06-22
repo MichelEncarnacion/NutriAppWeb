@@ -6,15 +6,15 @@ import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 
 const CATEGORIA_META = {
-    "Proteínas": { icon: "🥩", color: "#FF6B6B", bg: "rgba(255,107,107,0.08)", border: "rgba(255,107,107,0.2)" },
-    "Verduras y frutas": { icon: "🥦", color: "#3DDC84", bg: "rgba(61,220,132,0.08)", border: "rgba(61,220,132,0.2)" },
-    "Cereales y derivados": { icon: "🌽", color: "#F0A500", bg: "rgba(240,165,0,0.08)", border: "rgba(240,165,0,0.2)" },
-    "Lácteos": { icon: "🥛", color: "#58A6FF", bg: "rgba(88,166,255,0.08)", border: "rgba(88,166,255,0.2)" },
-    "Leguminosas": { icon: "🫘", color: "#A855F7", bg: "rgba(168,85,247,0.08)", border: "rgba(168,85,247,0.2)" },
-    "Condimentos y otros": { icon: "🧂", color: "#7D8590", bg: "rgba(125,133,144,0.08)", border: "rgba(125,133,144,0.2)" },
+    "Proteínas": { icon: "🥩", color: "#D64545", bg: "rgba(214,69,69,0.08)", border: "rgba(214,69,69,0.2)" },
+    "Verduras y frutas": { icon: "🥦", color: "#1B5E20", bg: "rgba(27,94,32,0.08)", border: "rgba(27,94,32,0.2)" },
+    "Cereales y derivados": { icon: "🌽", color: "#BF9000", bg: "rgba(191,144,0,0.08)", border: "rgba(191,144,0,0.2)" },
+    "Lácteos": { icon: "🥛", color: "#2563EB", bg: "rgba(37,99,235,0.08)", border: "rgba(37,99,235,0.2)" },
+    "Leguminosas": { icon: "🫘", color: "#7C3AED", bg: "rgba(124,58,237,0.08)", border: "rgba(124,58,237,0.2)" },
+    "Condimentos y otros": { icon: "🧂", color: "#4A5568", bg: "rgba(74,85,104,0.08)", border: "rgba(74,85,104,0.2)" },
 };
 
-const DEFAULT_META = { icon: "🛒", color: "#7D8590", bg: "rgba(125,133,144,0.08)", border: "rgba(125,133,144,0.2)" };
+const DEFAULT_META = { icon: "🛒", color: "#4A5568", bg: "rgba(74,85,104,0.08)", border: "rgba(74,85,104,0.2)" };
 
 function getCatMeta(categoria) {
     return CATEGORIA_META[categoria] ?? DEFAULT_META;

@@ -41,19 +41,18 @@ export default function ImageUploader({ value, onChange, folder = "misc" }) {
     <div className="flex flex-col gap-2">
       {/* Preview */}
       {value ? (
-        <div className="relative rounded-xl overflow-hidden border border-[#2D3748]" style={{ height: 160 }}>
+        <div className="relative rounded-xl overflow-hidden border border-dark-600" style={{ height: 160 }}>
           <img
             src={value}
             alt="preview"
-            className="w-full h-full object-contain cursor-pointer"
-            style={{ background: "#1C2330" }}
+            className="w-full h-full object-contain cursor-pointer bg-dark-700"
             onClick={() => window.open(value, "_blank")}
             onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
           <button
             type="button"
             onClick={quitar}
-            className="absolute top-2 right-2 bg-[rgba(0,0,0,0.6)] text-white text-xs px-2 py-1 rounded-lg hover:bg-[rgba(255,107,107,0.8)] transition-all"
+            className="absolute top-2 right-2 bg-[rgba(0,0,0,0.6)] text-white text-xs px-2 py-1 rounded-lg hover:bg-brand-red/80 transition-all"
           >
             Quitar
           </button>
@@ -63,7 +62,7 @@ export default function ImageUploader({ value, onChange, folder = "misc" }) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={uploading}
-          className="h-28 rounded-xl border-2 border-dashed border-[#2D3748] hover:border-[#A855F7] text-[#4A5568] hover:text-[#A855F7] transition-all flex flex-col items-center justify-center gap-1.5 disabled:opacity-50"
+          className="h-28 rounded-xl border-2 border-dashed border-dark-600 hover:border-brand-purple text-text-muted hover:text-brand-purple transition-all flex flex-col items-center justify-center gap-1.5 disabled:opacity-50"
         >
           {uploading ? (
             <span className="text-xs">Subiendo…</span>
@@ -71,7 +70,7 @@ export default function ImageUploader({ value, onChange, folder = "misc" }) {
             <>
               <span className="text-2xl">🖼️</span>
               <span className="text-xs font-semibold">Clic para subir imagen</span>
-              <span className="text-[10px] text-[#4A5568]">JPG, PNG, WEBP · máx. 5 MB</span>
+              <span className="text-[10px] text-text-muted">JPG, PNG, WEBP · máx. 5 MB</span>
             </>
           )}
         </button>
@@ -82,18 +81,18 @@ export default function ImageUploader({ value, onChange, folder = "misc" }) {
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="text-xs text-[#7D8590] hover:text-[#A855F7] transition-colors text-left"
+          className="text-xs text-text-muted hover:text-brand-purple transition-colors text-left"
         >
           Cambiar imagen
         </button>
       )}
 
       {uploading && value && (
-        <span className="text-xs text-[#7D8590]">Subiendo imagen…</span>
+        <span className="text-xs text-text-muted">Subiendo imagen…</span>
       )}
 
       {error && (
-        <span className="text-xs text-[#FF6B6B]">{error}</span>
+        <span className="text-xs text-brand-red">{error}</span>
       )}
 
       <input

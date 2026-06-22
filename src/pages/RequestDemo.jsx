@@ -249,8 +249,8 @@ export default function RequestDemo() {
                   </motion.div>
 
                   {errorMsg && (
-                    <div className="rounded-[10px] px-4 py-3" style={{ background: "rgba(255,107,107,.08)", border: "1px solid rgba(255,107,107,.3)" }}>
-                      <p className="text-[0.85rem]" style={{ color: "#FF6B6B" }}>{errorMsg}</p>
+                    <div className="rounded-[10px] px-4 py-3" style={{ background: "rgba(214,69,69,.08)", border: "1px solid rgba(214,69,69,.3)" }}>
+                      <p className="text-[0.85rem]" style={{ color: "#D64545" }}>{errorMsg}</p>
                     </div>
                   )}
 

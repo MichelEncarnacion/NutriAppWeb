@@ -165,8 +165,8 @@ export default function AdminFundadores() {
                     </div>
                   ) : (
                     <div
-                      className="w-full flex items-center justify-center"
-                      style={{ height: 120, background: "linear-gradient(135deg, #1A1032 0%, #2D1B69 100%)" }}
+                      className="w-full flex items-center justify-center bg-brand-purple/10"
+                      style={{ height: 120 }}
                     >
                       <span className="text-4xl font-black font-display text-brand-purple">
                         {f.initials}

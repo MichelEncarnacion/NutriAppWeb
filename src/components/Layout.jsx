@@ -86,7 +86,7 @@ export default function Layout({ children }) {
                                     `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] transition-all border-l-[3px]
                   ${isActive && !bloqueado
                                         ? "border-brand-green bg-brand-green/12 text-brand-green"
-                                        : "border-transparent text-text-muted hover:bg-dark-800 hover:text-white"
+                                        : "border-transparent text-text-muted hover:bg-dark-700 hover:text-text-primary"
                                     }
                   ${bloqueado ? "opacity-50 cursor-not-allowed" : ""}`
                                 }
@@ -106,7 +106,7 @@ export default function Layout({ children }) {
                         onClick={() => navigate("/perfil")}
                         className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-dark-800 transition-colors w-full text-left"
                     >
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-green to-brand-blue flex items-center justify-center text-black font-black text-xs flex-shrink-0">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-green to-brand-blue flex items-center justify-center text-white font-black text-xs flex-shrink-0">
                             {iniciales}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -132,7 +132,7 @@ export default function Layout({ children }) {
                 <div className="flex items-center gap-3">
                     <div className="flex items-center gap-1.5 bg-brand-green/[0.08] border border-brand-green/20 rounded-full px-3 py-1">
                         <span className="text-sm">🔥</span>
-                        <span className="font-display font-black text-sm text-white">{racha ?? "—"}</span>
+                        <span className="font-display font-black text-sm text-text-primary">{racha ?? "—"}</span>
                         <span className="text-[10px] text-text-muted">días</span>
                     </div>
                     <button onClick={() => setMenuOpen((v) => !v)} className="text-text-muted text-xl">
@@ -212,7 +212,7 @@ function RightPanel({ racha }) {
 
             <div className="mt-4 p-3 bg-brand-green/[0.06] border border-brand-green/[0.18] rounded-xl">
                 <p className="text-[9px] text-brand-green font-bold tracking-widest mb-1">RACHA ACTIVA 🔥</p>
-                <p className="font-display font-black text-2xl text-white">
+                <p className="font-display font-black text-2xl text-text-primary">
                     {racha === null ? "—" : racha}{" "}
                     <span className="text-xs font-normal text-text-muted">días</span>
                 </p>
@@ -231,20 +231,20 @@ function UpgradeModal() {
         <div className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center px-4">
             <div className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-sm p-8 text-center flex flex-col gap-5">
                 <span className="text-4xl">🔒</span>
-                <h3 className="text-white font-bold font-display text-lg">Función exclusiva Premium</h3>
+                <h3 className="text-text-primary font-bold font-display text-lg">Función exclusiva Premium</h3>
                 <p className="text-text-muted text-sm leading-relaxed">
-                    El panel de <strong className="text-white">Progreso</strong> está disponible para usuarios Premium y Demo.
+                    El panel de <strong className="text-text-primary">Progreso</strong> está disponible para usuarios Premium y Demo.
                     Actualiza tu plan para desbloquear seguimiento completo de métricas.
                 </p>
                 <button
                     onClick={() => navigate("/panel")}
-                    className="w-full py-3 bg-brand-green text-black font-bold font-display rounded-xl hover:bg-brand-greenL transition-all text-sm"
+                    className="w-full py-3 bg-brand-green text-white font-bold font-display rounded-xl hover:bg-brand-greenL transition-all text-sm"
                 >
                     Ver planes →
                 </button>
                 <button
                     onClick={() => navigate("/panel")}
-                    className="text-xs text-text-muted hover:text-white transition-colors"
+                    className="text-xs text-text-muted hover:text-text-primary transition-colors"
                 >
                     Volver al panel
                 </button>

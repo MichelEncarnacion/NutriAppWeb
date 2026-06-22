@@ -26,16 +26,16 @@ export default function AdminLogin() {
     };
 
     return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4 font-sans">
-            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-sm p-8 flex flex-col gap-5">
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center px-4 font-sans">
+            <div className="bg-dark-800 border border-dark-600 rounded-2xl w-full max-w-sm p-8 flex flex-col gap-5">
                 <div className="text-center">
                     <span className="text-4xl block mb-2">🔐</span>
-                    <span className="font-display font-black text-xl text-[#A855F7]">Admin</span>
-                    <span className="font-display font-black text-xl text-white">Panel</span>
-                    <p className="text-[#7D8590] text-xs mt-1">Solo para el equipo NutriiApp</p>
+                    <span className="font-display font-black text-xl text-brand-purple">Admin</span>
+                    <span className="font-display font-black text-xl text-text-primary">Panel</span>
+                    <p className="text-text-muted text-xs mt-1">Solo para el equipo NutriiApp</p>
                 </div>
 
-                {error && <div className="bg-[rgba(255,107,107,.12)] border border-[rgba(255,107,107,.3)] text-[#FF6B6B] rounded-xl p-3 text-sm">⚠️ {error}</div>}
+                {error && <div className="bg-[rgba(214,69,69,.12)] border border-[rgba(214,69,69,.3)] text-brand-red rounded-xl p-3 text-sm">⚠️ {error}</div>}
 
                 <form onSubmit={handleSubmit} className="flex flex-col gap-3">
                     {[
@@ -43,19 +43,19 @@ export default function AdminLogin() {
                         { name: "password", type: "password", placeholder: "••••••••", label: "Contraseña" },
                     ].map((f) => (
                         <div key={f.name} className="flex flex-col gap-1.5">
-                            <label className="text-xs text-[#7D8590]">{f.label}</label>
+                            <label className="text-xs text-text-muted">{f.label}</label>
                             <input
                                 name={f.name} type={f.type} placeholder={f.placeholder}
                                 value={form[f.name]}
                                 onChange={(e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }))}
                                 required
-                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#A855F7] transition-colors"
+                                className="bg-dark-700 border border-dark-600 rounded-xl px-4 py-3 text-text-primary text-sm outline-none focus:border-brand-purple transition-colors"
                             />
                         </div>
                     ))}
                     <button
                         type="submit" disabled={loading}
-                        className="py-3 bg-[#A855F7] text-white font-bold font-display rounded-xl hover:bg-[#C084FC] transition-all text-sm disabled:opacity-60 mt-2"
+                        className="py-3 bg-brand-purple text-white font-bold font-display rounded-xl hover:opacity-90 transition-all text-sm disabled:opacity-60 mt-2"
                     >
                         {loading ? "Verificando…" : "Entrar al panel"}
                     </button>

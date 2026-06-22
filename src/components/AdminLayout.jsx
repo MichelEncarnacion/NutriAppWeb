@@ -3,6 +3,9 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
+import Button from "./ui/Button";
+import { Field } from "./ui/Input";
+import Input from "./ui/Input";
 
 const ADMIN_NAV = [
     { to: "/admin",           label: "Dashboard", icon: "⊞", exact: true },
@@ -48,14 +51,14 @@ export default function AdminLayout({ titulo, children }) {
     };
 
     return (
-        <div className="min-h-screen bg-[#0D1117] text-[#E6EDF3] flex font-sans text-sm">
+        <div className="min-h-screen bg-dark-900 text-text-primary flex font-sans text-sm">
 
             {/* ── Sidebar (desktop) ─────────────────────────────────── */}
-            <aside className="hidden md:flex w-52 bg-[#0D1117] border-r border-[#1C2330] flex-col py-6 px-3 fixed h-full z-20">
+            <aside className="hidden md:flex w-52 bg-dark-900 border-r border-dark-600 flex-col py-6 px-3 fixed h-full z-20">
                 <div className="px-2 mb-8">
-                    <span className="font-display font-black text-xl text-[#A855F7]">Admin</span>
-                    <span className="font-display font-black text-xl text-white">Panel</span>
-                    <div className="text-[9px] text-[#7D8590] font-bold tracking-widest mt-0.5">NUTRIIAPP v1.0</div>
+                    <span className="font-display font-black text-xl text-brand-purple">Admin</span>
+                    <span className="font-display font-black text-xl text-text-primary">Panel</span>
+                    <div className="text-[9px] text-text-muted font-bold tracking-widest mt-0.5">NUTRIIAPP v1.0</div>
                 </div>
 
                 <nav className="flex flex-col gap-1 flex-1">
@@ -67,8 +70,8 @@ export default function AdminLayout({ titulo, children }) {
                             className={({ isActive }) =>
                                 `flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] transition-all border-l-[3px]
                 ${isActive
-                                    ? "border-[#A855F7] bg-[rgba(168,85,247,0.12)] text-[#A855F7]"
-                                    : "border-transparent text-[#7D8590] hover:bg-[#161B22] hover:text-white"
+                                    ? "border-brand-purple bg-brand-purple/12 text-brand-purple"
+                                    : "border-transparent text-text-muted hover:bg-dark-700 hover:text-text-primary"
                                 }`
                             }
                         >
@@ -78,17 +81,17 @@ export default function AdminLayout({ titulo, children }) {
                     ))}
                 </nav>
 
-                <div className="border-t border-[#1C2330] pt-4 flex flex-col gap-1">
-                    <div className="text-[10px] text-[#4A5568] px-3 pb-1 truncate">{session?.user?.email}</div>
+                <div className="border-t border-dark-600 pt-4 flex flex-col gap-1">
+                    <div className="text-[10px] text-text-muted px-3 pb-1 truncate">{session?.user?.email}</div>
                     <button
                         onClick={() => { setPassForm({ nueva: "", confirmar: "" }); setPassError(null); setPassMensaje(null); setModalPass(true); }}
-                        className="text-xs text-[#7D8590] hover:text-[#58A6FF] px-3 py-1.5 rounded-lg hover:bg-[#161B22] transition-all w-full text-left"
+                        className="text-xs text-text-muted hover:text-brand-blue px-3 py-1.5 rounded-lg hover:bg-dark-700 transition-all w-full text-left"
                     >
                         Cambiar contraseña
                     </button>
                     <button
                         onClick={handleLogout}
-                        className="text-xs text-[#7D8590] hover:text-[#FF6B6B] px-3 py-1.5 rounded-lg hover:bg-[#161B22] transition-all w-full text-left"
+                        className="text-xs text-text-muted hover:text-brand-red px-3 py-1.5 rounded-lg hover:bg-dark-700 transition-all w-full text-left"
                     >
                         Cerrar sesión
                     </button>
@@ -96,19 +99,19 @@ export default function AdminLayout({ titulo, children }) {
             </aside>
 
             {/* ── Topbar (mobile) ───────────────────────────────────── */}
-            <header className="md:hidden fixed top-0 left-0 right-0 bg-[#0D1117] border-b border-[#1C2330] z-30 flex items-center justify-between px-4 py-3">
+            <header className="md:hidden fixed top-0 left-0 right-0 bg-dark-900 border-b border-dark-600 z-30 flex items-center justify-between px-4 py-3">
                 <div className="flex flex-col">
-                    <span className="text-[9px] font-bold tracking-widest text-[#A855F7] font-display">ADMINPANEL</span>
-                    <span className="text-white font-black font-display text-sm leading-tight">{titulo}</span>
+                    <span className="text-[9px] font-bold tracking-widest text-brand-purple font-display">ADMINPANEL</span>
+                    <span className="text-text-primary font-black font-display text-sm leading-tight">{titulo}</span>
                 </div>
-                <button onClick={() => setMenuOpen((v) => !v)} className="text-[#7D8590] text-xl w-8 h-8 flex items-center justify-center flex-shrink-0">
+                <button onClick={() => setMenuOpen((v) => !v)} className="text-text-muted text-xl w-8 h-8 flex items-center justify-center flex-shrink-0">
                     {menuOpen ? "✕" : "☰"}
                 </button>
             </header>
 
             {/* ── Mobile menu overlay ───────────────────────────────── */}
             {menuOpen && (
-                <div className="md:hidden fixed inset-0 z-20 bg-[#0D1117] pt-16 px-4 flex flex-col gap-2">
+                <div className="md:hidden fixed inset-0 z-20 bg-dark-900 pt-16 px-4 flex flex-col gap-2">
                     {ADMIN_NAV.map(({ to, label, icon, exact }) => (
                         <NavLink
                             key={to}
@@ -118,8 +121,8 @@ export default function AdminLayout({ titulo, children }) {
                             className={({ isActive }) =>
                                 `flex items-center gap-3 px-4 py-3.5 rounded-xl text-sm transition-all
                 ${isActive
-                                    ? "bg-[rgba(168,85,247,0.12)] text-[#A855F7]"
-                                    : "text-[#7D8590] hover:bg-[#161B22] hover:text-white"
+                                    ? "bg-brand-purple/12 text-brand-purple"
+                                    : "text-text-muted hover:bg-dark-700 hover:text-text-primary"
                                 }`
                             }
                         >
@@ -127,17 +130,17 @@ export default function AdminLayout({ titulo, children }) {
                             <span className="font-medium">{label}</span>
                         </NavLink>
                     ))}
-                    <div className="border-t border-[#1C2330] mt-2 pt-4 flex flex-col gap-1">
-                        <div className="text-[10px] text-[#4A5568] px-4 pb-1 truncate">{session?.user?.email}</div>
+                    <div className="border-t border-dark-600 mt-2 pt-4 flex flex-col gap-1">
+                        <div className="text-[10px] text-text-muted px-4 pb-1 truncate">{session?.user?.email}</div>
                         <button
                             onClick={() => { setMenuOpen(false); setPassForm({ nueva: "", confirmar: "" }); setPassError(null); setPassMensaje(null); setModalPass(true); }}
-                            className="text-sm text-[#58A6FF] px-4 py-3 text-left w-full"
+                            className="text-sm text-brand-blue px-4 py-3 text-left w-full"
                         >
                             Cambiar contraseña
                         </button>
                         <button
                             onClick={handleLogout}
-                            className="text-sm text-[#FF6B6B] px-4 py-3 text-left w-full"
+                            className="text-sm text-brand-red px-4 py-3 text-left w-full"
                         >
                             Cerrar sesión
                         </button>
@@ -150,64 +153,59 @@ export default function AdminLayout({ titulo, children }) {
                 <>
                     <div
                         className="fixed inset-0 z-40"
-                        style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}
+                        style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)" }}
                         onClick={() => setModalPass(false)}
                     />
                     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                        <div className="w-full max-w-sm rounded-2xl border border-[#2D3748] flex flex-col" style={{ background: "#161B22" }}>
-                            <div className="flex items-center justify-between px-5 py-4 border-b border-[#2D3748]">
-                                <h3 className="text-white font-bold font-display text-sm">Cambiar contraseña</h3>
+                        <div className="w-full max-w-sm rounded-2xl border border-dark-600 bg-dark-800 flex flex-col shadow-[0_16px_56px_rgba(0,0,0,0.13)]">
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-dark-600">
+                                <h3 className="text-text-primary font-bold font-display text-sm">Cambiar contraseña</h3>
                                 <button
                                     onClick={() => setModalPass(false)}
-                                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-[#7D8590] hover:text-white transition-colors"
-                                    style={{ background: "rgba(255,255,255,0.05)" }}
+                                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-text-muted hover:text-text-primary transition-colors bg-dark-700"
                                 >✕</button>
                             </div>
                             <div className="flex flex-col gap-4 px-5 py-5">
-                                <div className="text-[11px] text-[#7D8590] bg-[#1C2330] rounded-xl px-3 py-2 truncate">
+                                <div className="text-[11px] text-text-muted bg-dark-700 rounded-xl px-3 py-2 truncate">
                                     {session?.user?.email}
                                 </div>
-                                <div>
-                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Nueva contraseña</label>
-                                    <input
+                                <Field label="Nueva contraseña" accent="purple">
+                                    <Input
+                                        accent="purple"
                                         type="password"
                                         placeholder="Mínimo 6 caracteres"
                                         value={passForm.nueva}
                                         onChange={(e) => setPassForm((f) => ({ ...f, nueva: e.target.value }))}
-                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#58A6FF] transition-colors"
                                     />
-                                </div>
-                                <div>
-                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Confirmar contraseña</label>
-                                    <input
+                                </Field>
+                                <Field label="Confirmar contraseña" accent="purple">
+                                    <Input
+                                        accent="purple"
                                         type="password"
                                         placeholder="Repite la contraseña"
                                         value={passForm.confirmar}
                                         onChange={(e) => setPassForm((f) => ({ ...f, confirmar: e.target.value }))}
-                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#58A6FF] transition-colors"
                                     />
-                                </div>
+                                </Field>
                                 {passError && (
-                                    <div className="bg-[rgba(255,107,107,.1)] border border-[rgba(255,107,107,.3)] text-[#FF6B6B] rounded-xl px-3 py-2.5 text-xs">{passError}</div>
+                                    <div className="bg-brand-red/10 border border-brand-red/30 text-brand-red rounded-xl px-3 py-2.5 text-xs">{passError}</div>
                                 )}
                                 {passMensaje && (
-                                    <div className="bg-[rgba(61,220,132,.1)] border border-[rgba(61,220,132,.3)] text-[#3DDC84] rounded-xl px-3 py-2.5 text-xs">{passMensaje}</div>
+                                    <div className="bg-brand-green/10 border border-brand-green/30 text-brand-green rounded-xl px-3 py-2.5 text-xs">{passMensaje}</div>
                                 )}
                             </div>
-                            <div className="flex gap-3 px-5 py-4 border-t border-[#2D3748]">
-                                <button
-                                    onClick={() => setModalPass(false)}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#7D8590] hover:text-white border border-[#2D3748] hover:border-[#4A5568] transition-all"
-                                >
+                            <div className="flex gap-3 px-5 py-4 border-t border-dark-600">
+                                <Button variant="secondary" onClick={() => setModalPass(false)} fullWidth>
                                     Cancelar
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant="admin"
                                     onClick={cambiarPassword}
                                     disabled={guardandoPass || !passForm.nueva || !passForm.confirmar}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-[#58A6FF] hover:bg-[#79B8FF] transition-all disabled:opacity-50"
+                                    fullWidth
                                 >
                                     {guardandoPass ? "Guardando…" : "Actualizar"}
-                                </button>
+                                </Button>
                             </div>
                         </div>
                     </div>
@@ -217,8 +215,8 @@ export default function AdminLayout({ titulo, children }) {
             {/* ── Main content ──────────────────────────────────────── */}
             <main className="flex-1 md:ml-52 p-4 md:p-8 pt-20 md:pt-8 min-h-screen">
                 <div className="mb-6">
-                    <h1 className="text-white text-xl md:text-2xl font-black font-display">{titulo}</h1>
-                    <div className="h-0.5 w-16 bg-[#A855F7] rounded-full mt-2" />
+                    <h1 className="text-text-primary text-xl md:text-2xl font-black font-display">{titulo}</h1>
+                    <div className="h-0.5 w-16 bg-brand-purple rounded-full mt-2" />
                 </div>
                 {children}
             </main>
