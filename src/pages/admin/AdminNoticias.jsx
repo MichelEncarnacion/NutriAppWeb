@@ -3,14 +3,26 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminLayout from "../../components/AdminLayout";
 import ImageUploader from "../../components/admin/ImageUploader";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Input, { Field } from "../../components/ui/Input";
+import Badge from "../../components/ui/Badge";
 
 /* ── Constantes ──────────────────────────────────────────────── */
 const CATEGORIAS = ["Empresa", "Investigación", "Salud Corporativa"];
 
-const CAT_COLORS = {
-  "Empresa":           { bg: "rgba(61,220,132,.1)",   color: "#3DDC84" },
-  "Investigación":     { bg: "rgba(240,165,0,.1)",    color: "#F0A500" },
-  "Salud Corporativa": { bg: "rgba(88,166,255,.1)",   color: "#58A6FF" },
+const CAT_TONES = {
+  "Empresa":           "green",
+  "Investigación":     "orange",
+  "Salud Corporativa": "blue",
+};
+
+const TONE_TEXT = {
+  purple: "text-brand-purple",
+  green:  "text-brand-green",
+  orange: "text-brand-orange",
+  blue:   "text-brand-blue",
+  red:    "text-brand-red",
 };
 
 const FORM_EMPTY = {
@@ -148,42 +160,40 @@ export default function AdminNoticias() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Total artículos", value: noticias.length,  color: "#A855F7" },
-            { label: "Publicados",      value: totalPublicadas,   color: "#3DDC84" },
-            { label: "Borradores",      value: totalBorradores,   color: "#F0A500" },
+            { label: "Total artículos", value: noticias.length,  tone: "purple" },
+            { label: "Publicados",      value: totalPublicadas,   tone: "green" },
+            { label: "Borradores",      value: totalBorradores,   tone: "orange" },
           ].map((s) => (
-            <div key={s.label} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-4">
-              <div className="font-display font-black text-2xl" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-xs text-[#7D8590] mt-1">{s.label}</div>
-            </div>
+            <Card key={s.label} className="p-4">
+              <div className={`font-display font-black text-2xl ${TONE_TEXT[s.tone]}`}>{s.value}</div>
+              <div className="text-xs text-text-muted mt-1">{s.label}</div>
+            </Card>
           ))}
         </div>
 
         {/* Toolbar */}
         <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
-          <input
+          <Input
+            accent="purple"
             type="text"
             placeholder="Buscar por título o categoría…"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className="bg-[#161B22] border border-[#2D3748] rounded-xl px-3 py-2 text-white text-sm w-full sm:w-72 outline-none focus:border-[#A855F7] transition-colors placeholder:text-[#4A5568]"
+            className="w-full sm:w-72"
           />
-          <button
-            onClick={abrirCrear}
-            className="bg-[#A855F7] hover:bg-[#9333EA] text-white text-sm font-bold px-4 py-2.5 rounded-xl transition-all whitespace-nowrap flex-shrink-0"
-          >
+          <Button variant="admin" onClick={abrirCrear} className="whitespace-nowrap flex-shrink-0">
             + Nueva noticia
-          </button>
+          </Button>
         </div>
 
         {/* Tabla */}
-        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl overflow-hidden">
+        <Card className="p-0 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-[#7D8590] text-sm">Cargando…</div>
+            <div className="p-8 text-center text-text-muted text-sm">Cargando…</div>
           ) : filtradas.length === 0 ? (
             <div className="p-10 text-center">
               <div className="text-3xl mb-3">📰</div>
-              <p className="text-[#7D8590] text-sm">
+              <p className="text-text-muted text-sm">
                 {busqueda ? "Sin resultados para tu búsqueda." : "No hay noticias todavía. ¡Crea la primera!"}
               </p>
             </div>
@@ -191,7 +201,7 @@ export default function AdminNoticias() {
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
-                  <tr className="text-[#7D8590] text-left border-b border-[#2D3748] text-xs uppercase tracking-wide">
+                  <tr className="text-text-muted text-left border-b border-dark-600 text-xs uppercase tracking-wide">
                     <th className="px-5 py-3.5 font-bold">Título</th>
                     <th className="px-4 py-3.5 font-bold">Categoría</th>
                     <th className="px-4 py-3.5 font-bold">Fecha</th>
@@ -200,65 +210,52 @@ export default function AdminNoticias() {
                     <th className="px-4 py-3.5 font-bold text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1C2330]">
+                <tbody className="divide-y divide-dark-700">
                   {filtradas.map((n) => {
-                    const cat = CAT_COLORS[n.categoria] ?? { bg: "rgba(255,255,255,.06)", color: "#E6EDF3" };
+                    const catTone = CAT_TONES[n.categoria] ?? "neutral";
                     return (
-                      <tr key={n.id} className="hover:bg-[rgba(255,255,255,.02)] transition-colors group">
+                      <tr key={n.id} className="hover:bg-white/[0.02] transition-colors group">
                         {/* Título */}
                         <td className="px-5 py-4">
-                          <p className="text-white font-semibold leading-snug line-clamp-2 max-w-xs">{n.titulo}</p>
+                          <p className="text-text-primary font-semibold leading-snug line-clamp-2 max-w-xs">{n.titulo}</p>
                           {n.extracto && (
-                            <p className="text-[#4A5568] text-xs mt-0.5 line-clamp-1">{n.extracto}</p>
+                            <p className="text-text-muted text-xs mt-0.5 line-clamp-1">{n.extracto}</p>
                           )}
                         </td>
 
                         {/* Categoría */}
                         <td className="px-4 py-4">
-                          <span
-                            className="text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap"
-                            style={{ background: cat.bg, color: cat.color }}
-                          >
-                            {n.categoria}
-                          </span>
+                          <Badge tone={catTone} className="whitespace-nowrap normal-case">{n.categoria}</Badge>
                         </td>
 
                         {/* Fecha */}
-                        <td className="px-4 py-4 text-[#7D8590] text-xs whitespace-nowrap">{n.fecha_display}</td>
+                        <td className="px-4 py-4 text-text-muted text-xs whitespace-nowrap">{n.fecha_display}</td>
 
                         {/* Orden */}
-                        <td className="px-4 py-4 text-center text-[#7D8590] text-xs">{n.orden}</td>
+                        <td className="px-4 py-4 text-center text-text-muted text-xs">{n.orden}</td>
 
                         {/* Estado — toggle */}
                         <td className="px-4 py-4 text-center">
                           <button
                             onClick={() => togglePublicado(n)}
                             title={n.publicado ? "Clic para despublicar" : "Clic para publicar"}
-                            className={`text-[10px] font-bold px-2.5 py-1 rounded-full transition-all cursor-pointer
-                              ${n.publicado
-                                ? "bg-[rgba(61,220,132,.12)] text-[#3DDC84] hover:bg-[rgba(61,220,132,.22)]"
-                                : "bg-[rgba(240,165,0,.1)] text-[#F0A500] hover:bg-[rgba(240,165,0,.2)]"
-                              }`}
+                            className="cursor-pointer"
                           >
-                            {n.publicado ? "● Publicado" : "○ Borrador"}
+                            <Badge tone={n.publicado ? "green" : "orange"} className="normal-case">
+                              {n.publicado ? "● Publicado" : "○ Borrador"}
+                            </Badge>
                           </button>
                         </td>
 
                         {/* Acciones */}
                         <td className="px-4 py-4">
                           <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button
-                              onClick={() => abrirEditar(n)}
-                              className="text-xs px-3 py-1.5 rounded-lg font-bold text-[#58A6FF] bg-[rgba(88,166,255,.08)] hover:bg-[rgba(88,166,255,.18)] transition-all"
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => abrirEditar(n)} className="text-brand-blue hover:bg-brand-blue/10">
                               Editar
-                            </button>
-                            <button
-                              onClick={() => setElimConf(n.id)}
-                              className="text-xs px-3 py-1.5 rounded-lg font-bold text-[#FF6B6B] bg-[rgba(255,107,107,.08)] hover:bg-[rgba(255,107,107,.18)] transition-all"
-                            >
+                            </Button>
+                            <Button variant="danger" size="sm" onClick={() => setElimConf(n.id)}>
                               Eliminar
-                            </button>
+                            </Button>
                           </div>
                         </td>
                       </tr>
@@ -268,7 +265,7 @@ export default function AdminNoticias() {
               </table>
             </div>
           )}
-        </div>
+        </Card>
       </div>
 
       {/* ── Modal crear / editar ─────────────────────────────── */}
@@ -280,22 +277,21 @@ export default function AdminNoticias() {
             onClick={cerrarModal}
           />
           <div className="fixed inset-0 z-50 flex items-start justify-center px-4 py-8 overflow-y-auto">
-            <div className="w-full max-w-xl rounded-2xl border border-[#2D3748] flex flex-col my-auto" style={{ background: "#161B22" }}>
+            <Card as="div" className="w-full max-w-xl rounded-xl flex flex-col my-auto p-0">
 
               {/* Header */}
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#2D3748]">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-dark-600">
                 <div>
-                  <h3 className="text-white font-bold font-display text-base">
+                  <h3 className="text-text-primary font-bold font-display text-base">
                     {modal === "crear" ? "Nueva noticia" : "Editar noticia"}
                   </h3>
-                  <p className="text-[#7D8590] text-xs mt-0.5">
+                  <p className="text-text-muted text-xs mt-0.5">
                     {modal === "crear" ? "Se guardará como borrador hasta que la publiques." : "Los cambios se aplican de inmediato al guardar."}
                   </p>
                 </div>
                 <button
                   onClick={cerrarModal}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm text-[#7D8590] hover:text-white transition-colors"
-                  style={{ background: "rgba(255,255,255,0.05)" }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm text-text-muted hover:text-text-primary hover:bg-dark-700 transition-colors"
                 >
                   ✕
                 </button>
@@ -305,102 +301,106 @@ export default function AdminNoticias() {
               <div className="px-6 py-5 flex flex-col gap-4">
 
                 {/* Título */}
-                <FormField label="Título *">
-                  <input
+                <Field label="Título *" accent="purple">
+                  <Input
+                    accent="purple"
                     type="text"
                     value={formData.titulo}
                     onChange={set("titulo")}
                     placeholder="Ej. NutriiApp lanza nueva versión del dashboard"
                     maxLength={200}
-                    className={INPUT_CLS}
                   />
-                  <span className="text-[10px] text-[#4A5568] text-right">{formData.titulo.length}/200</span>
-                </FormField>
+                  <span className="text-[10px] text-text-muted text-right">{formData.titulo.length}/200</span>
+                </Field>
 
                 {/* Categoría + Fecha */}
                 <div className="grid grid-cols-2 gap-3">
-                  <FormField label="Categoría *">
-                    <select value={formData.categoria} onChange={set("categoria")} className={INPUT_CLS}>
+                  <Field label="Categoría *">
+                    <Input accent="purple" as="select" value={formData.categoria} onChange={set("categoria")}>
                       {CATEGORIAS.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                  </FormField>
-                  <FormField label="Fecha de publicación *">
-                    <input
+                    </Input>
+                  </Field>
+                  <Field label="Fecha de publicación *">
+                    <Input
+                      accent="purple"
                       type="text"
                       value={formData.fecha_display}
                       onChange={set("fecha_display")}
                       placeholder="Ej. Mayo 2026"
-                      className={INPUT_CLS}
                     />
-                  </FormField>
+                  </Field>
                 </div>
 
                 {/* Extracto */}
-                <FormField label="Extracto * (2 líneas resumen)">
-                  <textarea
+                <Field label="Extracto * (2 líneas resumen)">
+                  <Input
+                    accent="purple"
+                    as="textarea"
                     value={formData.extracto}
                     onChange={set("extracto")}
                     rows={3}
                     maxLength={300}
                     placeholder="Breve descripción del artículo (máx. 300 caracteres)"
-                    className={`${INPUT_CLS} resize-none`}
+                    className="resize-none"
                   />
-                  <span className="text-[10px] text-[#4A5568] text-right">{formData.extracto.length}/300</span>
-                </FormField>
+                  <span className="text-[10px] text-text-muted text-right">{formData.extracto.length}/300</span>
+                </Field>
 
                 {/* Contenido */}
-                <FormField label="Contenido completo (opcional)">
-                  <textarea
+                <Field label="Contenido completo (opcional)">
+                  <Input
+                    accent="purple"
+                    as="textarea"
                     value={formData.contenido}
                     onChange={set("contenido")}
                     rows={5}
                     placeholder="Cuerpo del artículo completo. Soporta texto plano."
-                    className={`${INPUT_CLS} resize-none`}
+                    className="resize-none"
                   />
-                </FormField>
+                </Field>
 
                 {/* Imagen */}
-                <FormField label="Imagen (opcional)">
+                <Field label="Imagen (opcional)">
                   <ImageUploader
                     value={formData.imagen_url}
                     onChange={(url) => setFormData((p) => ({ ...p, imagen_url: url }))}
                     folder="noticias"
                   />
-                </FormField>
+                </Field>
 
                 {/* Autor + URL fuente */}
                 <div className="grid grid-cols-2 gap-3">
-                  <FormField label="Autor (opcional)">
-                    <input
+                  <Field label="Autor (opcional)">
+                    <Input
+                      accent="purple"
                       type="text"
                       value={formData.autor}
                       onChange={set("autor")}
                       placeholder="Ej. NutriiApp Editorial"
-                      className={INPUT_CLS}
                     />
-                  </FormField>
-                  <FormField label='URL "Leer más" (opcional)'>
-                    <input
+                  </Field>
+                  <Field label='URL "Leer más" (opcional)'>
+                    <Input
+                      accent="purple"
                       type="url"
                       value={formData.fuente_url}
                       onChange={set("fuente_url")}
                       placeholder="https://..."
-                      className={INPUT_CLS}
                     />
-                  </FormField>
+                  </Field>
                 </div>
 
                 {/* Orden + Publicado */}
                 <div className="grid grid-cols-2 gap-3 items-end">
-                  <FormField label="Orden de aparición">
-                    <input
+                  <Field label="Orden de aparición">
+                    <Input
+                      accent="purple"
                       type="number"
                       value={formData.orden}
                       onChange={set("orden")}
                       min={0}
-                      className={INPUT_CLS}
                     />
-                  </FormField>
+                  </Field>
                   <div className="flex items-center gap-3 pb-0.5">
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
@@ -409,39 +409,32 @@ export default function AdminNoticias() {
                         onChange={set("publicado")}
                         className="sr-only peer"
                       />
-                      <div className="w-10 h-5 bg-[#2D3748] peer-focus:ring-2 peer-focus:ring-[#A855F7] rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-[#3DDC84] after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
+                      <div className="w-10 h-5 bg-dark-600 peer-focus:ring-2 peer-focus:ring-brand-purple rounded-full peer peer-checked:after:translate-x-5 peer-checked:bg-brand-green after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
                     </label>
-                    <span className="text-xs text-[#7D8590]">
-                      {formData.publicado ? <span className="text-[#3DDC84] font-bold">Publicado</span> : "Borrador"}
+                    <span className="text-xs text-text-muted">
+                      {formData.publicado ? <span className="text-brand-green font-bold">Publicado</span> : "Borrador"}
                     </span>
                   </div>
                 </div>
 
                 {/* Error */}
                 {error && (
-                  <div className="bg-[rgba(255,107,107,.1)] border border-[rgba(255,107,107,.3)] text-[#FF6B6B] rounded-xl px-4 py-2.5 text-xs">
+                  <div className="bg-brand-red/10 border border-brand-red/30 text-brand-red rounded-xl px-4 py-2.5 text-xs">
                     {error}
                   </div>
                 )}
               </div>
 
               {/* Footer */}
-              <div className="flex gap-3 px-6 py-4 border-t border-[#2D3748]">
-                <button
-                  onClick={cerrarModal}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#7D8590] hover:text-white border border-[#2D3748] hover:border-[#4A5568] transition-all"
-                >
+              <div className="flex gap-3 px-6 py-4 border-t border-dark-600">
+                <Button variant="secondary" onClick={cerrarModal} className="flex-1">
                   Cancelar
-                </button>
-                <button
-                  onClick={guardar}
-                  disabled={guardando}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-[#A855F7] hover:bg-[#9333EA] transition-all disabled:opacity-50"
-                >
+                </Button>
+                <Button variant="admin" onClick={guardar} disabled={guardando} className="flex-1">
                   {guardando ? "Guardando…" : modal === "crear" ? "Crear noticia" : "Guardar cambios"}
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
           </div>
         </>
       )}
@@ -455,42 +448,24 @@ export default function AdminNoticias() {
             onClick={() => setElimConf(null)}
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <div className="w-full max-w-sm rounded-2xl border border-[#2D3748] flex flex-col" style={{ background: "#161B22" }}>
+            <Card className="w-full max-w-sm rounded-xl flex flex-col p-0">
               <div className="px-6 pt-6 pb-4 text-center">
                 <div className="text-3xl mb-3">🗑️</div>
-                <h3 className="text-white font-bold font-display text-base mb-1.5">¿Eliminar este artículo?</h3>
-                <p className="text-[#7D8590] text-sm">Esta acción es irreversible. El artículo se eliminará de la landing.</p>
+                <h3 className="text-text-primary font-bold font-display text-base mb-1.5">¿Eliminar este artículo?</h3>
+                <p className="text-text-muted text-sm">Esta acción es irreversible. El artículo se eliminará de la landing.</p>
               </div>
-              <div className="flex gap-3 px-6 py-4 border-t border-[#2D3748]">
-                <button
-                  onClick={() => setElimConf(null)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#7D8590] hover:text-white border border-[#2D3748] hover:border-[#4A5568] transition-all"
-                >
+              <div className="flex gap-3 px-6 py-4 border-t border-dark-600">
+                <Button variant="secondary" onClick={() => setElimConf(null)} className="flex-1">
                   Cancelar
-                </button>
-                <button
-                  onClick={eliminar}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white bg-[#FF6B6B] hover:bg-[#ff8585] transition-all"
-                >
+                </Button>
+                <Button variant="danger" onClick={eliminar} className="flex-1 bg-brand-red text-white hover:bg-brand-red/85 border-0">
                   Sí, eliminar
-                </button>
+                </Button>
               </div>
-            </div>
+            </Card>
           </div>
         </>
       )}
     </AdminLayout>
-  );
-}
-
-/* ── Helpers de UI ───────────────────────────────────────────── */
-const INPUT_CLS = "bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors placeholder:text-[#4A5568]";
-
-function FormField({ label, children }) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <label className="text-xs text-[#7D8590] font-semibold">{label}</label>
-      {children}
-    </div>
   );
 }

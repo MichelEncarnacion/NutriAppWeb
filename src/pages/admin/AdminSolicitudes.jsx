@@ -2,6 +2,9 @@
 import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../../lib/supabase";
 import AdminLayout from "../../components/AdminLayout";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Badge from "../../components/ui/Badge";
 
 export default function AdminSolicitudes() {
   const [items,   setItems]   = useState([]);
@@ -45,31 +48,31 @@ export default function AdminSolicitudes() {
         {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: "Total",     value: items.length,          color: "#A855F7" },
-            { label: "Sin leer",  value: noLeidas,              color: "#F0A500" },
-            { label: "Leídas",    value: items.length - noLeidas, color: "#3DDC84" },
+            { label: "Total",     value: items.length,          colorVar: "var(--color-brand-purple)" },
+            { label: "Sin leer",  value: noLeidas,              colorVar: "var(--color-brand-orange)" },
+            { label: "Leídas",    value: items.length - noLeidas, colorVar: "var(--color-brand-green)" },
           ].map((s) => (
-            <div key={s.label} className="bg-[#161B22] border border-[#2D3748] rounded-xl p-4">
-              <div className="font-display font-black text-2xl" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-xs text-[#7D8590] mt-1">{s.label}</div>
-            </div>
+            <Card key={s.label} className="p-4">
+              <div className="font-display font-black text-2xl" style={{ color: s.colorVar }}>{s.value}</div>
+              <div className="text-xs text-text-muted mt-1">{s.label}</div>
+            </Card>
           ))}
         </div>
 
         {/* Tabla */}
-        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl overflow-hidden">
+        <Card className="p-0 overflow-hidden">
           {loading ? (
-            <div className="p-8 text-center text-[#7D8590] text-sm">Cargando…</div>
+            <div className="p-8 text-center text-text-muted text-sm">Cargando…</div>
           ) : items.length === 0 ? (
             <div className="p-12 text-center">
               <div className="text-4xl mb-3">📋</div>
-              <p className="text-[#7D8590] text-sm">Aún no hay solicitudes de demo.</p>
+              <p className="text-text-muted text-sm">Aún no hay solicitudes de demo.</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm min-w-[640px]">
                 <thead>
-                  <tr className="text-[#7D8590] text-left border-b border-[#2D3748] text-xs uppercase tracking-wide">
+                  <tr className="text-text-muted text-left border-b border-dark-600 text-xs uppercase tracking-wide">
                     <th className="px-5 py-3.5 font-bold">Empresa / Contacto</th>
                     <th className="px-4 py-3.5 font-bold">Correo</th>
                     <th className="px-4 py-3.5 font-bold">Teléfono</th>
@@ -79,7 +82,7 @@ export default function AdminSolicitudes() {
                     <th className="px-4 py-3.5 font-bold text-right">Acciones</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#1C2330]">
+                <tbody className="divide-y divide-dark-700">
                   {items.map((s) => (
                     <tr
                       key={s.id}
@@ -87,42 +90,34 @@ export default function AdminSolicitudes() {
                       onClick={() => { setDetalle(s); if (!s.leida) marcarLeida(s.id, true); }}
                     >
                       <td className="px-5 py-4">
-                        <p className="text-white font-semibold leading-snug">{s.empresa}</p>
-                        <p className="text-[#7D8590] text-xs mt-0.5">{s.nombre} · {s.cargo}</p>
+                        <p className="text-text-primary font-semibold leading-snug">{s.empresa}</p>
+                        <p className="text-text-muted text-xs mt-0.5">{s.nombre} · {s.cargo}</p>
                       </td>
-                      <td className="px-4 py-4 text-[#58A6FF] text-xs">
+                      <td className="px-4 py-4 text-brand-blue text-xs">
                         <a href={`mailto:${s.email}`} onClick={(e) => e.stopPropagation()}>{s.email}</a>
                       </td>
-                      <td className="px-4 py-4 text-[#7D8590] text-xs whitespace-nowrap">
-                        {s.telefono || <span className="text-[#4A5568]">—</span>}
+                      <td className="px-4 py-4 text-text-muted text-xs whitespace-nowrap">
+                        {s.telefono || <span className="text-dark-600">—</span>}
                       </td>
-                      <td className="px-4 py-4 text-[#7D8590] text-xs whitespace-nowrap">{s.colaboradores}</td>
-                      <td className="px-4 py-4 text-[#7D8590] text-xs whitespace-nowrap">{fmtFecha(s.created_at)}</td>
+                      <td className="px-4 py-4 text-text-muted text-xs whitespace-nowrap">{s.colaboradores}</td>
+                      <td className="px-4 py-4 text-text-muted text-xs whitespace-nowrap">{fmtFecha(s.created_at)}</td>
                       <td className="px-4 py-4 text-center">
-                        <span
-                          className={`text-[10px] font-bold px-2.5 py-1 rounded-full
-                            ${s.leida
-                              ? "bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
-                              : "bg-[rgba(240,165,0,.12)] text-[#F0A500]"
-                            }`}
-                        >
+                        <Badge tone={s.leida ? "green" : "orange"}>
                           {s.leida ? "● Leída" : "○ Nueva"}
-                        </span>
+                        </Badge>
                       </td>
                       <td className="px-4 py-4">
                         <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
-                          <button
-                            onClick={() => marcarLeida(s.id, !s.leida)}
-                            className="text-xs px-3 py-1.5 rounded-lg font-bold text-[#58A6FF] bg-[rgba(88,166,255,.08)] hover:bg-[rgba(88,166,255,.18)] transition-all"
-                          >
+                          <Button variant="secondary" size="sm" onClick={() => marcarLeida(s.id, !s.leida)}>
                             {s.leida ? "Sin leer" : "Marcar leída"}
-                          </button>
-                          <button
+                          </Button>
+                          <Button
+                            variant="danger"
+                            size="sm"
                             onClick={() => { if (confirm("¿Eliminar esta solicitud?")) eliminar(s.id); }}
-                            className="text-xs px-3 py-1.5 rounded-lg font-bold text-[#FF6B6B] bg-[rgba(255,107,107,.08)] hover:bg-[rgba(255,107,107,.18)] transition-all"
                           >
                             Eliminar
-                          </button>
+                          </Button>
                         </div>
                       </td>
                     </tr>
@@ -131,7 +126,7 @@ export default function AdminSolicitudes() {
               </table>
             </div>
           )}
-        </div>
+        </Card>
       </div>
 
       {/* ── Modal detalle ── */}
@@ -143,16 +138,15 @@ export default function AdminSolicitudes() {
             onClick={() => setDetalle(null)}
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-            <div className="w-full max-w-lg rounded-2xl border border-[#2D3748] flex flex-col" style={{ background: "#161B22" }}>
-              <div className="flex items-center justify-between px-6 py-4 border-b border-[#2D3748]">
+            <div className="w-full max-w-lg rounded-xl border border-dark-600 flex flex-col bg-dark-800">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-dark-600">
                 <div>
-                  <h3 className="text-white font-bold font-display text-base">{detalle.empresa}</h3>
-                  <p className="text-[#7D8590] text-xs mt-0.5">{fmtFecha(detalle.created_at)}</p>
+                  <h3 className="text-text-primary font-bold font-display text-base">{detalle.empresa}</h3>
+                  <p className="text-text-muted text-xs mt-0.5">{fmtFecha(detalle.created_at)}</p>
                 </div>
                 <button
                   onClick={() => setDetalle(null)}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm text-[#7D8590] hover:text-white transition-colors"
-                  style={{ background: "rgba(255,255,255,0.05)" }}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-sm text-text-muted hover:text-text-primary transition-colors bg-dark-700"
                 >✕</button>
               </div>
 
@@ -166,26 +160,23 @@ export default function AdminSolicitudes() {
                   { label: "Reto principal", value: detalle.reto },
                 ].map(({ label, value, link }) => value ? (
                   <div key={label}>
-                    <p className="text-[10px] text-[#7D8590] font-bold uppercase tracking-wide mb-0.5">{label}</p>
+                    <p className="text-[10px] text-text-muted font-bold uppercase tracking-wide mb-0.5">{label}</p>
                     {link ? (
-                      <a href={link} className="text-[#58A6FF] text-sm font-semibold hover:underline">{value}</a>
+                      <a href={link} className="text-brand-blue text-sm font-semibold hover:underline">{value}</a>
                     ) : (
-                      <p className="text-white text-sm">{value}</p>
+                      <p className="text-text-primary text-sm">{value}</p>
                     )}
                   </div>
                 ) : null)}
               </div>
 
-              <div className="flex gap-3 px-6 py-4 border-t border-[#2D3748]">
-                <button
-                  onClick={() => setDetalle(null)}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#7D8590] hover:text-white border border-[#2D3748] transition-all"
-                >
+              <div className="flex gap-3 px-6 py-4 border-t border-dark-600">
+                <Button variant="secondary" fullWidth onClick={() => setDetalle(null)}>
                   Cerrar
-                </button>
+                </Button>
                 <a
                   href={`mailto:${detalle.email}`}
-                  className="flex-1 py-2.5 rounded-xl text-sm font-bold text-black bg-[#F0A500] hover:bg-[#e09400] transition-all text-center"
+                  className="flex-1 py-2.5 rounded-lg text-sm font-bold font-display text-white bg-brand-purple hover:bg-brand-purple/85 transition-colors text-center"
                 >
                   Responder por correo
                 </a>

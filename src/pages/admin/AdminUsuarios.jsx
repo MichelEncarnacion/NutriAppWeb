@@ -4,6 +4,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../lib/supabase";
 import { useAuth } from "../../hooks/useAuth";
 import AdminLayout from "../../components/AdminLayout";
+import Card from "../../components/ui/Card";
+import Button from "../../components/ui/Button";
+import Input, { Field } from "../../components/ui/Input";
+import Badge from "../../components/ui/Badge";
 
 export default function AdminUsuarios() {
     const { session } = useAuth();
@@ -131,113 +135,123 @@ export default function AdminUsuarios() {
                 {/* Filtros */}
                 <div className="flex flex-col gap-3">
                     <div className="flex gap-3 items-center">
-                        <input
+                        <Input
+                            accent="purple"
                             placeholder="Buscar por nombre o email…"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            className="bg-[#161B22] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#A855F7] flex-1 min-w-0 transition-colors"
+                            className="flex-1 min-w-0"
                         />
-                        <button
+                        <Button
+                            variant="admin"
                             onClick={() => { setFormNuevo(FORM_NUEVO); setErrorCrear(null); setModalCrear(true); }}
-                            className="px-4 py-2.5 bg-[#A855F7] text-white font-bold font-display text-sm rounded-xl hover:bg-[#C084FC] transition-all whitespace-nowrap flex-shrink-0"
+                            className="whitespace-nowrap flex-shrink-0"
                         >
                             + Nuevo
-                        </button>
+                        </Button>
                     </div>
                     <div className="flex gap-2 items-center flex-wrap">
                         {["todos", "demo", "freemium", "premium"].map((f) => (
                             <button key={f} onClick={() => setFiltro(f)}
-                                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border
+                                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border
                     ${filtro === f
-                                        ? "border-[#A855F7] bg-[rgba(168,85,247,.12)] text-[#A855F7]"
-                                        : "border-[#2D3748] text-[#7D8590] hover:border-[#A855F7]"
+                                        ? "border-brand-purple bg-brand-purple/15 text-brand-purple"
+                                        : "border-dark-600 text-text-muted hover:border-brand-purple"
                                     }`}
                             >
                                 {f.charAt(0).toUpperCase() + f.slice(1)}
                             </button>
                         ))}
-                        <span className="text-xs text-[#7D8590] ml-auto">{filtrados.length} usuarios</span>
+                        <span className="text-xs text-text-muted ml-auto">{filtrados.length} usuarios</span>
                     </div>
                 </div>
 
                 {/* Tabla */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-xl overflow-hidden">
+                <Card className="p-0 overflow-hidden">
                     <div className="overflow-x-auto">
                     <table className="w-full text-sm min-w-[640px]">
-                        <thead className="bg-[#1C2330]">
-                            <tr className="text-[#7D8590] text-left">
+                        <thead className="bg-dark-700">
+                            <tr className="text-text-muted text-left">
                                 {["Nombre", "Email", "Tipo", "Registro", "Estado", "Acciones"].map((h) => (
                                     <th key={h} className="px-4 py-3 text-xs font-bold tracking-wide">{h}</th>
                                 ))}
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-[#2D3748]">
+                        <tbody className="divide-y divide-dark-600">
                             {loading
                                 ? [...Array(5)].map((_, i) => (
-                                    <tr key={i}><td colSpan={6} className="px-4 py-3"><div className="h-4 bg-[#2D3748] rounded animate-pulse" /></td></tr>
+                                    <tr key={i}><td colSpan={6} className="px-4 py-3"><div className="h-4 bg-dark-600 rounded animate-pulse" /></td></tr>
                                 ))
                                 : filtrados.map((u) => (
-                                    <tr key={u.id} className="hover:bg-[rgba(255,255,255,.02)] transition-colors">
-                                        <td className="px-4 py-3 text-white font-semibold">{u.nombre ?? "—"}</td>
-                                        <td className="px-4 py-3 text-[#7D8590] text-xs">{u.email}</td>
+                                    <tr key={u.id} className="hover:bg-white/[0.02] transition-colors">
+                                        <td className="px-4 py-3 text-text-primary font-semibold">{u.nombre ?? "—"}</td>
+                                        <td className="px-4 py-3 text-text-muted text-xs">{u.email}</td>
                                         <td className="px-4 py-3">
-                                            <select
+                                            <Input
+                                                accent="purple"
+                                                as="select"
                                                 value={u.tipo_usuario}
                                                 onChange={(e) => cambiarTipo(u.id, e.target.value)}
-                                                className="bg-[#1C2330] border border-[#2D3748] text-white text-xs rounded-lg px-2 py-1 outline-none"
+                                                className="text-xs px-2 py-1 w-auto rounded-lg"
                                             >
                                                 {["demo", "freemium", "premium"].map((t) => (
                                                     <option key={t} value={t}>{t}</option>
                                                 ))}
-                                            </select>
+                                            </Input>
                                         </td>
-                                        <td className="px-4 py-3 text-[#7D8590] text-xs">
+                                        <td className="px-4 py-3 text-text-muted text-xs">
                                             {new Date(u.fecha_registro).toLocaleDateString("es-MX")}
                                         </td>
                                         <td className="px-4 py-3">
-                                            <span className="text-xs font-bold text-[#3DDC84]">● Activo</span>
+                                            <Badge tone="green" className="normal-case">● Activo</Badge>
                                         </td>
                                         <td className="px-4 py-3">
                                             <div className="flex gap-2 items-center">
-                                                <button
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
                                                     onClick={() => regenerarPlan(u.id)}
                                                     disabled={!!regenerando[u.id]}
-                                                    className={`text-[11px] font-bold px-2.5 py-1 rounded-lg transition-all disabled:opacity-60
-                                                        ${regenerando[u.id] === "ok"
-                                                            ? "bg-[rgba(61,220,132,.12)] text-[#3DDC84]"
+                                                    className={
+                                                        regenerando[u.id] === "ok"
+                                                            ? "text-brand-green bg-brand-green/10"
                                                             : regenerando[u.id] === "error"
-                                                                ? "bg-[rgba(255,107,107,.12)] text-[#FF6B6B]"
-                                                                : "bg-[rgba(88,166,255,.12)] text-[#58A6FF] hover:bg-[rgba(88,166,255,.2)]"
-                                                        }`}
+                                                                ? "text-brand-red bg-brand-red/10"
+                                                                : "text-brand-blue bg-brand-blue/10 hover:bg-brand-blue/20"
+                                                    }
                                                 >
                                                     {regenerando[u.id] === "loading" ? "Generando…"
                                                         : regenerando[u.id] === "ok" ? "✓ Listo"
                                                         : regenerando[u.id] === "error" ? "✗ Error"
                                                         : "Regenerar Plan"}
-                                                </button>
+                                                </Button>
                                                 {confirmarEliminar === u.id ? (
                                                     <>
-                                                        <button
+                                                        <Button
+                                                            variant="danger"
+                                                            size="sm"
                                                             onClick={() => eliminarUsuario(u.id)}
                                                             disabled={eliminando[u.id]}
-                                                            className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[rgba(255,107,107,.2)] text-[#FF6B6B] hover:bg-[rgba(255,107,107,.35)] transition-all disabled:opacity-60"
+                                                            className="bg-brand-red/20 hover:bg-brand-red/35"
                                                         >
                                                             {eliminando[u.id] ? "Eliminando…" : "Confirmar"}
-                                                        </button>
-                                                        <button
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="sm"
                                                             onClick={() => setConfirmarEliminar(null)}
-                                                            className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[#1C2330] text-[#7D8590] hover:text-white transition-all"
                                                         >
                                                             Cancelar
-                                                        </button>
+                                                        </Button>
                                                     </>
                                                 ) : (
-                                                    <button
+                                                    <Button
+                                                        variant="danger"
+                                                        size="sm"
                                                         onClick={() => setConfirmarEliminar(u.id)}
-                                                        className="text-[11px] font-bold px-2.5 py-1 rounded-lg bg-[rgba(255,107,107,.08)] text-[#FF6B6B] hover:bg-[rgba(255,107,107,.2)] transition-all"
                                                     >
                                                         Eliminar
-                                                    </button>
+                                                    </Button>
                                                 )}
                                             </div>
                                         </td>
@@ -247,7 +261,7 @@ export default function AdminUsuarios() {
                         </tbody>
                     </table>
                     </div>
-                </div>
+                </Card>
             </div>
             {/* ── Modal crear usuario ───────────────────────────────────── */}
             {modalCrear && (
@@ -258,15 +272,14 @@ export default function AdminUsuarios() {
                         onClick={() => setModalCrear(false)}
                     />
                     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-                        <div className="w-full max-w-md rounded-2xl border border-[#2D3748] flex flex-col" style={{ background: "#161B22" }}>
+                        <Card className="w-full max-w-md rounded-xl flex flex-col p-0">
 
                             {/* Header */}
-                            <div className="flex items-center justify-between px-5 py-4 border-b border-[#2D3748]">
-                                <h3 className="text-white font-bold font-display text-sm">Nuevo usuario</h3>
+                            <div className="flex items-center justify-between px-5 py-4 border-b border-dark-600">
+                                <h3 className="text-text-primary font-bold font-display text-sm">Nuevo usuario</h3>
                                 <button
                                     onClick={() => setModalCrear(false)}
-                                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-[#7D8590] hover:text-white transition-colors"
-                                    style={{ background: "rgba(255,255,255,0.05)" }}
+                                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs text-text-muted hover:text-text-primary hover:bg-dark-700 transition-colors"
                                 >✕</button>
                             </div>
 
@@ -274,96 +287,91 @@ export default function AdminUsuarios() {
                             <div className="flex flex-col gap-4 px-5 py-5">
 
                                 {/* Toggle admin/usuario */}
-                                <div className="flex gap-2 p-1 rounded-xl" style={{ background: "#1C2330" }}>
+                                <div className="flex gap-2 p-1 rounded-xl bg-dark-700">
                                     {[{ label: "Usuario normal", val: false }, { label: "Administrador", val: true }].map(({ label, val }) => (
                                         <button
                                             key={String(val)}
                                             onClick={() => setFormNuevo((f) => ({ ...f, es_admin: val }))}
-                                            className="flex-1 py-2 rounded-lg text-xs font-bold transition-all"
-                                            style={{
-                                                background: formNuevo.es_admin === val ? (val ? "rgba(240,165,0,0.15)" : "rgba(168,85,247,0.15)") : "transparent",
-                                                color: formNuevo.es_admin === val ? (val ? "#F0A500" : "#A855F7") : "#7D8590",
-                                                border: formNuevo.es_admin === val ? `1px solid ${val ? "rgba(240,165,0,0.3)" : "rgba(168,85,247,0.3)"}` : "1px solid transparent",
-                                            }}
+                                            className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all border ${
+                                                formNuevo.es_admin === val
+                                                    ? val
+                                                        ? "bg-brand-orange/15 text-brand-orange border-brand-orange/30"
+                                                        : "bg-brand-purple/15 text-brand-purple border-brand-purple/30"
+                                                    : "bg-transparent text-text-muted border-transparent"
+                                            }`}
                                         >
                                             {label}
                                         </button>
                                     ))}
                                 </div>
 
-                                <div>
-                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Email</label>
-                                    <input
+                                <Field label="Email">
+                                    <Input
+                                        accent="purple"
                                         type="email"
                                         placeholder="usuario@ejemplo.com"
                                         value={formNuevo.email}
                                         onChange={(e) => setFormNuevo((f) => ({ ...f, email: e.target.value }))}
-                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
                                     />
-                                </div>
+                                </Field>
 
-                                <div>
-                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Contraseña temporal</label>
-                                    <input
+                                <Field label="Contraseña temporal">
+                                    <Input
+                                        accent="purple"
                                         type="password"
                                         placeholder="Mínimo 6 caracteres"
                                         value={formNuevo.password}
                                         onChange={(e) => setFormNuevo((f) => ({ ...f, password: e.target.value }))}
-                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
                                     />
-                                </div>
+                                </Field>
 
-                                <div>
-                                    <label className="text-xs text-[#7D8590] mb-1.5 block">Nombre</label>
-                                    <input
+                                <Field label="Nombre">
+                                    <Input
+                                        accent="purple"
                                         type="text"
                                         placeholder="Nombre completo"
                                         value={formNuevo.nombre}
                                         onChange={(e) => setFormNuevo((f) => ({ ...f, nombre: e.target.value }))}
-                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
                                     />
-                                </div>
+                                </Field>
 
                                 {!formNuevo.es_admin && (
-                                    <div>
-                                        <label className="text-xs text-[#7D8590] mb-1.5 block">Tipo de usuario</label>
-                                        <select
+                                    <Field label="Tipo de usuario">
+                                        <Input
+                                            accent="purple"
+                                            as="select"
                                             value={formNuevo.tipo_usuario}
                                             onChange={(e) => setFormNuevo((f) => ({ ...f, tipo_usuario: e.target.value }))}
-                                            className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-full outline-none focus:border-[#A855F7] transition-colors"
                                         >
                                             {["freemium", "demo", "premium"].map((t) => (
                                                 <option key={t} value={t}>{t}</option>
                                             ))}
-                                        </select>
-                                    </div>
+                                        </Input>
+                                    </Field>
                                 )}
 
                                 {errorCrear && (
-                                    <div className="bg-[rgba(255,107,107,.1)] border border-[rgba(255,107,107,.3)] text-[#FF6B6B] rounded-xl px-3 py-2.5 text-xs">
+                                    <div className="bg-brand-red/10 border border-brand-red/30 text-brand-red rounded-xl px-3 py-2.5 text-xs">
                                         {errorCrear}
                                     </div>
                                 )}
                             </div>
 
                             {/* Footer */}
-                            <div className="flex gap-3 px-5 py-4 border-t border-[#2D3748]">
-                                <button
-                                    onClick={() => setModalCrear(false)}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-[#7D8590] hover:text-white border border-[#2D3748] hover:border-[#4A5568] transition-all"
-                                >
+                            <div className="flex gap-3 px-5 py-4 border-t border-dark-600">
+                                <Button variant="secondary" onClick={() => setModalCrear(false)} className="flex-1">
                                     Cancelar
-                                </button>
-                                <button
+                                </Button>
+                                <Button
+                                    variant={formNuevo.es_admin ? "secondary" : "admin"}
                                     onClick={crearUsuario}
                                     disabled={creando || !formNuevo.email || !formNuevo.password}
-                                    className="flex-1 py-2.5 rounded-xl text-sm font-bold text-white transition-all disabled:opacity-50"
-                                    style={{ background: formNuevo.es_admin ? "#F0A500" : "#A855F7" }}
+                                    className={`flex-1 ${formNuevo.es_admin ? "bg-brand-orange text-black hover:bg-brand-orange/85 border-0" : ""}`}
                                 >
                                     {creando ? "Creando…" : formNuevo.es_admin ? "Crear admin" : "Crear usuario"}
-                                </button>
+                                </Button>
                             </div>
-                        </div>
+                        </Card>
                     </div>
                 </>
             )}

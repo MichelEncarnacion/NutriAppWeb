@@ -4,6 +4,16 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Badge from "../components/ui/Badge";
+import Input, { Field } from "../components/ui/Input";
+
+const ROL_TONE = {
+    premium: "orange",
+    demo: "purple",
+    freemium: "blue",
+};
 
 const ROL_LABEL = {
     premium: { label: "✦ Premium", color: "#F0A500", bg: "rgba(240,165,0,0.1)", border: "rgba(240,165,0,0.2)" },
@@ -123,87 +133,71 @@ export default function Perfil() {
                 </div>
 
                 {/* Avatar + info */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-6 flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#3DDC84] to-[#58A6FF] flex items-center justify-center text-black font-black text-2xl font-display flex-shrink-0">
+                <Card className="p-6 flex items-center gap-5">
+                    <div className="w-16 h-16 rounded-full bg-dark-700 border border-dark-600 flex items-center justify-center text-brand-green font-black text-2xl font-display flex-shrink-0">
                         {iniciales}
                     </div>
                     <div className="min-w-0 flex-1">
                         <p className="text-white font-bold text-lg leading-tight truncate">{perfil?.nombre ?? "Sin nombre"}</p>
                         <p className="text-[#7D8590] text-xs mt-0.5 truncate">{email}</p>
-                        <span className="inline-block mt-2 text-[10px] font-bold px-2.5 py-1 rounded-full"
-                            style={{ background: rolMeta.bg, color: rolMeta.color, border: `1px solid ${rolMeta.border}` }}>
-                            {rolMeta.label}
-                        </span>
+                        <Badge tone={ROL_TONE[rol] ?? "blue"} className="mt-2">{rolMeta.label}</Badge>
                     </div>
-                </div>
+                </Card>
 
                 {/* Editar nombre */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5 flex flex-col gap-4">
+                <Card className="flex flex-col gap-4">
                     <p className="text-white font-bold text-sm font-display">Editar nombre</p>
 
                     {feedback && (
-                        <div className="text-xs px-3 py-2.5 rounded-xl font-medium"
-                            style={{
-                                background: feedback.tipo === "ok" ? "rgba(61,220,132,0.1)" : "rgba(255,107,107,0.1)",
-                                color: feedback.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
-                                border: `1px solid ${feedback.tipo === "ok" ? "rgba(61,220,132,0.2)" : "rgba(255,107,107,0.2)"}`,
-                            }}>
+                        <div className={`text-xs px-3 py-2.5 rounded-lg font-medium border ${feedback.tipo === "ok" ? "bg-brand-green/10 text-brand-green border-brand-green/20" : "bg-brand-red/10 text-brand-red border-brand-red/20"}`}>
                             {feedback.tipo === "ok" ? "✓ " : "⚠️ "}{feedback.msg}
                         </div>
                     )}
 
                     <form onSubmit={handleGuardar} className="flex flex-col gap-3">
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-xs text-[#7D8590]">Nombre completo</label>
-                            <input
+                        <Field label="Nombre completo">
+                            <Input
                                 type="text"
                                 value={nombre}
                                 onChange={(e) => setNombre(e.target.value)}
                                 placeholder="Tu nombre"
                                 required
-                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#3DDC84] transition-colors"
                             />
-                        </div>
-                        <button
+                        </Field>
+                        <Button
                             type="submit"
                             disabled={guardando || nombre.trim() === (perfil?.nombre ?? "")}
-                            className="py-2.5 text-sm font-bold font-display rounded-xl transition-all disabled:opacity-50"
-                            style={{ background: "#3DDC84", color: "#000" }}
+                            fullWidth
                         >
                             {guardando ? "Guardando…" : "Guardar cambios"}
-                        </button>
+                        </Button>
                     </form>
-                </div>
+                </Card>
 
                 {/* Info de cuenta */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5 flex flex-col gap-3">
+                <Card className="flex flex-col gap-3">
                     <p className="text-white font-bold text-sm font-display mb-1">Información de cuenta</p>
                     {[
                         { label: "Correo electrónico", value: email },
                         { label: "Tipo de cuenta", value: rolMeta.label },
                         { label: "Miembro desde", value: fechaRegistro },
                     ].map(({ label, value }) => (
-                        <div key={label} className="flex justify-between items-center py-2 border-b border-[#1C2330] last:border-0">
+                        <div key={label} className="flex justify-between items-center py-2 border-b border-dark-700 last:border-0">
                             <span className="text-[#7D8590] text-xs">{label}</span>
                             <span className="text-white text-xs font-medium">{value}</span>
                         </div>
                     ))}
-                </div>
+                </Card>
 
                 {/* Registrar métricas */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5 flex flex-col gap-4">
+                <Card className="flex flex-col gap-4">
                     <div>
                         <p className="text-white font-bold text-sm font-display">Registrar métricas corporales</p>
                         <p className="text-[#7D8590] text-xs mt-0.5">Se guarda con la fecha de hoy. Puedes actualizar una vez por día.</p>
                     </div>
 
                     {feedbackMetr && (
-                        <div className="text-xs px-3 py-2.5 rounded-xl font-medium"
-                            style={{
-                                background: feedbackMetr.tipo === "ok" ? "rgba(61,220,132,0.1)" : "rgba(255,107,107,0.1)",
-                                color: feedbackMetr.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
-                                border: `1px solid ${feedbackMetr.tipo === "ok" ? "rgba(61,220,132,0.2)" : "rgba(255,107,107,0.2)"}`,
-                            }}>
+                        <div className={`text-xs px-3 py-2.5 rounded-lg font-medium border ${feedbackMetr.tipo === "ok" ? "bg-brand-green/10 text-brand-green border-brand-green/20" : "bg-brand-red/10 text-brand-red border-brand-red/20"}`}>
                             {feedbackMetr.tipo === "ok" ? "✓ " : "⚠️ "}{feedbackMetr.msg}
                         </div>
                     )}
@@ -217,38 +211,38 @@ export default function Perfil() {
                             <div key={f.key} className="flex items-center gap-3">
                                 <label className="text-xs text-[#7D8590] w-36 flex-shrink-0">{f.label}</label>
                                 <div className="flex items-center gap-2 flex-1">
-                                    <input
+                                    <Input
                                         type="number"
                                         step="0.1"
                                         placeholder={f.placeholder}
                                         value={metrForm[f.key]}
                                         onChange={(e) => setMetrForm(fm => ({ ...fm, [f.key]: e.target.value }))}
-                                        className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-3 py-2.5 text-white text-sm w-28 outline-none focus:border-[#3DDC84] transition-colors"
+                                        className="w-28"
                                     />
                                     <span className="text-[#7D8590] text-xs">{f.unit}</span>
                                 </div>
                             </div>
                         ))}
-                        <button
+                        <Button
                             type="submit"
+                            variant="secondary"
                             disabled={guardandoMetr || (!metrForm.peso && !metrForm.porcentaje_grasa && !metrForm.porcentaje_musculo)}
-                            className="py-2.5 text-sm font-bold font-display rounded-xl transition-all disabled:opacity-40 mt-1"
-                            style={{ background: "rgba(61,220,132,0.15)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.3)" }}
+                            fullWidth
+                            className="mt-1 !bg-brand-green/15 !text-brand-green !border-brand-green/30"
                         >
                             {guardandoMetr ? "Guardando…" : "Guardar métricas →"}
-                        </button>
+                        </Button>
                     </form>
-                </div>
+                </Card>
 
                 {/* Acciones */}
-                <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-5 flex flex-col gap-2">
+                <Card className="flex flex-col gap-2">
                     <p className="text-white font-bold text-sm font-display mb-1">Acciones</p>
 
                     {esPremium ? (
                         <button
                             onClick={() => navigate("/diagnostico")}
-                            className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm text-left transition-all hover:bg-[rgba(61,220,132,0.05)]"
-                            style={{ border: "1px solid rgba(61,220,132,0.15)" }}
+                            className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm text-left transition-all border border-brand-green/15 hover:bg-brand-green/5"
                         >
                             <div>
                                 <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
@@ -257,68 +251,53 @@ export default function Perfil() {
                             <span className="text-[#3DDC84] text-lg ml-3">→</span>
                         </button>
                     ) : (
-                        <div
-                            className="flex items-center justify-between w-full px-4 py-3 rounded-xl text-sm"
-                            style={{ border: "1px solid rgba(240,165,0,0.15)", opacity: 0.7 }}
-                        >
+                        <div className="flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm border border-brand-orange/15 opacity-70">
                             <div>
                                 <p className="text-white font-medium text-sm">Actualizar mis datos físicos</p>
                                 <p className="text-[#7D8590] text-xs mt-0.5">🔒 Disponible solo en Premium</p>
                             </div>
-                            <button
-                                onClick={() => navigate("/panel?upgrade=true")}
-                                className="text-[10px] font-bold px-2.5 py-1 rounded-full flex-shrink-0 ml-3"
-                                style={{ background: "rgba(240,165,0,0.12)", color: "#F0A500", border: "1px solid rgba(240,165,0,0.25)" }}
-                            >
-                                ✦ Premium
+                            <button onClick={() => navigate("/panel?upgrade=true")} className="flex-shrink-0 ml-3">
+                                <Badge tone="orange">✦ Premium</Badge>
                             </button>
                         </div>
                     )}
 
                     {/* Cambiar contraseña inline */}
-                    <div className="flex flex-col gap-3 px-4 py-3 rounded-xl" style={{ border: "1px solid rgba(88,166,255,0.15)" }}>
+                    <div className="flex flex-col gap-3 px-4 py-3 rounded-lg border border-brand-blue/15">
                         <p className="text-white font-medium text-sm">Cambiar contraseña</p>
 
                         {feedbackPass && (
-                            <div className="text-xs px-3 py-2 rounded-lg font-medium"
-                                style={{
-                                    background: feedbackPass.tipo === "ok" ? "rgba(61,220,132,0.1)" : "rgba(255,107,107,0.1)",
-                                    color: feedbackPass.tipo === "ok" ? "#3DDC84" : "#FF6B6B",
-                                    border: `1px solid ${feedbackPass.tipo === "ok" ? "rgba(61,220,132,0.2)" : "rgba(255,107,107,0.2)"}`,
-                                }}>
+                            <div className={`text-xs px-3 py-2 rounded-lg font-medium border ${feedbackPass.tipo === "ok" ? "bg-brand-green/10 text-brand-green border-brand-green/20" : "bg-brand-red/10 text-brand-red border-brand-red/20"}`}>
                                 {feedbackPass.tipo === "ok" ? "✓ " : "⚠️ "}{feedbackPass.msg}
                             </div>
                         )}
 
                         <form onSubmit={handleCambiarPass} className="flex flex-col gap-2">
-                            <input
+                            <Input
                                 type="password"
                                 placeholder="Nueva contraseña"
                                 value={passForm.nueva}
                                 onChange={(e) => setPassForm(f => ({ ...f, nueva: e.target.value }))}
                                 required
-                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#58A6FF] transition-colors"
                             />
-                            <input
+                            <Input
                                 type="password"
                                 placeholder="Confirmar contraseña"
                                 value={passForm.confirmar}
                                 onChange={(e) => setPassForm(f => ({ ...f, confirmar: e.target.value }))}
                                 required
-                                className="bg-[#1C2330] border border-[#2D3748] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-[#58A6FF] transition-colors"
                                 style={{ borderColor: passForm.confirmar && passForm.confirmar !== passForm.nueva ? "#FF6B6B" : undefined }}
                             />
-                            <button
+                            <Button
                                 type="submit"
                                 disabled={guardandoPass || !passForm.nueva || !passForm.confirmar}
-                                className="py-2.5 text-sm font-bold font-display rounded-xl transition-all disabled:opacity-50"
-                                style={{ background: "rgba(88,166,255,0.15)", color: "#58A6FF", border: "1px solid rgba(88,166,255,0.3)" }}
+                                className="!bg-brand-blue/15 !text-brand-blue !border-brand-blue/30"
                             >
                                 {guardandoPass ? "Actualizando…" : "Actualizar contraseña"}
-                            </button>
+                            </Button>
                         </form>
                     </div>
-                </div>
+                </Card>
 
             </div>
         </Layout>

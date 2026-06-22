@@ -4,6 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Badge from "../components/ui/Badge";
 import {
     ResponsiveContainer,
     AreaChart, Area,
@@ -65,14 +68,14 @@ function ImcGauge({ imc, clasificacion }) {
 function PesoTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
-        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
+        <Card className="p-3 text-xs">
             <p className="text-[#7D8590] mb-1">{label}</p>
             {payload.map((p) => p.value != null && (
                 <p key={p.dataKey} style={{ color: p.color }}>
                     {p.dataKey === "peso" ? "Peso real" : "Proyección"}: {p.value} kg
                 </p>
             ))}
-        </div>
+        </Card>
     );
 }
 
@@ -86,7 +89,7 @@ const STAT_PILLS = [
 function ComposicionTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
-        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-xs">
+        <Card className="p-3 text-xs">
             <p className="text-[#7D8590] mb-1">{label}</p>
             {payload.map((p) => {
                 const labels = { porcentaje_grasa: "Grasa", porcentaje_musculo: "Músculo" };
@@ -96,7 +99,7 @@ function ComposicionTooltip({ active, payload, label }) {
                     </p>
                 );
             })}
-        </div>
+        </Card>
     );
 }
 
@@ -294,21 +297,21 @@ export default function Progreso() {
                     <>
                         <div className="flex gap-3">
                             {[...Array(3)].map((_, i) => (
-                                <div key={i} className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl h-20 animate-pulse" />
+                                <Card key={i} className="flex-1 h-20 animate-pulse" />
                             ))}
                         </div>
-                        <div className="bg-[#161B22] border border-[#2D3748] rounded-xl h-48 animate-pulse" />
+                        <Card className="h-48 animate-pulse" />
                     </>
 
                 /* Empty state */
                 ) : !ultima ? (
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-8 text-center">
+                    <Card className="p-8 text-center">
                         <span className="text-4xl block mb-3">📊</span>
                         <p className="text-white font-bold mb-2">Sin métricas registradas</p>
                         <p className="text-[#7D8590] text-sm">
                             Completa tu primer formulario de seguimiento para ver tu progreso.
                         </p>
-                    </div>
+                    </Card>
 
                 ) : (
                     <>
@@ -321,7 +324,7 @@ export default function Progreso() {
                                     ? (s.bueno ? d.positivo : !d.positivo)
                                     : null;
                                 return (
-                                    <div key={s.key} className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl p-3 text-center">
+                                    <Card key={s.key} className="flex-1 p-3 text-center">
                                         <p className="text-[9px] text-[#7D8590] font-bold tracking-widest mb-1">
                                             {s.label.toUpperCase()}
                                         </p>
@@ -334,7 +337,7 @@ export default function Progreso() {
                                                 {Number(d.valor) > 0 ? "▲" : "▼"} {Math.abs(d.valor)}
                                             </p>
                                         )}
-                                    </div>
+                                    </Card>
                                 );
                             })}
                         </div>
@@ -343,7 +346,7 @@ export default function Progreso() {
                         {(imc !== null || radarData) && (
                             <div className="flex gap-3">
                                 {imc !== null && (
-                                    <div className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl p-5 flex flex-col items-center">
+                                    <Card className="flex-1 flex flex-col items-center">
                                         <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3 self-start">IMC</p>
                                         <ImcGauge imc={imc} clasificacion={imcClasificacion} />
                                         <div className="flex gap-3 mt-2 flex-wrap justify-center">
@@ -359,10 +362,10 @@ export default function Progreso() {
                                                 </div>
                                             ))}
                                         </div>
-                                    </div>
+                                    </Card>
                                 )}
                                 {radarData && (
-                                    <div className="flex-1 bg-[#161B22] border border-[#2D3748] rounded-xl p-5 flex flex-col">
+                                    <Card className="flex-1 flex flex-col">
                                         <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-1">SALUD GLOBAL</p>
                                         <ResponsiveContainer width="100%" height={160}>
                                             <RadarChart data={radarData} margin={{ top: 8, right: 16, bottom: 8, left: 16 }}>
@@ -377,14 +380,14 @@ export default function Progreso() {
                                                 />
                                             </RadarChart>
                                         </ResponsiveContainer>
-                                    </div>
+                                    </Card>
                                 )}
                             </div>
                         )}
 
                         {/* BarChart apilado — composición corporal */}
                         {composicionData && (
-                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                            <Card>
                                 <div className="flex items-center justify-between mb-3">
                                     <p className="text-[#7D8590] text-xs font-bold tracking-widest">COMPOSICIÓN CORPORAL</p>
                                     <div className="flex gap-4">
@@ -431,12 +434,12 @@ export default function Progreso() {
                                         </Bar>
                                     </BarChart>
                                 </ResponsiveContainer>
-                            </div>
+                            </Card>
                         )}
 
                         {/* Progress towards weight goal */}
                         {pesoProgreso !== null ? (
-                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                            <Card>
                                 <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
                                 <div className="flex justify-between text-xs text-[#7D8590] mb-1">
                                     <span>Inicio: <strong className="text-white">{pesoProgreso.pesoInicial} kg</strong></span>
@@ -452,22 +455,19 @@ export default function Progreso() {
                                 <p className="text-center text-xs text-[#7D8590] mt-2">
                                     Peso actual: <strong className="text-white">{pesoProgreso.pesoActual} kg</strong>
                                 </p>
-                            </div>
+                            </Card>
                         ) : diag && !diag.peso_meta ? (
-                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5 text-center">
+                            <Card className="text-center">
                                 <p className="text-[#7D8590] text-xs font-bold tracking-widest mb-3">PROGRESO HACIA TU META</p>
                                 <p className="text-[#7D8590] text-sm mb-3">Actualiza tu diagnóstico para ver tu progreso hacia tu meta</p>
-                                <button
-                                    onClick={() => navigate("/diagnostico")}
-                                    className="px-4 py-2 bg-[rgba(61,220,132,.1)] border border-[rgba(61,220,132,.3)] text-[#3DDC84] text-sm font-bold rounded-xl hover:bg-[rgba(61,220,132,.2)] transition-all"
-                                >
+                                <Button variant="secondary" onClick={() => navigate("/diagnostico")}>
                                     Actualizar diagnóstico →
-                                </button>
-                            </div>
+                                </Button>
+                            </Card>
                         ) : null}
 
                         {pesoChartData && (
-                            <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                            <Card>
                                 <div className="flex items-center justify-between mb-3">
                                     <p className="text-[#7D8590] text-xs font-bold tracking-widest">TENDENCIA DE PESO</p>
                                     <span
@@ -525,14 +525,14 @@ export default function Progreso() {
                                         <span className="text-[10px] text-[#7D8590]">Proyección</span>
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
                         )}
                     </>
                 )}
 
                 {/* History list — unchanged */}
                 {metricas.length > 0 && (
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-xl p-5">
+                    <Card>
                         <h3 className="text-white font-bold font-display text-sm mb-4">Historial de registros</h3>
                         <div className="flex flex-col divide-y divide-[#2D3748]">
                             {metricas.map((m, i) => (
@@ -552,14 +552,12 @@ export default function Progreso() {
                                         <span className="text-[#7D8590]">Músculo: {m.porcentaje_musculo}%</span>
                                     )}
                                     {i === 0 && (
-                                        <span className="ml-auto text-[10px] bg-[rgba(61,220,132,.12)] text-[#3DDC84] font-bold px-2 py-0.5 rounded-full">
-                                            ACTUAL
-                                        </span>
+                                        <Badge tone="green" className="ml-auto">Actual</Badge>
                                     )}
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </Card>
                 )}
 
             </div>

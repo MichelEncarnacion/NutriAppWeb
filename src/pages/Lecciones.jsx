@@ -3,6 +3,9 @@ import { useEffect, useState, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Layout from "../components/Layout";
+import Card from "../components/ui/Card";
+import Button from "../components/ui/Button";
+import Badge from "../components/ui/Badge";
 
 // ─── Parsea el markdown en slides individuales ───────────────────────────────
 function parsearSlides(contenido) {
@@ -68,9 +71,9 @@ function RenderSlide({ slide }) {
                     </h2>
                 </div>
                 {cuerpo && (
-                    <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <Card className="rounded-xl">
                         <RenderTexto texto={cuerpo} />
-                    </div>
+                    </Card>
                 )}
             </div>
         );
@@ -79,18 +82,13 @@ function RenderSlide({ slide }) {
     if (slide.tipo === "callout") {
         const texto = slide.texto.replace(/^>\s?/gm, "").trim();
         return (
-            <div className="rounded-2xl p-5 flex flex-col gap-3"
-                style={{
-                    background: "linear-gradient(135deg, rgba(61,220,132,0.07), rgba(88,166,255,0.04))",
-                    border: "1px solid rgba(61,220,132,0.22)",
-                    boxShadow: "0 0 30px rgba(61,220,132,0.06) inset",
-                }}>
+            <Card className="rounded-xl flex flex-col gap-3 border-brand-green/30">
                 <div className="flex items-center gap-2">
                     <span className="text-lg">💡</span>
-                    <span className="text-[10px] font-black font-display tracking-[0.18em]" style={{ color: "#3DDC84" }}>DATO CLAVE</span>
+                    <Badge tone="green">Dato clave</Badge>
                 </div>
                 <p className="text-white text-[1rem] leading-[1.75] font-medium">{texto}</p>
-            </div>
+            </Card>
         );
     }
 
@@ -101,13 +99,12 @@ function RenderSlide({ slide }) {
         return (
             <div className="flex flex-col gap-2.5">
                 {items.map((item, i) => (
-                    <div key={i} className="flex gap-3 items-start rounded-xl p-3.5 transition-colors"
-                        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}>
-                        <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 font-bold font-display text-[11px]"
-                            style={{ background: "rgba(61,220,132,0.15)", color: "#3DDC84", marginTop: "1px" }}>
+                    <div key={i} className="flex gap-3 items-start rounded-xl p-3.5 bg-dark-800 border border-dark-600 transition-colors">
+                        <div className="w-6 h-6 rounded-lg flex items-center justify-center flex-shrink-0 font-bold font-display text-[11px] bg-brand-green/15 text-brand-green"
+                            style={{ marginTop: "1px" }}>
                             {i + 1}
                         </div>
-                        <p className="text-[#C9D1D9] text-[0.9rem] leading-[1.7] flex-1">{item}</p>
+                        <p className="text-text-muted text-[0.9rem] leading-[1.7] flex-1">{item}</p>
                     </div>
                 ))}
             </div>
@@ -116,9 +113,9 @@ function RenderSlide({ slide }) {
 
     // texto
     return (
-        <div className="rounded-2xl p-5" style={{ background: "rgba(255,255,255,0.025)", border: "1px solid rgba(255,255,255,0.05)" }}>
+        <Card className="rounded-xl">
             <RenderTexto texto={slide.texto} />
-        </div>
+        </Card>
     );
 }
 
@@ -310,30 +307,29 @@ export default function Lecciones() {
                 {loading ? (
                     <div className="flex flex-col gap-3">
                         {[...Array(5)].map((_, i) => (
-                            <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-2xl h-20 animate-pulse" />
+                            <Card key={i} className="h-20 animate-pulse" />
                         ))}
                     </div>
                 ) : seedError ? (
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-10 text-center flex flex-col items-center gap-4">
+                    <Card className="p-10 text-center flex flex-col items-center gap-4">
                         <p className="text-5xl">⚠️</p>
                         <div>
                             <p className="text-white font-bold font-display mb-1">Error al cargar lecciones</p>
-                            <p className="text-[#7D8590] text-sm">No se pudieron preparar tus lecciones. Intenta de nuevo.</p>
+                            <p className="text-text-muted text-sm">No se pudieron preparar tus lecciones. Intenta de nuevo.</p>
                         </div>
-                        <button
+                        <Button
+                            variant="secondary"
                             onClick={() => { setSeedError(false); setLoading(true); window.location.reload(); }}
-                            className="px-5 py-2.5 rounded-xl text-sm font-bold font-display transition-all"
-                            style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)" }}
                         >
                             Reintentar
-                        </button>
-                    </div>
+                        </Button>
+                    </Card>
                 ) : lecciones.length === 0 ? (
-                    <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-10 text-center">
+                    <Card className="p-10 text-center">
                         <p className="text-5xl mb-3">📖</p>
                         <p className="text-white font-bold font-display mb-1">Próximamente</p>
-                        <p className="text-[#7D8590] text-sm">Las lecciones estarán disponibles pronto.</p>
-                    </div>
+                        <p className="text-text-muted text-sm">Las lecciones estarán disponibles pronto.</p>
+                    </Card>
                 ) : (
                     <div className="flex flex-col gap-2">
                         {lecciones.map((lec) => {
@@ -437,19 +433,17 @@ export default function Lecciones() {
                         <div className="px-5 pt-2 pb-3 flex-shrink-0">
                             <div className="flex items-center justify-between mb-3">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-[10px] font-black font-display tracking-[0.18em] px-2 py-0.5 rounded-full"
-                                        style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)" }}>
-                                        LECCIÓN {activa.orden}
-                                    </span>
+                                    <Badge tone="green">Lección {activa.orden}</Badge>
                                     <span className="text-[10px] text-[#4A5568] font-medium">
                                         {slideIdx + 1} / {slides.length}
                                     </span>
                                 </div>
-                                <button
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
                                     onClick={() => setActiva(null)}
-                                    className="w-7 h-7 rounded-full flex items-center justify-center transition-colors text-xs"
-                                    style={{ background: "rgba(255,255,255,0.05)", color: "#7D8590" }}
-                                >✕</button>
+                                    className="w-7 h-7 !p-0 rounded-full flex items-center justify-center"
+                                >✕</Button>
                             </div>
 
                             {/* Progress dots */}
@@ -498,38 +492,19 @@ export default function Lecciones() {
                             style={{ borderTop: "1px solid rgba(45,55,72,0.4)" }}>
 
                             {esUltimoSlide ? (
-                                <button
-                                    onClick={() => marcarCompletada(activa)}
-                                    className="w-full py-3.5 font-bold font-display rounded-2xl text-sm transition-all duration-200"
-                                    style={{
-                                        background: "linear-gradient(135deg, #3DDC84, #2bc96e)",
-                                        color: "#0D1117",
-                                        boxShadow: "0 4px 20px rgba(61,220,132,0.3)",
-                                    }}
-                                >
+                                <Button variant="primary" size="lg" fullWidth onClick={() => marcarCompletada(activa)}>
                                     ¡Completar lección! 🎉
-                                </button>
+                                </Button>
                             ) : (
-                                <button
-                                    onClick={() => irSlide(1)}
-                                    className="w-full py-3.5 font-bold font-display rounded-2xl text-sm transition-all duration-200"
-                                    style={{
-                                        background: "rgba(61,220,132,0.1)",
-                                        color: "#3DDC84",
-                                        border: "1px solid rgba(61,220,132,0.2)",
-                                    }}
-                                >
+                                <Button variant="secondary" size="lg" fullWidth onClick={() => irSlide(1)}>
                                     Siguiente →
-                                </button>
+                                </Button>
                             )}
 
                             {slideIdx > 0 && (
-                                <button
-                                    onClick={() => irSlide(-1)}
-                                    className="text-[#4A5568] text-xs text-center font-medium py-1 transition-colors hover:text-[#7D8590]"
-                                >
+                                <Button variant="ghost" size="sm" onClick={() => irSlide(-1)}>
                                     ← Anterior
-                                </button>
+                                </Button>
                             )}
                         </div>
                     </div>
