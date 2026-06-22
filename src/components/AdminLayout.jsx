@@ -6,6 +6,7 @@ import { useAuth } from "../hooks/useAuth";
 import Button from "./ui/Button";
 import { Field } from "./ui/Input";
 import Input from "./ui/Input";
+import ThemeToggle from "./ui/ThemeToggle";
 
 const ADMIN_NAV = [
     { to: "/admin",           label: "Dashboard", icon: "⊞", exact: true },
@@ -82,6 +83,10 @@ export default function AdminLayout({ titulo, children }) {
                 </nav>
 
                 <div className="border-t border-dark-600 pt-4 flex flex-col gap-1">
+                    <div className="flex items-center justify-between px-3 pb-2">
+                        <span className="text-[10px] text-text-muted font-bold tracking-widest">MODO OSCURO</span>
+                        <ThemeToggle />
+                    </div>
                     <div className="text-[10px] text-text-muted px-3 pb-1 truncate">{session?.user?.email}</div>
                     <button
                         onClick={() => { setPassForm({ nueva: "", confirmar: "" }); setPassError(null); setPassMensaje(null); setModalPass(true); }}
@@ -104,9 +109,12 @@ export default function AdminLayout({ titulo, children }) {
                     <span className="text-[9px] font-bold tracking-widest text-brand-purple font-display">ADMINPANEL</span>
                     <span className="text-text-primary font-black font-display text-sm leading-tight">{titulo}</span>
                 </div>
-                <button onClick={() => setMenuOpen((v) => !v)} className="text-text-muted text-xl w-8 h-8 flex items-center justify-center flex-shrink-0">
-                    {menuOpen ? "✕" : "☰"}
-                </button>
+                <div className="flex items-center gap-3 flex-shrink-0">
+                    <ThemeToggle />
+                    <button onClick={() => setMenuOpen((v) => !v)} className="text-text-muted text-xl w-8 h-8 flex items-center justify-center">
+                        {menuOpen ? "✕" : "☰"}
+                    </button>
+                </div>
             </header>
 
             {/* ── Mobile menu overlay ───────────────────────────────── */}

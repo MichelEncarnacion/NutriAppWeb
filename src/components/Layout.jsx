@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Logo from "./Logo";
+import ThemeToggle from "./ui/ThemeToggle";
 
 const NAV = [
     { to: "/panel", label: "Panel General", icon: "⊞" },
@@ -102,6 +103,10 @@ export default function Layout({ children }) {
 
                 {/* Usuario */}
                 <div className="border-t border-dark-700 pt-4 flex flex-col gap-2">
+                    <div className="flex items-center justify-between px-2 pb-1">
+                        <span className="text-[10px] text-text-muted font-bold tracking-widest">MODO OSCURO</span>
+                        <ThemeToggle />
+                    </div>
                     <button
                         onClick={() => navigate("/perfil")}
                         className="flex items-center gap-2 px-2 py-1.5 rounded-xl hover:bg-dark-800 transition-colors w-full text-left"
@@ -135,6 +140,7 @@ export default function Layout({ children }) {
                         <span className="font-display font-black text-sm text-text-primary">{racha ?? "—"}</span>
                         <span className="text-[10px] text-text-muted">días</span>
                     </div>
+                    <ThemeToggle />
                     <button onClick={() => setMenuOpen((v) => !v)} className="text-text-muted text-xl">
                         {menuOpen ? "✕" : "☰"}
                     </button>

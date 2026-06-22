@@ -34,6 +34,15 @@
     <meta name="twitter:title"       content="NutriiApp — Salud Preventiva Corporativa" />
     <meta name="twitter:description" content="Plataforma SaaS B2B de salud preventiva corporativa para empresas mexicanas. IoT + IA + ROI medible." />
     <meta name="twitter:image"       content="/nutriAppLOGO.jpeg" />
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem("nutriiapp-theme") === "dark") {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
