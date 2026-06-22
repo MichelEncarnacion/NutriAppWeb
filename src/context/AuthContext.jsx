@@ -293,8 +293,8 @@ export function AuthProvider({ children }) {
     };
 
     if (loading) return (
-        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-[#3DDC84] border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-dark-900 flex items-center justify-center">
+            <div className="w-8 h-8 border-2 border-brand-green border-t-transparent rounded-full animate-spin" />
         </div>
     );
 

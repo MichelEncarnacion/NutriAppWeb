@@ -1,11 +1,20 @@
 // src/pages/ResetContrasena.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 import { supabase } from "../lib/supabase";
 import Logo from "../components/Logo";
 
 export default function ResetContrasena() {
     const navigate = useNavigate();
+    const { isRecoverySession, session } = useAuth();
+
+    useEffect(() => {
+        if (!isRecoverySession && !session) {
+            navigate("/olvide-contrasena", { replace: true });
+        }
+    }, [isRecoverySession, session, navigate]);
+
     const [form, setForm] = useState({ password: "", confirmar: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);

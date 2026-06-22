@@ -108,15 +108,22 @@ export default function Login() {
 
 // ── Traducción de errores de Supabase al español ────────────────────────
 function traducirError(msg) {
-    const map = {
-        "Invalid login credentials": "Correo o contraseña incorrectos.",
-        "Email not confirmed": "Confirma tu correo antes de iniciar sesión.",
-        "User already registered": "Este correo ya está registrado.",
-        "Password should be at least": "La contraseña debe tener al menos 6 caracteres.",
-        "Unable to validate email": "Correo inválido.",
-    };
-    for (const [key, val] of Object.entries(map)) {
-        if (msg.includes(key)) return val;
+    const lower = msg.toLowerCase();
+    const map = [
+        ["invalid login credentials", "Correo o contraseña incorrectos."],
+        ["email not confirmed", "Tu correo aún no ha sido confirmado. Revisa tu bandeja de entrada."],
+        ["user already registered", "Este correo ya está registrado."],
+        ["password should be at least", "La contraseña debe tener al menos 6 caracteres."],
+        ["unable to validate email", "Correo inválido."],
+        ["too many requests", "Demasiados intentos. Espera unos minutos antes de intentar de nuevo."],
+        ["user not found", "No encontramos una cuenta con ese correo."],
+        ["email rate limit exceeded", "Demasiados intentos. Espera unos minutos."],
+    ];
+    for (const [key, val] of map) {
+        if (lower.includes(key)) return val;
+    }
+    if (lower.includes("network") || lower.includes("fetch")) {
+        return "Error de conexión. Verifica tu internet e intenta de nuevo.";
     }
     return "Ocurrió un error. Intenta de nuevo.";
 }

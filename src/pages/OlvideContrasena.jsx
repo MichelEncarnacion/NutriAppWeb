@@ -19,7 +19,14 @@ export default function OlvideContrasena() {
         });
         setLoading(false);
         if (error) {
-            setError("No pudimos enviar el correo. Verifica que el email sea correcto.");
+            const lower = error.message?.toLowerCase() ?? "";
+            if (lower.includes("rate limit")) {
+                setError("Demasiados intentos. Espera unos minutos antes de intentar de nuevo.");
+            } else if (lower.includes("network") || lower.includes("fetch")) {
+                setError("Error de conexión. Verifica tu internet e intenta de nuevo.");
+            } else {
+                setError("No pudimos enviar el correo. Verifica que el email sea correcto.");
+            }
             return;
         }
         setEnviado(true);

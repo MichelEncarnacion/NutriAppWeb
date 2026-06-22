@@ -18,28 +18,42 @@ export default function Seguimiento() {
     });
     const [paso, setPaso] = useState(0);
     const [guardando, setGuardando] = useState(false);
+    const [errorMsg, setErrorMsg] = useState(null);
 
     const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
 
     const guardar = async () => {
         setGuardando(true);
-        const { data: plan } = await supabase
-            .rpc("get_plan_activo", { p_usuario_id: session.user.id });
+        setErrorMsg(null);
+        try {
+            const { data: plan, error: rpcError } = await supabase
+                .rpc("get_plan_activo", { p_usuario_id: session.user.id });
 
-        const { error } = await supabase.from("seguimientos").insert({
-            perfil_id: session.user.id,
-            plan_id: plan?.[0]?.id,
-            peso_kg: form.peso_kg ? Number(form.peso_kg) : null,
-            pct_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
-            pct_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
-            nivel_satisfaccion: form.nivel_satisfaccion,
-            fuente_datos: "manual",
-            respuestas_raw: form,
-        });
+            if (rpcError) {
+                console.error("Error al obtener plan activo:", rpcError);
+                setErrorMsg("No pudimos obtener tu plan activo. Por favor intenta de nuevo.");
+                return;
+            }
 
-        if (!error) {
+            const { error } = await supabase.from("seguimientos").insert({
+                perfil_id: session.user.id,
+                plan_id: plan?.[0]?.id,
+                peso_kg: form.peso_kg ? Number(form.peso_kg) : null,
+                pct_grasa: form.pct_grasa ? Number(form.pct_grasa) : null,
+                pct_musculo: form.pct_musculo ? Number(form.pct_musculo) : null,
+                nivel_satisfaccion: form.nivel_satisfaccion,
+                fuente_datos: "manual",
+                respuestas_raw: form,
+            });
+
+            if (error) {
+                console.error("Error al guardar seguimiento:", error);
+                setErrorMsg("No pudimos guardar tu seguimiento. Por favor intenta de nuevo.");
+                return;
+            }
+
             const hoy = new Date().toISOString().split("T")[0];
-            await supabase.from("metricas").upsert(
+            const { error: upsertError } = await supabase.from("metricas").upsert(
                 {
                     perfil_id: session.user.id,
                     fecha: hoy,
@@ -50,9 +64,17 @@ export default function Seguimiento() {
                 { onConflict: "perfil_id,fecha" }
             );
 
+            if (upsertError) {
+                console.error("Error al actualizar métricas:", upsertError);
+            }
+
             navigate("/panel");
+        } catch (err) {
+            console.error("Error inesperado en seguimiento:", err);
+            setErrorMsg("Ocurrió un error inesperado. Por favor intenta de nuevo.");
+        } finally {
+            setGuardando(false);
         }
-        setGuardando(false);
     };
 
     const PASOS_SEG = [
@@ -153,6 +175,11 @@ export default function Seguimiento() {
                     </div>
                     {pasoActual.contenido}
                 </div>
+
+                {/* Error */}
+                {errorMsg && (
+                    <p className="text-[#FF6B6B] text-sm text-center">{errorMsg}</p>
+                )}
 
                 {/* Navegación */}
                 <div className="flex gap-3">

@@ -38,19 +38,25 @@ export default function MiPlan() {
       .limit(1)
       .maybeSingle()
       .then(({ data }) => setFeedback(data ?? false))
+      .catch(() => setFeedback(false))
   }, [planId, session?.user?.id])
 
   const enviarFeedback = async () => {
     if (feedbackForm.estrellas === 0 || !planId) return
     setEnviandoFeedback(true)
-    const { error } = await supabase.from('plan_feedback').insert({
-      plan_id: planId,
-      perfil_id: session.user.id,
-      estrellas: feedbackForm.estrellas,
-      comentario: feedbackForm.comentario.trim() || null,
-    })
-    if (!error) setFeedback({ estrellas: feedbackForm.estrellas })
-    setEnviandoFeedback(false)
+    try {
+      const { error } = await supabase.from('plan_feedback').insert({
+        plan_id: planId,
+        perfil_id: session.user.id,
+        estrellas: feedbackForm.estrellas,
+        comentario: feedbackForm.comentario.trim() || null,
+      })
+      if (!error) setFeedback({ estrellas: feedbackForm.estrellas })
+    } catch {
+      // Prevent unhandled promise rejection
+    } finally {
+      setEnviandoFeedback(false)
+    }
   }
 
   // Detectar plan vencido: fecha_fin ya pasó
