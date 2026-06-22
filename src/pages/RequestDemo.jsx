@@ -1,9 +1,5 @@
 // src/pages/RequestDemo.jsx
 import { useState } from "react";
-import {
-  Box, Container, Typography, TextField, Button, MenuItem,
-  Select, FormControl, InputLabel, Chip,
-} from "@mui/material";
 import { motion } from "framer-motion";
 import { CheckCircle2, Clock, Users, Shield } from "lucide-react";
 import LandingNavbar from "../components/landing/LandingNavbar";
@@ -26,17 +22,22 @@ const TRUST_ITEMS = [
   { Icon: CheckCircle2, text: "Asesor dedicado sin costo" },
 ];
 
-const FIELD_SX = {
-  "& .MuiOutlinedInput-root": {
-    borderRadius: "10px",
-    bgcolor:      C.bgAlt,
-    fontSize:     "0.95rem",
-    "&:hover .MuiOutlinedInput-notchedOutline":  { borderColor: C.accent },
-    "&.Mui-focused .MuiOutlinedInput-notchedOutline": { borderColor: C.primary, borderWidth: 2 },
-  },
-  "& .MuiOutlinedInput-notchedOutline": { borderColor: C.border },
-  "& .MuiInputLabel-root.Mui-focused":  { color: C.primary },
-};
+const fieldClass = "w-full rounded-[10px] border px-4 py-3 text-[0.95rem] outline-none transition-colors";
+
+function Field({ label, ...props }) {
+  return (
+    <label className="flex flex-col gap-1.5">
+      <span className="text-sm font-medium" style={{ color: C.textMuted }}>{label}</span>
+      <input
+        {...props}
+        className={fieldClass}
+        style={{ background: C.bgAlt, borderColor: C.border, color: C.textPrimary }}
+        onFocus={(e) => { e.currentTarget.style.borderColor = C.primary; e.currentTarget.style.borderWidth = "2px"; }}
+        onBlur={(e) => { e.currentTarget.style.borderColor = C.border; e.currentTarget.style.borderWidth = "1px"; }}
+      />
+    </label>
+  );
+}
 
 export default function RequestDemo() {
   const { fadeInUp, stagger } = useMotionSafe();
@@ -81,99 +82,67 @@ export default function RequestDemo() {
     form.colaboradores;
 
   return (
-    <Box sx={{ bgcolor: "#FFFFFF", minHeight: "100vh" }}>
+    <div className="min-h-screen bg-white">
       <LandingNavbar />
 
       {/* ── Hero ── */}
-      <Box
-        sx={{
-          background: C.heroGrad,
-          pt:         { xs: 13, md: 14 },
-          pb:         { xs: 7, md: 9 },
-          textAlign:  "center",
-          position:   "relative",
-          overflow:   "hidden",
-        }}
-      >
-        <Box sx={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05), transparent 50%)", pointerEvents: "none" }} />
-        <Container maxWidth="sm" sx={{ position: "relative", zIndex: 1 }}>
+      <div className="relative overflow-hidden pt-[104px] pb-14 text-center md:pt-28 md:pb-[72px]" style={{ background: C.heroGrad }}>
+        <div className="pointer-events-none absolute inset-0" style={{ backgroundImage: "radial-gradient(circle at 70% 30%, rgba(255,255,255,0.05), transparent 50%)" }} />
+        <div className="relative z-[1] mx-auto max-w-[600px] px-4 sm:px-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-            <Chip
-              label="Sin costo · Sin compromiso"
-              sx={{
-                bgcolor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.9)",
-                border: "1px solid rgba(255,255,255,0.2)", fontWeight: 700, fontSize: "0.72rem",
-                mb: 3, "& .MuiChip-label": { py: 0.6, px: 1.5 },
-              }}
-            />
-            <Typography
-              component="h1"
-              sx={{
-                color:      C.white,
-                fontFamily: "Plus Jakarta Sans, sans-serif",
-                fontWeight: 900,
-                fontSize:   { xs: "2rem", md: "2.7rem" },
-                lineHeight: 1.15,
-                mb:         2,
-              }}
+            <span
+              className="mb-6 inline-block rounded-full px-[18px] py-[5px] text-[0.72rem] font-bold"
+              style={{ background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.9)", border: "1px solid rgba(255,255,255,0.2)" }}
+            >
+              Sin costo · Sin compromiso
+            </span>
+            <h1
+              className="mb-4 text-[2rem] font-black leading-[1.15] md:text-[2.7rem]"
+              style={{ color: C.white, fontFamily: "Plus Jakarta Sans, sans-serif" }}
             >
               Agenda tu demo
               <br />
               personalizada
-            </Typography>
-            <Typography sx={{ color: "rgba(255,255,255,0.78)", fontSize: { xs: "0.95rem", md: "1.05rem" }, lineHeight: 1.75 }}>
+            </h1>
+            <p className="text-[0.95rem] leading-[1.75] md:text-[1.05rem]" style={{ color: "rgba(255,255,255,0.78)" }}>
               Te mostramos cómo NutriiApp transforma la salud de tus colaboradores
               en productividad medible, adaptado a tu empresa.
-            </Typography>
+            </p>
           </motion.div>
-        </Container>
-      </Box>
+        </div>
+      </div>
 
       {/* ── Form section ── */}
-      <Box sx={{ bgcolor: C.bgAlt, py: { xs: 7, md: 10 } }}>
-        <Container maxWidth="sm">
+      <div className="py-14 md:py-20" style={{ background: C.bgAlt }}>
+        <div className="mx-auto max-w-[600px] px-4 sm:px-6">
           {submitted ? (
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }}>
-              <Box
-                sx={{
-                  bgcolor:      C.bgCard,
-                  borderRadius: "20px",
-                  border:       `1px solid ${C.border}`,
-                  boxShadow:    C.shadowMd,
-                  p:            { xs: 4, md: 6 },
-                  textAlign:    "center",
-                }}
+              <div
+                className="rounded-[20px] p-8 text-center md:p-12"
+                style={{ background: C.bgCard, border: `1px solid ${C.border}`, boxShadow: C.shadowMd }}
               >
-                <Box
-                  sx={{
-                    width:          72,
-                    height:         72,
-                    bgcolor:        "#E8F5E9",
-                    borderRadius:   "50%",
-                    display:        "flex",
-                    alignItems:     "center",
-                    justifyContent: "center",
-                    mx:             "auto",
-                    mb:             3,
-                  }}
+                <div
+                  className="mx-auto mb-6 flex h-[72px] w-[72px] items-center justify-center rounded-full"
+                  style={{ background: "#E8F5E9" }}
                 >
                   <CheckCircle2 size={32} color={C.primary} />
-                </Box>
-                <Typography
-                  sx={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif", fontWeight: 900, fontSize: "1.6rem", mb: 1.5 }}
+                </div>
+                <p
+                  className="mb-3 text-[1.6rem] font-black"
+                  style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
                 >
                   ¡Solicitud recibida!
-                </Typography>
-                <Typography sx={{ color: C.textMuted, fontSize: "1rem", lineHeight: 1.75, mb: 3 }}>
+                </p>
+                <p className="mb-4 text-base leading-[1.75]" style={{ color: C.textMuted }}>
                   Nuestro equipo revisará tu información y te contactará en menos de{" "}
-                  <Box component="span" sx={{ color: C.primary, fontWeight: 700 }}>24 horas</Box>{" "}
+                  <span className="font-bold" style={{ color: C.primary }}>24 horas</span>{" "}
                   para agendar tu demo personalizada.
-                </Typography>
-                <Typography sx={{ color: C.textLight, fontSize: "0.85rem" }}>
+                </p>
+                <p className="text-[0.85rem]" style={{ color: C.textLight }}>
                   ¿Dudas? Escríbenos a{" "}
-                  <Box component="span" sx={{ color: C.primary, fontWeight: 600 }}>hola@nutriiapp.mx</Box>
-                </Typography>
-              </Box>
+                  <span className="font-semibold" style={{ color: C.primary }}>hola@nutriiapp.mx</span>
+                </p>
+              </div>
             </motion.div>
           ) : (
             <motion.div
@@ -181,176 +150,148 @@ export default function RequestDemo() {
               initial="hidden"
               animate="visible"
             >
-              <Box
-                component="form"
+              <form
                 onSubmit={handleSubmit}
-                sx={{
-                  bgcolor:      C.bgCard,
-                  borderRadius: "20px",
-                  border:       `1px solid ${C.border}`,
-                  boxShadow:    C.shadowMd,
-                  p:            { xs: 3.5, md: 5 },
-                }}
+                className="rounded-[20px] p-7 md:p-10"
+                style={{ background: C.bgCard, border: `1px solid ${C.border}`, boxShadow: C.shadowMd }}
               >
                 <motion.div variants={fadeInUp}>
-                  <Typography
-                    sx={{
-                      color:      C.textPrimary,
-                      fontFamily: "Plus Jakarta Sans, sans-serif",
-                      fontWeight: 900,
-                      fontSize:   "1.3rem",
-                      mb:         0.75,
-                    }}
+                  <p
+                    className="mb-1 text-[1.3rem] font-black"
+                    style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
                   >
                     Cuéntanos sobre tu empresa
-                  </Typography>
-                  <Typography sx={{ color: C.textMuted, fontSize: "0.875rem", mb: 3.5 }}>
+                  </p>
+                  <p className="mb-7 text-[0.875rem]" style={{ color: C.textMuted }}>
                     Completamos la demo en 30 minutos, enfocada en tu industria y tamaño de empresa.
-                  </Typography>
+                  </p>
                 </motion.div>
 
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2.5 }}>
+                <div className="flex flex-col gap-5">
                   <motion.div variants={fadeInUp}>
-                    <TextField
+                    <Field
                       label="Nombre completo"
                       value={form.nombre}
                       onChange={handleChange("nombre")}
-                      fullWidth
                       required
-                      sx={FIELD_SX}
                     />
                   </motion.div>
 
                   <motion.div variants={fadeInUp}>
-                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
-                      <TextField
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <Field
                         label="Empresa"
                         value={form.empresa}
                         onChange={handleChange("empresa")}
                         required
-                        sx={FIELD_SX}
                       />
-                      <TextField
+                      <Field
                         label="Cargo"
                         value={form.cargo}
                         onChange={handleChange("cargo")}
                         required
                         placeholder="Director RR.HH., CEO…"
-                        sx={FIELD_SX}
                       />
-                    </Box>
+                    </div>
                   </motion.div>
 
                   <motion.div variants={fadeInUp}>
-                    <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr" }, gap: 2 }}>
-                      <TextField
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <Field
                         label="Correo corporativo"
                         type="email"
                         value={form.email}
                         onChange={handleChange("email")}
                         required
-                        sx={FIELD_SX}
                       />
-                      <TextField
+                      <Field
                         label="Teléfono (opcional)"
                         type="tel"
                         value={form.telefono}
                         onChange={handleChange("telefono")}
                         placeholder="Ej. 222 123 4567"
-                        sx={FIELD_SX}
                       />
-                    </Box>
+                    </div>
                   </motion.div>
 
                   <motion.div variants={fadeInUp}>
-                    <FormControl fullWidth required sx={FIELD_SX}>
-                      <InputLabel>Número de colaboradores</InputLabel>
-                      <Select
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-sm font-medium" style={{ color: C.textMuted }}>Número de colaboradores</span>
+                      <select
                         value={form.colaboradores}
-                        label="Número de colaboradores"
                         onChange={handleChange("colaboradores")}
-                        sx={{ borderRadius: "10px", bgcolor: C.bgAlt }}
+                        required
+                        className={fieldClass}
+                        style={{ background: C.bgAlt, borderColor: C.border, color: C.textPrimary }}
                       >
+                        <option value="" disabled>Selecciona un rango</option>
                         {COLLABORATOR_RANGES.map((r) => (
-                          <MenuItem key={r.value} value={r.value}>{r.label}</MenuItem>
+                          <option key={r.value} value={r.value}>{r.label}</option>
                         ))}
-                      </Select>
-                    </FormControl>
+                      </select>
+                    </label>
                   </motion.div>
 
                   <motion.div variants={fadeInUp}>
-                    <TextField
-                      label="¿Cuál es tu mayor reto de bienestar hoy? (opcional)"
-                      value={form.reto}
-                      onChange={handleChange("reto")}
-                      fullWidth
-                      multiline
-                      rows={3}
-                      placeholder="Ausentismo elevado, cumplimiento NOM, estrés laboral, productividad…"
-                      sx={FIELD_SX}
-                    />
+                    <label className="flex flex-col gap-1.5">
+                      <span className="text-sm font-medium" style={{ color: C.textMuted }}>
+                        ¿Cuál es tu mayor reto de bienestar hoy? (opcional)
+                      </span>
+                      <textarea
+                        value={form.reto}
+                        onChange={handleChange("reto")}
+                        rows={3}
+                        placeholder="Ausentismo elevado, cumplimiento NOM, estrés laboral, productividad…"
+                        className={fieldClass}
+                        style={{ background: C.bgAlt, borderColor: C.border, color: C.textPrimary, resize: "vertical" }}
+                      />
+                    </label>
                   </motion.div>
 
                   {errorMsg && (
-                    <Box sx={{ bgcolor: "rgba(255,107,107,.08)", border: "1px solid rgba(255,107,107,.3)", borderRadius: "10px", px: 2, py: 1.5 }}>
-                      <Typography sx={{ color: "#FF6B6B", fontSize: "0.85rem" }}>{errorMsg}</Typography>
-                    </Box>
+                    <div className="rounded-[10px] px-4 py-3" style={{ background: "rgba(255,107,107,.08)", border: "1px solid rgba(255,107,107,.3)" }}>
+                      <p className="text-[0.85rem]" style={{ color: "#FF6B6B" }}>{errorMsg}</p>
+                    </div>
                   )}
 
                   <motion.div variants={fadeInUp}>
-                    <Button
+                    <button
                       type="submit"
-                      variant="contained"
-                      fullWidth
                       disabled={!isValid || loading}
-                      sx={{
-                        bgcolor:       C.primary,
-                        color:         C.white,
-                        fontWeight:    800,
-                        textTransform: "none",
-                        borderRadius:  "12px",
-                        py:            1.7,
-                        fontSize:      "1rem",
-                        mt:            0.5,
-                        boxShadow:     "none",
-                        "&:hover":     { bgcolor: C.secondary, boxShadow: "none" },
-                        "&.Mui-disabled": { bgcolor: C.border, color: C.textLight },
-                      }}
+                      className="mt-0.5 w-full rounded-xl py-[14px] text-base font-extrabold transition-colors disabled:cursor-not-allowed"
+                      style={
+                        !isValid || loading
+                          ? { background: C.border, color: C.textLight }
+                          : { background: C.primary, color: C.white }
+                      }
+                      onMouseEnter={(e) => { if (isValid && !loading) e.currentTarget.style.background = C.secondary; }}
+                      onMouseLeave={(e) => { if (isValid && !loading) e.currentTarget.style.background = C.primary; }}
                     >
                       {loading ? "Enviando…" : "Quiero mi demo personalizada"}
-                    </Button>
+                    </button>
                   </motion.div>
-                </Box>
-              </Box>
+                </div>
+              </form>
 
               {/* Trust band */}
               <motion.div variants={fadeInUp}>
-                <Box
-                  sx={{
-                    mt:             3,
-                    display:        "flex",
-                    flexWrap:       "wrap",
-                    justifyContent: "center",
-                    gap:            { xs: 2, md: 3 },
-                    py:             2,
-                  }}
-                >
+                <div className="mt-6 flex flex-wrap justify-center gap-3 py-4 md:gap-6">
                   {TRUST_ITEMS.map(({ Icon, text }) => (
-                    <Box key={text} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                    <div key={text} className="flex items-center gap-2">
                       <Icon size={14} color={C.primary} />
-                      <Typography sx={{ color: C.textMuted, fontSize: "0.8rem", fontWeight: 600 }}>
+                      <span className="text-[0.8rem] font-semibold" style={{ color: C.textMuted }}>
                         {text}
-                      </Typography>
-                    </Box>
+                      </span>
+                    </div>
                   ))}
-                </Box>
+                </div>
               </motion.div>
             </motion.div>
           )}
-        </Container>
-      </Box>
+        </div>
+      </div>
 
       <LandingFooter />
-    </Box>
+    </div>
   );
 }

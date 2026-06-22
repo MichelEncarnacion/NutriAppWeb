@@ -1,6 +1,5 @@
 // src/components/landing/LandingCTA.jsx
 import { useNavigate } from "react-router-dom";
-import { Box, Container, Typography, Button } from "@mui/material";
 import { motion } from "framer-motion";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { C } from "./landingTokens";
@@ -20,23 +19,14 @@ export default function LandingCTA() {
   const { fadeInUp, stagger, shouldAnimate } = useMotionSafe();
 
   return (
-    <Box
-      sx={{
-        background: C.ctaGrad,
-        py:         { xs: 9, md: 13 },
-        position:   "relative",
-        overflow:   "hidden",
-      }}
-    >
+    <div className="relative overflow-hidden py-[72px] md:py-[104px]" style={{ background: C.ctaGrad }}>
       {/* Radial base */}
-      <Box
-        sx={{
-          position:        "absolute",
-          inset:           0,
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
           backgroundImage:
             "radial-gradient(circle at 10% 50%, rgba(255,255,255,0.05) 0%, transparent 45%), " +
             "radial-gradient(circle at 90% 50%, rgba(255,255,255,0.04) 0%, transparent 45%)",
-          pointerEvents:   "none",
         }}
       />
 
@@ -45,17 +35,8 @@ export default function LandingCTA() {
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.55, 0.35] }}
           transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            position:     "absolute",
-            top:          "-20%",
-            left:         "-10%",
-            width:        "45%",
-            aspectRatio:  "1",
-            borderRadius: "50%",
-            background:   "radial-gradient(circle, rgba(165,214,167,0.15), transparent 70%)",
-            filter:       "blur(50px)",
-            pointerEvents:"none",
-          }}
+          className="pointer-events-none absolute -top-[20%] -left-[10%] aspect-square w-[45%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(165,214,167,0.15), transparent 70%)", filter: "blur(50px)" }}
         />
       )}
 
@@ -64,21 +45,12 @@ export default function LandingCTA() {
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.25, 0.45, 0.25] }}
           transition={{ duration: 9, repeat: Infinity, ease: "easeInOut", delay: 3 }}
-          style={{
-            position:     "absolute",
-            bottom:       "-15%",
-            right:        "-8%",
-            width:        "40%",
-            aspectRatio:  "1",
-            borderRadius: "50%",
-            background:   "radial-gradient(circle, rgba(67,160,71,0.12), transparent 70%)",
-            filter:       "blur(60px)",
-            pointerEvents:"none",
-          }}
+          className="pointer-events-none absolute -bottom-[15%] -right-[8%] aspect-square w-[40%] rounded-full"
+          style={{ background: "radial-gradient(circle, rgba(67,160,71,0.12), transparent 70%)", filter: "blur(60px)" }}
         />
       )}
 
-      <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
+      <div className="relative z-[1] mx-auto max-w-[900px] px-4 sm:px-6">
         <motion.div
           variants={stagger}
           initial="hidden"
@@ -87,18 +59,12 @@ export default function LandingCTA() {
         >
           {/* Headline animado por palabras */}
           <motion.div variants={fadeInUp}>
-            <Box sx={{ textAlign: "center", mb: 2 }}>
-              <Typography
-                component="h2"
-                sx={{
-                  color:      C.white,
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontWeight: 900,
-                  fontSize:   { xs: "2rem", md: "2.8rem" },
-                  lineHeight: 1.15,
-                }}
+            <div className="mb-4 text-center">
+              <h2
+                className="text-[2rem] font-black leading-[1.15] md:text-[2.8rem]"
+                style={{ color: C.white, fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
-                <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+                <span className="flex flex-wrap justify-center gap-[0.25em]">
                   {HEADLINE_WORDS.map((word, i) => (
                     <motion.span
                       key={i}
@@ -110,8 +76,8 @@ export default function LandingCTA() {
                       {word}
                     </motion.span>
                   ))}
-                </Box>
-                <Box sx={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.25em" }}>
+                </span>
+                <span className="flex flex-wrap justify-center gap-[0.25em]">
                   {HEADLINE_WORDS2.map((word, i) => (
                     <motion.span
                       key={i}
@@ -123,97 +89,65 @@ export default function LandingCTA() {
                       {word}
                     </motion.span>
                   ))}
-                </Box>
-              </Typography>
-            </Box>
+                </span>
+              </h2>
+            </div>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Typography
-              sx={{
-                color:      "rgba(255,255,255,0.78)",
-                fontSize:   "1.05rem",
-                lineHeight: 1.7,
-                textAlign:  "center",
-                mb:         5,
-                maxWidth:   480,
-                mx:         "auto",
-              }}
+            <p
+              className="mx-auto mb-10 max-w-[480px] text-center text-[1.05rem] leading-[1.7]"
+              style={{ color: "rgba(255,255,255,0.78)" }}
             >
               $28,600 MXN/año para 20 colaboradores. La inversión más inteligente
               que puedes hacer en productividad corporativa.
-            </Typography>
+            </p>
           </motion.div>
 
           {/* Botón con shimmer */}
           <motion.div variants={fadeInUp}>
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 4 }}>
-              <Box sx={{ position: "relative", overflow: "hidden", borderRadius: "12px", display: "inline-flex" }}>
-                <Button
+            <div className="mb-8 flex justify-center">
+              <div className="relative inline-flex overflow-hidden rounded-xl">
+                <button
                   onClick={() => navigate("/demo")}
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowRight size={18} />}
-                  sx={{
-                    bgcolor:       C.white,
-                    color:         C.primary,
-                    fontWeight:    800,
-                    textTransform: "none",
-                    borderRadius:  "12px",
-                    px:            4,
-                    py:            1.7,
-                    fontSize:      "1.05rem",
-                    boxShadow:     "0 6px 28px rgba(0,0,0,0.2)",
-                    "&:hover":     { bgcolor: "#F0FFF4", boxShadow: "0 10px 36px rgba(0,0,0,0.25)" },
-                    position:      "relative",
-                    zIndex:        1,
-                  }}
+                  className="relative z-[1] flex items-center gap-2 rounded-xl px-8 py-[14px] text-[1.05rem] font-extrabold transition-shadow"
+                  style={{ background: C.white, color: C.primary, boxShadow: "0 6px 28px rgba(0,0,0,0.2)" }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = "#F0FFF4"; e.currentTarget.style.boxShadow = "0 10px 36px rgba(0,0,0,0.25)"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = C.white; e.currentTarget.style.boxShadow = "0 6px 28px rgba(0,0,0,0.2)"; }}
                 >
                   Agendar mi demo gratuita
-                </Button>
+                  <ArrowRight size={18} />
+                </button>
                 {/* Shimmer sweep */}
                 {shouldAnimate && (
                   <motion.div
                     animate={{ x: ["-100%", "200%"] }}
                     transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", repeatDelay: 1.5 }}
+                    className="pointer-events-none absolute top-0 left-0 z-[2] h-full w-[40%]"
                     style={{
-                      position:    "absolute",
-                      top:         0,
-                      left:        0,
-                      width:       "40%",
-                      height:      "100%",
-                      background:  "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)",
-                      transform:   "skewX(-15deg)",
-                      pointerEvents: "none",
-                      zIndex:      2,
+                      background: "linear-gradient(90deg, transparent, rgba(255,255,255,0.45), transparent)",
+                      transform:  "skewX(-15deg)",
                     }}
                   />
                 )}
-              </Box>
-            </Box>
+              </div>
+            </div>
           </motion.div>
 
           <motion.div variants={fadeInUp}>
-            <Box
-              sx={{
-                display:        "flex",
-                flexWrap:       "wrap",
-                justifyContent: "center",
-                gap:            { xs: 1.5, md: 3 },
-              }}
-            >
+            <div className="flex flex-wrap justify-center gap-3 md:gap-6">
               {HIGHLIGHTS.map((h) => (
-                <Box key={h} sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                <div key={h} className="flex items-center gap-2">
                   <CheckCircle2 size={15} color="rgba(255,255,255,0.7)" />
-                  <Typography sx={{ color: "rgba(255,255,255,0.8)", fontSize: "0.83rem", fontWeight: 600 }}>
+                  <span className="text-[0.83rem] font-semibold" style={{ color: "rgba(255,255,255,0.8)" }}>
                     {h}
-                  </Typography>
-                </Box>
+                  </span>
+                </div>
               ))}
-            </Box>
+            </div>
           </motion.div>
         </motion.div>
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }

@@ -1,9 +1,6 @@
 // src/components/landing/LandingNavbar.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import {
-  Box, Button, Container, IconButton, Drawer, List, ListItem,
-} from "@mui/material";
 import { Menu, X } from "lucide-react";
 import { C } from "./landingTokens";
 import Logo from "../Logo";
@@ -29,184 +26,139 @@ export default function LandingNavbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const textColor     = (scrolled || !onHero) ? C.textPrimary : C.white;
-  const hoverBg       = (scrolled || !onHero) ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.12)";
-  const navBg         = (scrolled || !onHero)
-    ? "rgba(255,255,255,0.96)"
-    : "transparent";
-  const navShadow     = (scrolled || !onHero)
-    ? "0 1px 16px rgba(0,0,0,0.08)"
-    : "none";
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
+  const dark           = scrolled || !onHero;
+  const textColor       = dark ? C.textPrimary : C.white;
+  const hoverBg         = dark ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.12)";
+  const navBg           = dark ? "rgba(255,255,255,0.96)" : "transparent";
+  const navShadow       = dark ? "0 1px 16px rgba(0,0,0,0.08)" : "none";
 
   return (
-    <Box
-      component="nav"
-      sx={{
-        position:     "fixed",
-        top: 0, left: 0, right: 0,
-        zIndex:       100,
-        transition:   "background 0.3s, box-shadow 0.3s",
-        background:   navBg,
-        backdropFilter: (scrolled || !onHero) ? "blur(12px)" : "none",
-        boxShadow:    navShadow,
+    <nav
+      className="fixed top-0 left-0 right-0 z-[100] transition-[background,box-shadow] duration-300"
+      style={{
+        background:     navBg,
+        backdropFilter: dark ? "blur(12px)" : "none",
+        boxShadow:      navShadow,
       }}
     >
-      <Container maxWidth="lg">
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", py: 1.75 }}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
+        <div className="flex items-center justify-between py-[14px]">
 
           {/* Logo */}
-          <Box sx={{ cursor: "pointer", display: "flex", alignItems: "center" }} onClick={() => navigate("/")}>
+          <div className="flex cursor-pointer items-center" onClick={() => navigate("/")}>
             <Logo size="sm" />
-          </Box>
+          </div>
 
           {/* Desktop nav */}
-          <Box sx={{ display: { xs: "none", md: "flex" }, alignItems: "center", gap: 0.5 }}>
+          <div className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => (
-              <Button
+              <button
                 key={link.label}
                 onClick={() => navigate(link.to)}
-                sx={{
-                  color:         textColor,
-                  textTransform: "none",
-                  fontWeight:    600,
-                  fontSize:      "0.95rem",
-                  px:            2,
-                  borderRadius:  "8px",
-                  opacity:       location.pathname === link.to ? 1 : 0.85,
-                  "&:hover":     { bgcolor: hoverBg, opacity: 1 },
+                className="rounded-lg px-4 py-2 text-[0.95rem] font-semibold normal-case transition-opacity"
+                style={{
+                  color:   textColor,
+                  opacity: location.pathname === link.to ? 1 : 0.85,
                 }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.opacity = 1; }}
+                onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; e.currentTarget.style.opacity = location.pathname === link.to ? 1 : 0.85; }}
               >
                 {link.label}
-              </Button>
+              </button>
             ))}
 
-            <Button
+            <button
               onClick={() => navigate("/login")}
-              sx={{
-                ml:            1,
-                color:         textColor,
-                fontWeight:    600,
-                textTransform: "none",
-                borderRadius:  "10px",
-                px:            2,
-                py:            0.9,
-                fontSize:      "0.9rem",
-                border:        `1px solid ${scrolled || !onHero ? C.border : "rgba(255,255,255,0.3)"}`,
-                "&:hover":     { bgcolor: hoverBg },
-              }}
+              className="ml-2 rounded-[10px] px-4 py-[7px] text-[0.9rem] font-semibold"
+              style={{ color: textColor, border: `1px solid ${dark ? C.border : "rgba(255,255,255,0.3)"}` }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = hoverBg; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = "transparent"; }}
             >
               Acceso colaboradores
-            </Button>
+            </button>
 
-            <Button
+            <button
               onClick={() => navigate("/demo")}
-              variant="contained"
-              sx={{
-                ml:            1,
-                bgcolor:       C.primary,
-                color:         C.white,
-                fontWeight:    700,
-                textTransform: "none",
-                borderRadius:  "10px",
-                px:            2.5,
-                py:            0.9,
-                fontSize:      "0.9rem",
-                boxShadow:     "none",
-                "&:hover":     { bgcolor: C.secondary, boxShadow: "none" },
-              }}
+              className="ml-2 rounded-[10px] px-5 py-[7px] text-[0.9rem] font-bold"
+              style={{ background: C.primary, color: C.white }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = C.secondary; }}
+              onMouseLeave={(e) => { e.currentTarget.style.background = C.primary; }}
             >
               Solicitar demo
-            </Button>
-          </Box>
+            </button>
+          </div>
 
           {/* Mobile hamburger */}
-          <IconButton
+          <button
             onClick={() => setMobileOpen(true)}
-            sx={{
-              display: { xs: "flex", md: "none" },
-              color:   textColor,
-            }}
+            className="flex md:hidden p-2"
+            style={{ color: textColor }}
+            aria-label="Abrir menú"
           >
             <Menu size={22} />
-          </IconButton>
-        </Box>
-      </Container>
+          </button>
+        </div>
+      </div>
 
       {/* Mobile drawer */}
-      <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}>
-        <Box sx={{ width: 280, p: 3, bgcolor: C.bgMain, height: "100%" }}>
-          <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 4 }}>
-            <Logo size="sm" />
-            <IconButton onClick={() => setMobileOpen(false)}>
-              <X size={20} color={C.textPrimary} />
-            </IconButton>
-          </Box>
+      {mobileOpen && (
+        <>
+          <div
+            className="fixed inset-0 z-[150] bg-black/40"
+            onClick={() => setMobileOpen(false)}
+          />
+          <div
+            className="fixed top-0 right-0 z-[151] flex h-full w-[280px] flex-col p-6"
+            style={{ background: C.bgMain }}
+          >
+            <div className="mb-8 flex items-center justify-between">
+              <Logo size="sm" />
+              <button onClick={() => setMobileOpen(false)} aria-label="Cerrar menú">
+                <X size={20} color={C.textPrimary} />
+              </button>
+            </div>
 
-          <List disablePadding>
-            {NAV_LINKS.map((link) => (
-              <ListItem key={link.label} disablePadding sx={{ mb: 0.5 }}>
-                <Button
-                  fullWidth
-                  onClick={() => { navigate(link.to); setMobileOpen(false); }}
-                  sx={{
-                    justifyContent: "flex-start",
-                    color:          C.textPrimary,
-                    textTransform:  "none",
-                    fontWeight:     600,
-                    borderRadius:   "10px",
-                    py:             1.2,
-                    px:             2,
-                    "&:hover":      { bgcolor: C.bgAlt },
-                  }}
+            <ul className="flex flex-col gap-1">
+              {NAV_LINKS.map((link) => (
+                <li key={link.label}>
+                  <button
+                    className="w-full rounded-[10px] px-4 py-[10px] text-left font-semibold"
+                    style={{ color: C.textPrimary }}
+                    onClick={() => { navigate(link.to); setMobileOpen(false); }}
+                  >
+                    {link.label}
+                  </button>
+                </li>
+              ))}
+
+              <li className="mt-2">
+                <button
+                  className="w-full rounded-[10px] px-4 py-[10px] text-left font-semibold"
+                  style={{ color: C.textPrimary, border: `1px solid ${C.border}` }}
+                  onClick={() => { navigate("/login"); setMobileOpen(false); }}
                 >
-                  {link.label}
-                </Button>
-              </ListItem>
-            ))}
+                  Acceso colaboradores
+                </button>
+              </li>
 
-            <ListItem disablePadding sx={{ mt: 1 }}>
-              <Button
-                fullWidth
-                onClick={() => { navigate("/login"); setMobileOpen(false); }}
-                sx={{
-                  justifyContent: "flex-start",
-                  color:          C.textPrimary,
-                  textTransform:  "none",
-                  fontWeight:     600,
-                  borderRadius:   "10px",
-                  py:             1.2,
-                  px:             2,
-                  border:         `1px solid ${C.border}`,
-                  "&:hover":      { bgcolor: C.bgAlt },
-                }}
-              >
-                Acceso colaboradores
-              </Button>
-            </ListItem>
-
-            <ListItem disablePadding sx={{ mt: 1 }}>
-              <Button
-                fullWidth
-                onClick={() => { navigate("/demo"); setMobileOpen(false); }}
-                variant="contained"
-                sx={{
-                  justifyContent: "center",
-                  bgcolor:        C.primary,
-                  color:          C.white,
-                  textTransform:  "none",
-                  fontWeight:     700,
-                  borderRadius:   "10px",
-                  py:             1.3,
-                  boxShadow:      "none",
-                  "&:hover":      { bgcolor: C.secondary, boxShadow: "none" },
-                }}
-              >
-                Solicitar demo
-              </Button>
-            </ListItem>
-          </List>
-        </Box>
-      </Drawer>
-    </Box>
+              <li className="mt-2">
+                <button
+                  className="w-full rounded-[10px] py-3 text-center font-bold"
+                  style={{ background: C.primary, color: C.white }}
+                  onClick={() => { navigate("/demo"); setMobileOpen(false); }}
+                >
+                  Solicitar demo
+                </button>
+              </li>
+            </ul>
+          </div>
+        </>
+      )}
+    </nav>
   );
 }

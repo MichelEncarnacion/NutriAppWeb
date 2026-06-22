@@ -1,5 +1,4 @@
 // src/components/landing/LandingCredBand.jsx
-import { Box, Container, Typography } from "@mui/material";
 import { motion } from "framer-motion";
 import { C } from "./landingTokens";
 import { useMotionSafe } from "../../hooks/useMotionSafe";
@@ -13,81 +12,58 @@ const STATS = [
 export default function LandingCredBand() {
   const { fadeInUp, stagger } = useMotionSafe();
   return (
-    <Box sx={{ bgcolor: C.bgAlt, py: { xs: 8, md: 10 }, borderTop: `1px solid ${C.border}` }}>
-      <Container maxWidth="lg">
+    <div className="py-16 md:py-20" style={{ background: C.bgAlt, borderTop: `1px solid ${C.border}` }}>
+      <div className="mx-auto max-w-[1200px] px-4 sm:px-6">
         <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.15 }}
         >
-          <Box
-            sx={{
-              display:             "grid",
-              gridTemplateColumns: { xs: "1fr", md: "5fr 7fr" },
-              gap:                 { xs: 6, md: 8 },
-              alignItems:          "center",
-            }}
-          >
+          <div className="grid grid-cols-1 items-center gap-12 md:grid-cols-[5fr_7fr] md:gap-16">
             {/* Heading */}
             <motion.div variants={fadeInUp}>
-              <Typography
-                component="h2"
-                sx={{
-                  color:      C.textPrimary,
-                  fontFamily: "Plus Jakarta Sans, sans-serif",
-                  fontWeight: 900,
-                  fontSize:   { xs: "1.75rem", md: "2.1rem" },
-                  lineHeight: 1.25,
-                }}
+              <h2
+                className="text-[1.75rem] font-black leading-[1.25] md:text-[2.1rem]"
+                style={{ color: C.textPrimary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
               >
                 La salud de tu equipo
                 impacta directamente
                 en tus resultados.
-              </Typography>
-              <Typography sx={{ color: C.textMuted, fontSize: "0.95rem", mt: 2, lineHeight: 1.7 }}>
+              </h2>
+              <p className="mt-4 text-[0.95rem] leading-[1.7]" style={{ color: C.textMuted }}>
                 Tres realidades que toda empresa mexicana enfrenta, pero pocas miden.
-              </Typography>
+              </p>
             </motion.div>
 
             {/* Stats — sin tarjetas, solo números con divisores */}
             <motion.div variants={fadeInUp}>
-              <Box sx={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)" }}>
+              <div className="grid grid-cols-3">
                 {STATS.map((s, i) => (
-                  <Box
+                  <div
                     key={s.value}
-                    sx={{
-                      px:         { xs: 2, md: 3 },
-                      py:         { xs: 1, md: 0 },
-                      borderLeft: i > 0 ? `1px solid ${C.border}` : "none",
-                      textAlign:  "center",
-                    }}
+                    className="px-2 py-2 text-center md:px-3 md:py-0"
+                    style={{ borderLeft: i > 0 ? `1px solid ${C.border}` : "none" }}
                   >
-                    <Typography
-                      sx={{
-                        color:      C.primary,
-                        fontFamily: "Plus Jakarta Sans, sans-serif",
-                        fontWeight: 900,
-                        fontSize:   { xs: "2rem", md: "2.6rem" },
-                        lineHeight: 1,
-                        mb:         1,
-                      }}
+                    <p
+                      className="mb-2 text-[2rem] font-black leading-none md:text-[2.6rem]"
+                      style={{ color: C.primary, fontFamily: "Plus Jakarta Sans, sans-serif" }}
                     >
                       {s.value}
-                    </Typography>
-                    <Typography sx={{ color: C.textMuted, fontSize: "0.8rem", lineHeight: 1.6, mb: 0.75 }}>
+                    </p>
+                    <p className="mb-1 text-[0.8rem] leading-[1.6]" style={{ color: C.textMuted }}>
                       {s.label}
-                    </Typography>
-                    <Typography sx={{ color: C.textLight, fontSize: "0.67rem", fontWeight: 600 }}>
+                    </p>
+                    <p className="text-[0.67rem] font-semibold" style={{ color: C.textLight }}>
                       {s.source}
-                    </Typography>
-                  </Box>
+                    </p>
+                  </div>
                 ))}
-              </Box>
+              </div>
             </motion.div>
-          </Box>
+          </div>
         </motion.div>
-      </Container>
-    </Box>
+      </div>
+    </div>
   );
 }
