@@ -408,7 +408,7 @@ export default function Diagnostico() {
             sexo: respuestas.sexo ?? null,
             objetivo: respuestas.objetivo ?? null,
             nivel_actividad: respuestas.nivel_actividad ?? null,
-            habitos_alimenticios: respuestas.preferencias_comida?.join(", ") ?? null,
+            habitos_alimenticios: respuestas.preferencias_comida ?? null,
             restricciones_medicas: respuestas.medicamentos ?? null,
             alergias: respuestas.alergias ?? [],
             enfermedades: respuestas.enfermedades ?? [],

@@ -153,6 +153,7 @@ export default function Progreso() {
     const imc = (() => {
         if (!diag?.estatura || !ultima?.peso) return null;
         const estatura_m = diag.estatura / 100;
+        if (estatura_m <= 0) return null;
         return parseFloat((ultima.peso / (estatura_m * estatura_m)).toFixed(1));
     })();
 

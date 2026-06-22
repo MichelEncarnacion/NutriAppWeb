@@ -45,11 +45,11 @@ export default function Registro() {
         // Supabase envía email de confirmación por defecto.
         // Si en tu proyecto tienes "Confirm email" desactivado, el usuario
         // queda logueado de inmediato y puedes redirigir directo.
-        if (data.session) {
-            // Sesión inmediata (confirm email desactivado en Supabase)
+        if (data.session && data.user?.confirmed_at) {
+            // Sesión inmediata + email confirmado (confirm email desactivado en Supabase)
             navigate("/terminos", { replace: true });
         } else {
-            // Necesita confirmar email
+            // Necesita confirmar email (user exists pero sin sesión o sin confirmed_at)
             setEnviado(true);
         }
     };

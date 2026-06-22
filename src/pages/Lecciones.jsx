@@ -146,6 +146,7 @@ export default function Lecciones() {
     const [activa, setActiva] = useState(null);
     const [sheetMounted, setSheetMounted] = useState(false);
     const [loading, setLoading] = useState(true);
+    const [seedError, setSeedError] = useState(false);
 
     const [slides, setSlides] = useState([]);
     const [slideIdx, setSlideIdx] = useState(0);
@@ -192,12 +193,17 @@ export default function Lecciones() {
                 // usuarios que tenían solo la primera lección con el sistema anterior)
                 const faltantes = (lecs ?? []).filter((l) => !map[l.id]);
                 if (faltantes.length > 0) {
-                    await seedLecciones(faltantes, esSoloPremium, uid, perfil.fecha_registro, map);
-                    const { data: progAfter } = await supabase
-                        .from("lecciones_usuario")
-                        .select("leccion_id, estado, fecha_disponible, fecha_completada")
-                        .eq("perfil_id", uid);
-                    (progAfter ?? []).forEach((p) => { map[p.leccion_id] = p; });
+                    try {
+                        await seedLecciones(faltantes, esSoloPremium, uid, perfil.fecha_registro, map);
+                        const { data: progAfter } = await supabase
+                            .from("lecciones_usuario")
+                            .select("leccion_id, estado, fecha_disponible, fecha_completada")
+                            .eq("perfil_id", uid);
+                        (progAfter ?? []).forEach((p) => { map[p.leccion_id] = p; });
+                    } catch (seedErr) {
+                        console.error("Error seeding lecciones:", seedErr);
+                        setSeedError(true);
+                    }
                 }
 
                 setLecciones(lecs ?? []);
@@ -306,6 +312,21 @@ export default function Lecciones() {
                         {[...Array(5)].map((_, i) => (
                             <div key={i} className="bg-[#161B22] border border-[#2D3748] rounded-2xl h-20 animate-pulse" />
                         ))}
+                    </div>
+                ) : seedError ? (
+                    <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-10 text-center flex flex-col items-center gap-4">
+                        <p className="text-5xl">⚠️</p>
+                        <div>
+                            <p className="text-white font-bold font-display mb-1">Error al cargar lecciones</p>
+                            <p className="text-[#7D8590] text-sm">No se pudieron preparar tus lecciones. Intenta de nuevo.</p>
+                        </div>
+                        <button
+                            onClick={() => { setSeedError(false); setLoading(true); window.location.reload(); }}
+                            className="px-5 py-2.5 rounded-xl text-sm font-bold font-display transition-all"
+                            style={{ background: "rgba(61,220,132,0.1)", color: "#3DDC84", border: "1px solid rgba(61,220,132,0.2)" }}
+                        >
+                            Reintentar
+                        </button>
                     </div>
                 ) : lecciones.length === 0 ? (
                     <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl p-10 text-center">
@@ -537,7 +558,8 @@ async function seedLecciones(lecciones, esSoloPremium, uid, fechaRegistro, exist
             perfil_id: uid, leccion_id: l.id,
             estado: "disponible", fecha_disponible: new Date().toISOString(),
         }));
-        await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
+        const { error } = await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
+        if (error) throw error;
         return;
     }
 
@@ -579,5 +601,6 @@ async function seedLecciones(lecciones, esSoloPremium, uid, fechaRegistro, exist
         };
     });
 
-    await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
+    const { error } = await supabase.from("lecciones_usuario").upsert(rows, { onConflict: "perfil_id,leccion_id" });
+    if (error) throw error;
 }

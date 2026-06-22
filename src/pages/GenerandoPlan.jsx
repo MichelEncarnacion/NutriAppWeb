@@ -21,6 +21,7 @@ export default function GenerandoPlan() {
     const [progreso, setProgreso] = useState(0);
     const [error, setError] = useState(null);
     const [mostrarAviso, setMostrarAviso] = useState(false);
+    const [sinEstado, setSinEstado] = useState(false);
     const generandoRef = useRef(false);
 
     // Barra de progreso basada en tiempo (~25s para llegar a 95%)
@@ -37,7 +38,7 @@ export default function GenerandoPlan() {
 
     // Llamar al backend para generar el plan
     useEffect(() => {
-        if (!regenerar && !respuestas) { navigate("/diagnostico", { replace: true }); return; }
+        if (!regenerar && !respuestas) { setSinEstado(true); return; }
         if (!session) return; // Esperar a que AuthContext cargue la sesión
         if (generandoRef.current) return;
         generandoRef.current = true;
@@ -89,6 +90,25 @@ export default function GenerandoPlan() {
 
         generar();
     }, [session, respuestas, regenerar, navigate]);
+
+    // ── Sin estado (recarga de página) ──────────────────────────────────
+    if (sinEstado) return (
+        <div className="min-h-screen bg-[#0D1117] flex items-center justify-center px-4">
+            <div className="bg-[#161B22] border border-[#2D3748] rounded-2xl w-full max-w-md p-8 text-center flex flex-col gap-5">
+                <span className="text-5xl">🔄</span>
+                <h2 className="text-white text-xl font-bold font-display">Sesión interrumpida</h2>
+                <p className="text-[#7D8590] text-sm leading-relaxed">
+                    Parece que la página se recargó durante la generación de tu plan. Por favor regresa al diagnóstico para continuar.
+                </p>
+                <button
+                    onClick={() => navigate("/diagnostico", { replace: true })}
+                    className="w-full py-3 bg-[#3DDC84] text-black font-bold font-display rounded-xl hover:bg-[#5EF0A0] transition-all text-sm"
+                >
+                    Ir al diagnóstico →
+                </button>
+            </div>
+        </div>
+    );
 
     // ── Aviso médico ──────────────────────────────────────────────────────
     if (mostrarAviso) return (

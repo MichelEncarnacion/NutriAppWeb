@@ -10,16 +10,25 @@ export default function TerminosCondiciones() {
     const { session } = useAuth();
     const [aceptado, setAceptado] = useState(false);
     const [guardando, setGuardando] = useState(false);
+    const [error, setError] = useState(null);
 
     const handleAceptar = async () => {
         if (!aceptado || !session) return;
         setGuardando(true);
-        await supabase.from("diagnosticos").upsert(
-            { perfil_id: session.user.id, acepto_terminos: true },
-            { onConflict: "perfil_id" }
-        );
-        setGuardando(false);
-        navigate("/diagnostico", { replace: true });
+        setError(null);
+        try {
+            const { error: dbError } = await supabase.from("diagnosticos").upsert(
+                { perfil_id: session.user.id, acepto_terminos: true },
+                { onConflict: "perfil_id" }
+            );
+            if (dbError) throw dbError;
+            navigate("/diagnostico", { replace: true });
+        } catch (err) {
+            console.error("Error al aceptar términos:", err);
+            setError("No pudimos guardar tu aceptación. Por favor intenta de nuevo.");
+        } finally {
+            setGuardando(false);
+        }
     };
 
     return (
@@ -88,6 +97,10 @@ export default function TerminosCondiciones() {
                             de NutriiApp.
                         </span>
                     </label>
+
+                    {error && (
+                        <p className="text-[#FF6B6B] text-sm text-center">{error}</p>
+                    )}
 
                     <button
                         onClick={handleAceptar}
