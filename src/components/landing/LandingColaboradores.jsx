@@ -68,15 +68,17 @@ export default function LandingColaboradores() {
                 style={{ border: `1px solid ${C.border}`, boxShadow: C.shadow }}
               >
                 {c.foto_url ? (
-                  <img
-                    src={c.foto_url}
-                    alt={c.nombre}
-                    className="h-40 w-full object-cover"
-                    onError={(e) => { e.currentTarget.style.display = "none"; }}
-                  />
+                  <div className="aspect-square w-full overflow-hidden" style={{ background: "#F1F4F2" }}>
+                    <img
+                      src={c.foto_url}
+                      alt={c.nombre}
+                      className="h-full w-full object-contain"
+                      onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                    />
+                  </div>
                 ) : (
                   <div
-                    className="h-40 w-full flex items-center justify-center"
+                    className="aspect-square w-full flex items-center justify-center"
                     style={{ background: "#E8F5E9" }}
                   >
                     <span className="text-4xl font-black" style={{ color: C.primary, fontFamily: "Plus Jakarta Sans, sans-serif" }}>
@@ -148,12 +150,15 @@ export default function LandingColaboradores() {
               >
                 <div className="relative">
                   {seleccion.foto_url ? (
-                    <img
-                      src={seleccion.foto_url}
-                      alt={seleccion.nombre}
-                      className="h-48 w-full object-cover"
-                      onError={(e) => { e.currentTarget.style.display = "none"; }}
-                    />
+                    <div className="w-full overflow-hidden" style={{ maxHeight: "55vh", background: "#F1F4F2" }}>
+                      <img
+                        src={seleccion.foto_url}
+                        alt={seleccion.nombre}
+                        className="w-full h-full object-contain"
+                        style={{ maxHeight: "55vh" }}
+                        onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
+                      />
+                    </div>
                   ) : (
                     <div className="h-48 w-full flex items-center justify-center" style={{ background: "#E8F5E9" }}>
                       <span className="text-5xl font-black" style={{ color: C.primary, fontFamily: "Plus Jakarta Sans, sans-serif" }}>
