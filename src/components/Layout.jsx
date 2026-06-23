@@ -12,6 +12,7 @@ const NAV = [
     { to: "/lista-compras", label: "Lista de Compras", icon: "🛒" },
     { to: "/lecciones", label: "Lecciones", icon: "📖" },
     { to: "/progreso", label: "Progreso", icon: "📈", soloPremiun: true },
+    { to: "/salud-mental", label: "Salud Mental", icon: "🧠" },
     { to: "/ejercicios", label: "Ejercicios", icon: "💪", proximamente: true },
     { to: "/wearables", label: "Wearables", icon: "⌚", proximamente: true },
 ];

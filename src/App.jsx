@@ -29,6 +29,7 @@ import ListaCompras from "./pages/ListaCompras";
 import Perfil from "./pages/Perfil";
 import Ejercicios from "./pages/Ejercicios";
 import Wearables from "./pages/Wearables";
+import SaludMental from "./pages/SaludMental";
 
 import NotFound from "./pages/NotFound";
 
@@ -136,6 +137,11 @@ function AppRoutes() {
           <Route path="/wearables" element={
             <PrivateRoute>
               <Wearables />
+            </PrivateRoute>
+          } />
+          <Route path="/salud-mental" element={
+            <PrivateRoute>
+              <SaludMental />
             </PrivateRoute>
           } />
 
