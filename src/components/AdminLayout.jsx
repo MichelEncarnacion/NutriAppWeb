@@ -18,6 +18,7 @@ const ADMIN_NAV = [
     { to: "/admin/reconocimientos",  label: "Reconocimientos",  icon: "🏆" },
     { to: "/admin/nosotros",         label: "Quiénes somos",    icon: "👤" },
     { to: "/admin/solicitudes",      label: "Solicitudes demo",  icon: "📋" },
+    { to: "/admin/colaboradores",    label: "Colaboradores",     icon: "🧠" },
 ];
 
 export default function AdminLayout({ titulo, children }) {

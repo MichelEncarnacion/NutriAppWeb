@@ -4,6 +4,7 @@ import LandingHero         from "../components/landing/LandingHero";
 import LandingCredBand     from "../components/landing/LandingCredBand";
 import LandingBenefits     from "../components/landing/LandingBenefits";
 import LandingHowItWorks   from "../components/landing/LandingHowItWorks";
+import LandingColaboradores from "../components/landing/LandingColaboradores";
 import LandingFAQ          from "../components/landing/LandingFAQ";
 import LandingCTA          from "../components/landing/LandingCTA";
 import LandingFooter       from "../components/landing/LandingFooter";
@@ -16,6 +17,7 @@ export default function Landing() {
       <LandingCredBand />
       <LandingBenefits />
       <LandingHowItWorks />
+      <LandingColaboradores />
       <LandingFAQ />
       <LandingCTA />
       <LandingFooter />

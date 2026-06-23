@@ -43,6 +43,7 @@ import AdminArticulos        from "./pages/admin/AdminArticulos";
 import AdminReconocimientos  from "./pages/admin/AdminReconocimientos";
 import AdminFundadores       from "./pages/admin/AdminFundadores";
 import AdminSolicitudes      from "./pages/admin/AdminSolicitudes";
+import AdminColaboradores    from "./pages/admin/AdminColaboradores";
 
 function AppRoutes() {
   return (
@@ -166,6 +167,9 @@ function AppRoutes() {
           } />
           <Route path="/admin/solicitudes" element={
             <AdminRoute><AdminSolicitudes /></AdminRoute>
+          } />
+          <Route path="/admin/colaboradores" element={
+            <AdminRoute><AdminColaboradores /></AdminRoute>
           } />
 
           {/* ── 404 ──────────────────────────────────────── */}
