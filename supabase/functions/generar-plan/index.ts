@@ -81,7 +81,14 @@ Deno.serve(async (req) => {
     // 2. Leer diagnóstico
     const { data: diag, error: diagError } = await supabase
       .from("diagnosticos")
-      .select("peso, estatura, edad, sexo, objetivo, nivel_actividad, habitos_alimenticios, restricciones_medicas, alergias, enfermedades, presupuesto_quincenal")
+      .select(`
+        peso, peso_meta, estatura, edad, sexo, objetivo, meta_personal, ocupacion,
+        nivel_actividad, dias_ejercicio, tipo_ejercicio,
+        comidas_por_dia, horario_primer_comida, horario_ultima_comida,
+        habitos_alimenticios, alimentos_no_gustados,
+        restricciones_medicas, alergias, enfermedades, presupuesto_quincenal,
+        vasos_agua, horas_sueno, consume_alcohol, nivel_estres, tiempo_cocina
+      `)
       .eq("perfil_id", effectivePerfilId)
       .order("created_at", { ascending: false })
       .limit(1)
@@ -237,17 +244,42 @@ Deno.serve(async (req) => {
   }
 });
 
+const OBJETIVO_ESTRATEGIA: Record<string, string> = {
+  perder_peso: "Aplica un déficit calórico moderado y sostenible (no agresivo), priorizando saciedad (proteína y fibra altas) para minimizar el hambre y preservar masa muscular.",
+  bajar_grasa: "Aplica un déficit calórico moderado con proteína alta para preservar masa muscular mientras se reduce el porcentaje de grasa corporal.",
+  ganar_masa_muscular: "Aplica un superávit calórico ligero con proteína alta (mínimo 1.6-2.2 g/kg de peso) repartida en todas las comidas para favorecer la síntesis muscular.",
+  subir_peso: "Aplica un superávit calórico moderado usando alimentos densos en energía y nutrientes, evitando solo ultraprocesados, para una ganancia de peso saludable.",
+  peso_ideal: "Aplica un balance calórico de mantenimiento, enfocado en calidad nutricional, regularidad de horarios y composición corporal equilibrada.",
+};
+
 function buildPrompt(diag: Record<string, unknown>): string {
   const safe = (v: unknown, max = 200): string =>
-    String(v ?? "ninguna").slice(0, max).replace(/\n/g, " ");
+    String(v ?? "no especificado").slice(0, max).replace(/\n/g, " ");
 
-  const enfermedades = Array.isArray(diag.enfermedades) && diag.enfermedades.length > 0
-    ? safe(diag.enfermedades.join(", "))
-    : "ninguna";
+  const listaSafe = (v: unknown): string =>
+    Array.isArray(v) && v.length > 0 ? safe(v.join(", ")) : "ninguno";
 
-  return `Actúa como un nutriólogo especializado en salud pública y economía familiar de México. Eres experto diseñando planes nutricionales para la población mexicana, principalmente del estado de Puebla, México. Tu objetivo es maximizar la nutrición minimizando el gasto, usando alimentos accesibles en mercados y tiendas locales de la región (frijoles, tortillas, verduras de temporada, proteínas económicas como huevo, pollo, atún, sardina, hígado, leguminosas, etc.).
+  const objetivo = String(diag.objetivo ?? "");
+  const estrategiaObjetivo = OBJETIVO_ESTRATEGIA[objetivo] ?? OBJETIVO_ESTRATEGIA.peso_ideal;
 
-Genera un plan nutricional personalizado de exactamente 15 días basado en las respuestas del cuestionario del usuario que se muestran abajo. Respeta estrictamente su presupuesto quincenal, sus restricciones médicas, alergias y enfermedades. Prioriza ingredientes de bajo costo y alta densidad nutricional típicos de Puebla y México.
+  const enfermedades = listaSafe(diag.enfermedades);
+  const tipoEjercicio = listaSafe(diag.tipo_ejercicio);
+  const alimentosNoGustados = listaSafe(diag.alimentos_no_gustados);
+  const diasEjercicio = diag.dias_ejercicio !== null && diag.dias_ejercicio !== undefined
+    ? String(diag.dias_ejercicio)
+    : "0";
+
+  return `Actúa como un equipo de dos especialistas trabajando en conjunto para una persona en Puebla, México:
+1) Un nutriólogo especializado en salud pública y economía familiar mexicana, experto en maximizar la nutrición minimizando el gasto usando alimentos accesibles en mercados y tiendas locales (frijoles, tortillas, verduras de temporada, proteínas económicas como huevo, pollo, atún, sardina, hígado, leguminosas, etc.).
+2) Un entrenador físico certificado, experto en diseñar rutinas seguras y realistas adaptadas al nivel, tiempo y equipo disponible de cada persona, y en cómo el ejercicio debe coordinarse con la alimentación.
+
+Tu tarea es generar un plan COMPLETO Y PERSONALIZADO basado ÚNICAMENTE en las respuestas del cuestionario del usuario que se muestran abajo — cada respuesta debe reflejarse de forma evidente en el resultado (macros, tipo de comidas, horarios, tipo de rutina, intensidad, días de entrenamiento, recomendaciones de bienestar). No generes un plan genérico: ajústalo a esta persona en particular.
+
+ESTRATEGIA NUTRICIONAL SEGÚN SU OBJETIVO ("${safe(objetivo)}"): ${estrategiaObjetivo}
+
+Respeta estrictamente su presupuesto quincenal, sus restricciones médicas, alergias y enfermedades. Evita por completo los alimentos que no le gustan. Ajusta el número y horario de comidas a sus hábitos reales (comidas/día y horario de su primera y última comida). Si su tiempo disponible para cocinar es bajo, prioriza recetas simples y rápidas; si es alto, puedes incluir preparaciones algo más elaboradas. Prioriza ingredientes de bajo costo y alta densidad nutricional típicos de Puebla y México.
+
+Para la rutina de ejercicio: ajústala a su nivel de actividad actual, los días por semana que ya entrena, el tipo de ejercicio que prefiere y su objetivo nutricional (p. ej. si el objetivo es ganar masa muscular, prioriza rutinas de fuerza progresiva; si es perder peso o bajar grasa, combina fuerza con cardio para maximizar gasto calórico sin sacrificar músculo). Si tiene enfermedades, alergias o restricciones médicas relevantes para el ejercicio (cardiovasculares, articulares, etc.), modera la intensidad y evita movimientos de riesgo, indicándolo en las notas. Si su nivel de estrés es alto o duerme poco, incluye una nota breve de recuperación (sueño/estrés) ligada al rendimiento físico y nutricional.
 
 Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura exacta:
 
@@ -272,24 +304,56 @@ Responde ÚNICAMENTE con JSON válido, sin texto adicional, con esta estructura 
         { "tipo": "desayuno|colacion_am|comida|colacion_pm|cena", "nombre": string, "descripcion": string, "ingredientes": [{"nombre": string, "cantidad": string}], "hora_sugerida": "HH:MM", "kcal": number, "proteina_g": number, "carbos_g": number, "grasas_g": number }
       ]
     }
-  ]
+  ],
+  "rutina_ejercicio": {
+    "resumen": string,
+    "dias_por_semana": number,
+    "sesiones": [
+      {
+        "dia_semana": "Lunes|Martes|Miércoles|Jueves|Viernes|Sábado|Domingo",
+        "enfoque": string,
+        "duracion_min": number,
+        "calentamiento": string,
+        "ejercicios": [
+          { "nombre": string, "series": string, "repeticiones": string, "descanso": string, "notas": string }
+        ],
+        "enfriamiento": string
+      }
+    ],
+    "recomendaciones": [string]
+  }
 }
 
 El array "dias" debe tener exactamente 15 elementos (dia 1 al 15). Cada día debe tener al menos 3 comidas.
 El campo "ingredientes" de cada comida es OBLIGATORIO y debe listar TODOS y CADA UNO de los ingredientes necesarios para prepararla, sin excepción. Incluye condimentos, aceite, sal y cualquier ingrediente menor. Usa cantidades exactas en gramos (g), mililitros (ml), piezas, tazas o cucharadas según corresponda. Ejemplo: {"nombre": "pechuga de pollo", "cantidad": "150g"}, {"nombre": "tortilla de maíz", "cantidad": "2 piezas"}, {"nombre": "aceite vegetal", "cantidad": "1 cdita"}. Nunca dejes el array ingredientes vacío.
 El campo "lista_compras" debe contener TODOS los ingredientes necesarios para los 15 días, consolidados y sin repetir, con cantidades totales para toda la quincena y precios aproximados en MXN según el mercado local de Puebla, México. El costo_total_estimado debe estar dentro del presupuesto quincenal del usuario.
+El campo "rutina_ejercicio.sesiones" debe tener un elemento por cada día de entrenamiento que la persona indicó (o, si indicó 0, propone una rutina de inicio de 2-3 días/semana acorde a su nivel sedentario). El array "ejercicios" de cada sesión debe tener entre 4 y 8 ejercicios concretos y realizables sin equipo especializado salvo que el usuario haya indicado que va al gimnasio/pesas. "recomendaciones" debe incluir 2-4 tips breves de bienestar (hidratación, sueño, estrés, descanso) conectados a sus respuestas de estilo de vida.
 
 Respuestas del cuestionario del usuario:
-- Peso: ${safe(diag.peso, 20)} kg
+- Peso actual: ${safe(diag.peso, 20)} kg
+- Peso objetivo: ${safe(diag.peso_meta, 20)} kg
 - Estatura: ${safe(diag.estatura, 20)} cm
 - Edad: ${safe(diag.edad, 10)} años
 - Sexo: ${safe(diag.sexo, 20)}
-- Objetivo: ${safe(diag.objetivo)}
-- Nivel de actividad: ${safe(diag.nivel_actividad)}
-- Hábitos alimenticios: ${safe(diag.habitos_alimenticios)}
-- Restricciones médicas: ${safe(diag.restricciones_medicas)}
+- Objetivo principal: ${safe(diag.objetivo)}
+- Motivación personal: ${safe(diag.meta_personal, 300)}
+- Ocupación: ${safe(diag.ocupacion, 100)}
+- Nivel de actividad física: ${safe(diag.nivel_actividad)}
+- Días de ejercicio por semana actuales: ${diasEjercicio}
+- Tipo de ejercicio que practica: ${tipoEjercicio}
+- Comidas por día: ${safe(diag.comidas_por_dia, 10)}
+- Horario primera comida: ${safe(diag.horario_primer_comida, 10)}
+- Horario última comida: ${safe(diag.horario_ultima_comida, 10)}
+- Alimentos que prefiere/consume: ${safe(diag.habitos_alimenticios)}
+- Alimentos que NO le gustan: ${alimentosNoGustados}
+- Restricciones médicas / medicamentos: ${safe(diag.restricciones_medicas)}
 - Alergias: ${safe(diag.alergias)}
-- Enfermedades: ${enfermedades}
+- Enfermedades diagnosticadas: ${enfermedades}
 - Presupuesto quincenal: $${safe(diag.presupuesto_quincenal, 20)} MXN
+- Vasos de agua al día: ${safe(diag.vasos_agua, 10)}
+- Horas de sueño promedio: ${safe(diag.horas_sueno, 10)}
+- Consumo de alcohol: ${safe(diag.consume_alcohol, 30)}
+- Nivel de estrés: ${safe(diag.nivel_estres, 30)}
+- Tiempo disponible para cocinar (min): ${safe(diag.tiempo_cocina, 10)}
 `;
 }
