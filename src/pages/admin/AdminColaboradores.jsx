@@ -13,6 +13,7 @@ const FORM_EMPTY = {
   ubicacion:     "",
   enfoque:       "",
   cedula:        "",
+  telefono:      "",
   tipo_terapias: "",
   descuento:     0,
   publicado:     true,
@@ -58,6 +59,7 @@ export default function AdminColaboradores() {
       ubicacion:     c.ubicacion ?? "",
       enfoque:       c.enfoque ?? "",
       cedula:        c.cedula ?? "",
+      telefono:      c.telefono ?? "",
       tipo_terapias: c.tipo_terapias ?? "",
       descuento:     c.descuento ?? 0,
       publicado:     c.publicado,
@@ -84,6 +86,7 @@ export default function AdminColaboradores() {
       ubicacion:     formData.ubicacion.trim() || null,
       enfoque:       formData.enfoque.trim() || null,
       cedula:        formData.cedula.trim() || null,
+      telefono:      formData.telefono.trim() || null,
       tipo_terapias: formData.tipo_terapias.trim() || null,
       descuento:     Number(formData.descuento) || 0,
       publicado:     formData.publicado,
@@ -170,6 +173,9 @@ export default function AdminColaboradores() {
                     )}
                     {c.tipo_terapias && (
                       <p className="text-text-muted text-xs leading-relaxed line-clamp-2 mb-1">{c.tipo_terapias}</p>
+                    )}
+                    {c.telefono && (
+                      <p className="text-text-muted text-xs leading-relaxed mb-1">📞 {c.telefono}</p>
                     )}
                     <p className="text-brand-green text-xs font-bold mb-3">
                       {Math.round((c.descuento ?? 0) * 100)}% de descuento
@@ -267,6 +273,16 @@ export default function AdminColaboradores() {
                     />
                   </Field>
                 </div>
+
+                <Field label="Teléfono / WhatsApp" accent="purple">
+                  <Input
+                    accent="purple"
+                    type="tel"
+                    value={formData.telefono}
+                    onChange={set("telefono")}
+                    placeholder="Ej. 2221234567 (10 dígitos, sin espacios)"
+                  />
+                </Field>
 
                 <Field label="Tipo de terapias" accent="purple">
                   <Input
