@@ -59,7 +59,7 @@ export default function SaludMental() {
             {items.map((c) => (
               <Card key={c.id} className="p-0 rounded-xl overflow-hidden flex flex-col">
                 {c.foto_url ? (
-                  <div className="w-full h-32 flex items-center justify-center bg-dark-700">
+                  <div className="w-full h-40 md:h-32 flex items-center justify-center bg-dark-700">
                     <img
                       src={c.foto_url}
                       alt={c.nombre}
@@ -68,7 +68,7 @@ export default function SaludMental() {
                     />
                   </div>
                 ) : (
-                  <div className="w-full flex items-center justify-center bg-brand-purple/10" style={{ height: 128 }}>
+                  <div className="w-full h-40 md:h-32 flex items-center justify-center bg-brand-purple/10">
                     <span className="text-3xl font-black font-display text-brand-purple">
                       {c.nombre.charAt(0).toUpperCase()}
                     </span>
