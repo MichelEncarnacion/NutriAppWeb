@@ -6,12 +6,28 @@ import Layout from "../components/Layout";
 import Card from "../components/ui/Card";
 import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
+import { X } from "lucide-react";
+
+const ZONAS = [
+  { match: /pierna|glúte|gluteo|cuadríceps|cuadriceps|muslo/i, emoji: "🦵", gradiente: "linear-gradient(135deg,#7C3AED,#A855F7)" },
+  { match: /pecho|push|empuje/i, emoji: "🏋️", gradiente: "linear-gradient(135deg,#2563EB,#58A6FF)" },
+  { match: /espalda|jalón|jalon|pull|tracción|traccion/i, emoji: "💪", gradiente: "linear-gradient(135deg,#1B5E20,#3DDC84)" },
+  { match: /abdomen|core|abdominal/i, emoji: "🔥", gradiente: "linear-gradient(135deg,#BF9000,#F0A500)" },
+  { match: /cardio|hiit|resistencia/i, emoji: "🏃", gradiente: "linear-gradient(135deg,#DC2626,#FF6B6B)" },
+  { match: /brazo|bícep|bicep|trícep|tricep|hombro/i, emoji: "💪", gradiente: "linear-gradient(135deg,#0E7490,#22D3EE)" },
+  { match: /descanso|movilidad|estiramiento|recuperación|recuperacion/i, emoji: "🧘", gradiente: "linear-gradient(135deg,#475569,#94A3B8)" },
+];
+
+function zonaDe(enfoque) {
+  const texto = enfoque ?? "";
+  return ZONAS.find((z) => z.match.test(texto)) ?? { emoji: "🏋️", gradiente: "linear-gradient(135deg,#1B5E20,#3DDC84)" };
+}
 
 export default function Ejercicios() {
   const { plan, isLoading, stuckGenerating } = useActivePlan();
   const navigate = useNavigate();
   const rutina = plan?.rutina_ejercicio ?? null;
-  const [abierta, setAbierta] = useState(0);
+  const [seleccion, setSeleccion] = useState(null);
 
   if (isLoading) {
     return (
@@ -56,64 +72,29 @@ export default function Ejercicios() {
           )}
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {rutina.sesiones.map((s, i) => {
-            const expandida = abierta === i;
+            const zona = zonaDe(s.enfoque);
             return (
-              <Card key={`${s.dia_semana}-${i}`} className="p-0 overflow-hidden">
-                <button
-                  onClick={() => setAbierta(expandida ? -1 : i)}
-                  className="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-dark-700/50 transition-colors"
-                >
-                  <div>
-                    <p className="text-text-primary font-bold text-sm">{s.dia_semana}</p>
-                    <p className="text-text-muted text-xs mt-0.5">{s.enfoque}</p>
-                  </div>
-                  <div className="flex items-center gap-3 flex-shrink-0">
-                    {s.duracion_min != null && (
-                      <span className="text-[10px] font-bold text-brand-blue bg-brand-blue/10 rounded-full px-2.5 py-1">
-                        {s.duracion_min} min
-                      </span>
-                    )}
-                    <span className="text-text-muted text-xs">{expandida ? "▲" : "▼"}</span>
-                  </div>
-                </button>
-
-                {expandida && (
-                  <div className="px-5 pb-5 flex flex-col gap-4 border-t border-dark-600 pt-4">
-                    {s.calentamiento && (
-                      <div>
-                        <p className="text-[10px] font-bold text-text-muted tracking-widest mb-1">CALENTAMIENTO</p>
-                        <p className="text-text-primary text-xs leading-relaxed">{s.calentamiento}</p>
-                      </div>
-                    )}
-
-                    {Array.isArray(s.ejercicios) && s.ejercicios.length > 0 && (
-                      <div className="flex flex-col gap-2">
-                        <p className="text-[10px] font-bold text-text-muted tracking-widest mb-1">EJERCICIOS</p>
-                        {s.ejercicios.map((ej, j) => (
-                          <div key={j} className="bg-dark-700 rounded-xl px-4 py-3">
-                            <p className="text-text-primary font-semibold text-sm mb-1">{ej.nombre}</p>
-                            <div className="flex flex-wrap gap-3 text-xs text-text-muted">
-                              {ej.series && <span>Series: <span className="text-text-primary font-medium">{ej.series}</span></span>}
-                              {ej.repeticiones && <span>Reps: <span className="text-text-primary font-medium">{ej.repeticiones}</span></span>}
-                              {ej.descanso && <span>Descanso: <span className="text-text-primary font-medium">{ej.descanso}</span></span>}
-                            </div>
-                            {ej.notas && <p className="text-text-muted text-xs mt-1.5 italic">{ej.notas}</p>}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-
-                    {s.enfriamiento && (
-                      <div>
-                        <p className="text-[10px] font-bold text-text-muted tracking-widest mb-1">ENFRIAMIENTO</p>
-                        <p className="text-text-primary text-xs leading-relaxed">{s.enfriamiento}</p>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </Card>
+              <button
+                key={`${s.dia_semana}-${i}`}
+                onClick={() => setSeleccion(s)}
+                className="relative h-36 rounded-2xl overflow-hidden text-left flex flex-col justify-between p-4 transition-transform hover:scale-[1.02]"
+                style={{ background: zona.gradiente }}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-bold text-white/80 tracking-widest uppercase">{s.dia_semana}</span>
+                  {s.duracion_min != null && (
+                    <span className="text-[10px] font-bold text-white bg-black/25 rounded-full px-2 py-0.5">
+                      {s.duracion_min} min
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-end justify-between">
+                  <p className="text-white font-black font-display text-sm leading-tight max-w-[80%]">{s.enfoque}</p>
+                  <span className="text-3xl">{zona.emoji}</span>
+                </div>
+              </button>
             );
           })}
         </div>
@@ -132,6 +113,68 @@ export default function Ejercicios() {
           </Card>
         )}
       </div>
+
+      {/* ── Modal de detalle de sesión ─────────────────────────── */}
+      {seleccion && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(4px)" }}
+            onClick={() => setSeleccion(null)}
+          />
+          <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
+            <div className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl border border-dark-600 bg-dark-800">
+              <div className="relative p-6 pb-4" style={{ background: zonaDe(seleccion.enfoque).gradiente }}>
+                <button
+                  onClick={() => setSeleccion(null)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center bg-black/25 hover:bg-black/40 transition-colors"
+                >
+                  <X size={16} className="text-white" />
+                </button>
+                <span className="text-4xl block mb-2">{zonaDe(seleccion.enfoque).emoji}</span>
+                <p className="text-white/80 text-[10px] font-bold tracking-widest uppercase mb-1">{seleccion.dia_semana}</p>
+                <h3 className="text-white font-black font-display text-lg">{seleccion.enfoque}</h3>
+                {seleccion.duracion_min != null && (
+                  <p className="text-white/90 text-xs font-bold mt-1">{seleccion.duracion_min} min de entrenamiento</p>
+                )}
+              </div>
+
+              <div className="p-6 flex flex-col gap-4">
+                {seleccion.calentamiento && (
+                  <div>
+                    <p className="text-[10px] font-bold text-text-muted tracking-widest mb-1">CALENTAMIENTO</p>
+                    <p className="text-text-primary text-xs leading-relaxed">{seleccion.calentamiento}</p>
+                  </div>
+                )}
+
+                {Array.isArray(seleccion.ejercicios) && seleccion.ejercicios.length > 0 && (
+                  <div className="flex flex-col gap-2">
+                    <p className="text-[10px] font-bold text-text-muted tracking-widest mb-1">EJERCICIOS</p>
+                    {seleccion.ejercicios.map((ej, j) => (
+                      <div key={j} className="bg-dark-700 rounded-xl px-4 py-3">
+                        <p className="text-text-primary font-semibold text-sm mb-1">{ej.nombre}</p>
+                        <div className="flex flex-wrap gap-3 text-xs text-text-muted">
+                          {ej.series && <span>Series: <span className="text-text-primary font-medium">{ej.series}</span></span>}
+                          {ej.repeticiones && <span>Reps: <span className="text-text-primary font-medium">{ej.repeticiones}</span></span>}
+                          {ej.descanso && <span>Descanso: <span className="text-text-primary font-medium">{ej.descanso}</span></span>}
+                        </div>
+                        {ej.notas && <p className="text-text-muted text-xs mt-1.5 italic">{ej.notas}</p>}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {seleccion.enfriamiento && (
+                  <div>
+                    <p className="text-[10px] font-bold text-text-muted tracking-widest mb-1">ENFRIAMIENTO</p>
+                    <p className="text-text-primary text-xs leading-relaxed">{seleccion.enfriamiento}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </Layout>
   );
 }
