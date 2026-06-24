@@ -62,7 +62,7 @@ export default function SaludMental() {
                   <img
                     src={c.foto_url}
                     alt={c.nombre}
-                    className="w-full h-32 object-cover"
+                    className="w-full h-32 object-cover object-top"
                     onError={(e) => { e.currentTarget.style.display = "none"; }}
                   />
                 ) : (
@@ -100,7 +100,7 @@ export default function SaludMental() {
                   <img
                     src={seleccion.foto_url}
                     alt={seleccion.nombre}
-                    className="h-44 w-full object-cover"
+                    className="h-44 w-full object-cover object-top"
                     onError={(e) => { e.currentTarget.style.display = "none"; }}
                   />
                 ) : (
