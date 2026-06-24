@@ -8,6 +8,8 @@ import Button from "../components/ui/Button";
 import Badge from "../components/ui/Badge";
 import { X } from "lucide-react";
 
+const ZONA_DEFAULT = { emoji: "🏋️", gradiente: "linear-gradient(135deg,#1B5E20,#3DDC84)" };
+
 const ZONAS = [
   { match: /pierna|glúte|gluteo|cuadríceps|cuadriceps|muslo/i, emoji: "🦵", gradiente: "linear-gradient(135deg,#7C3AED,#A855F7)" },
   { match: /pecho|push|empuje/i, emoji: "🏋️", gradiente: "linear-gradient(135deg,#2563EB,#58A6FF)" },
@@ -20,7 +22,7 @@ const ZONAS = [
 
 function zonaDe(enfoque) {
   const texto = enfoque ?? "";
-  return ZONAS.find((z) => z.match.test(texto)) ?? { emoji: "🏋️", gradiente: "linear-gradient(135deg,#1B5E20,#3DDC84)" };
+  return ZONAS.find((z) => z.match.test(texto)) ?? ZONA_DEFAULT;
 }
 
 export default function Ejercicios() {
@@ -28,6 +30,7 @@ export default function Ejercicios() {
   const navigate = useNavigate();
   const rutina = plan?.rutina_ejercicio ?? null;
   const [seleccion, setSeleccion] = useState(null);
+  const zonaSeleccion = seleccion ? zonaDe(seleccion.enfoque) : null;
 
   if (isLoading) {
     return (
@@ -124,14 +127,14 @@ export default function Ejercicios() {
           />
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
             <div className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl border border-dark-600 bg-dark-800">
-              <div className="relative p-6 pb-4" style={{ background: zonaDe(seleccion.enfoque).gradiente }}>
+              <div className="relative p-6 pb-4" style={{ background: zonaSeleccion.gradiente }}>
                 <button
                   onClick={() => setSeleccion(null)}
                   className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center bg-black/25 hover:bg-black/40 transition-colors"
                 >
                   <X size={16} className="text-white" />
                 </button>
-                <span className="text-4xl block mb-2">{zonaDe(seleccion.enfoque).emoji}</span>
+                <span className="text-4xl block mb-2">{zonaSeleccion.emoji}</span>
                 <p className="text-white/80 text-[10px] font-bold tracking-widest uppercase mb-1">{seleccion.dia_semana}</p>
                 <h3 className="text-white font-black font-display text-lg">{seleccion.enfoque}</h3>
                 {seleccion.duracion_min != null && (
