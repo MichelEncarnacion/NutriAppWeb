@@ -167,6 +167,7 @@ Deno.serve(async (req) => {
             generationConfig: {
               responseMimeType: "application/json",
               thinkingConfig: { thinkingBudget: 0 },
+              maxOutputTokens: 65536,
             },
           }),
           signal: controller.signal,
@@ -190,14 +191,17 @@ Deno.serve(async (req) => {
     }
 
     // 6. Extraer y validar JSON del plan
-    const rawText = (geminiData as { candidates?: { content?: { parts?: { text?: string }[] } }[] })
-      ?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const candidate = (geminiData as { candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[] })
+      ?.candidates?.[0];
+    const rawText = candidate?.content?.parts?.[0]?.text ?? "";
+    console.log("[generar-plan] finishReason:", candidate?.finishReason, "rawText length:", rawText.length);
 
     let plan: { meta_diaria: Record<string, number>; dias: { dia: number; comidas: unknown[] }[] };
     try {
       plan = JSON.parse(rawText);
-    } catch {
-      await supabase.from("planes").update({ estado: "error" }).eq("id", planId);
+    } catch (parseErr) {
+      console.error("[generar-plan] JSON.parse failed:", parseErr, "finishReason:", candidate?.finishReason);
+      await supabase.from("planes").update({ estado: "error", respuesta_ia: rawText }).eq("id", planId);
       return new Response(JSON.stringify({ error: "Respuesta inválida de IA" }), {
         status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
