@@ -7,6 +7,29 @@ import { supabase } from "../lib/supabase";
 import { useAuth } from "../hooks/useAuth";
 import { MapPin, IdCard, BadgeCheck, MessageCircle, X } from "lucide-react";
 
+function FotoColaborador({ colaborador, className, initialClassName }) {
+  const [error, setError] = useState(false);
+  if (!colaborador.foto_url || error) {
+    return (
+      <div className={`flex items-center justify-center bg-brand-purple/10 ${className}`}>
+        <span className={`font-black font-display text-brand-purple ${initialClassName}`}>
+          {colaborador.nombre.charAt(0).toUpperCase()}
+        </span>
+      </div>
+    );
+  }
+  return (
+    <div className={`flex items-center justify-center bg-dark-700 ${className}`}>
+      <img
+        src={colaborador.foto_url}
+        alt={colaborador.nombre}
+        className="h-full w-full object-contain"
+        onError={() => setError(true)}
+      />
+    </div>
+  );
+}
+
 function whatsappUrl(telefono, nombreColaborador, nombreUsuario) {
   const digitos = telefono.replace(/\D/g, "");
   const numero  = digitos.length === 10 ? `52${digitos}` : digitos;
@@ -58,22 +81,11 @@ export default function SaludMental() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {items.map((c) => (
               <Card key={c.id} className="p-0 rounded-xl overflow-hidden flex flex-col">
-                {c.foto_url ? (
-                  <div className="w-full h-40 md:h-32 flex items-center justify-center bg-dark-700">
-                    <img
-                      src={c.foto_url}
-                      alt={c.nombre}
-                      className="h-full w-full object-contain"
-                      onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
-                    />
-                  </div>
-                ) : (
-                  <div className="w-full h-40 md:h-32 flex items-center justify-center bg-brand-purple/10">
-                    <span className="text-3xl font-black font-display text-brand-purple">
-                      {c.nombre.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+                <FotoColaborador
+                  colaborador={c}
+                  className="w-full h-40 md:h-32"
+                  initialClassName="text-3xl"
+                />
                 <div className="p-4 flex flex-col flex-1">
                   <p className="text-text-primary font-bold text-sm mb-0.5">{c.nombre}</p>
                   {c.enfoque && <p className="text-brand-purple text-xs font-semibold mb-3">{c.enfoque}</p>}
@@ -98,22 +110,11 @@ export default function SaludMental() {
           <div className="fixed inset-0 z-50 flex items-center justify-center px-4 py-8">
             <div className="w-full max-w-md max-h-[85vh] overflow-y-auto rounded-2xl border border-dark-600 bg-dark-800">
               <div className="relative">
-                {seleccion.foto_url ? (
-                  <div className="h-44 w-full flex items-center justify-center bg-dark-700">
-                    <img
-                      src={seleccion.foto_url}
-                      alt={seleccion.nombre}
-                      className="h-full w-full object-contain"
-                      onError={(e) => { e.currentTarget.parentElement.style.display = "none"; }}
-                    />
-                  </div>
-                ) : (
-                  <div className="h-44 w-full flex items-center justify-center bg-brand-purple/10">
-                    <span className="text-5xl font-black font-display text-brand-purple">
-                      {seleccion.nombre.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                )}
+                <FotoColaborador
+                  colaborador={seleccion}
+                  className="h-44 w-full"
+                  initialClassName="text-5xl"
+                />
                 <button
                   onClick={() => setSeleccion(null)}
                   className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center bg-dark-900/80 hover:bg-dark-900 transition-colors"
