@@ -35,7 +35,7 @@ function whatsappUrl(telefono, nombreColaborador, nombreUsuario) {
   const numero  = digitos.length === 10 ? `52${digitos}` : digitos;
   const mensaje =
     `Hola ${nombreColaborador}, soy ${nombreUsuario || "un usuario"} de NutriiApp. ` +
-    `Me interesa agendar una consulta y vengo de NutriiApp para aplicar el descuento. ¿Podrías darme más información?`;
+    `Me interesa agendar una consulta y aplicar el descuento. ¿Podrías darme más información?`;
   return `https://wa.me/${numero}?text=${encodeURIComponent(mensaje)}`;
 }
 
