@@ -1,34 +1,20 @@
 // src/pages/TerminosCondiciones.jsx
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { supabase } from "../lib/supabase";
 import Logo from "../components/Logo";
 
 export default function TerminosCondiciones() {
     const navigate = useNavigate();
-    const { session } = useAuth();
     const [aceptado, setAceptado] = useState(false);
-    const [guardando, setGuardando] = useState(false);
-    const [error, setError] = useState(null);
 
-    const handleAceptar = async () => {
-        if (!aceptado || !session) return;
-        setGuardando(true);
-        setError(null);
-        try {
-            const { error: dbError } = await supabase.from("diagnosticos").upsert(
-                { perfil_id: session.user.id, acepto_terminos: true },
-                { onConflict: "perfil_id" }
-            );
-            if (dbError) throw dbError;
-            navigate("/diagnostico", { replace: true });
-        } catch (err) {
-            console.error("Error al aceptar términos:", err);
-            setError("No pudimos guardar tu aceptación. Por favor intenta de nuevo.");
-        } finally {
-            setGuardando(false);
-        }
+    // No se escribe en la base de datos aquí: `acepto_terminos` se guarda
+    // en `diagnosticos` junto con el resto de las respuestas al finalizar
+    // el cuestionario (ver Diagnostico.jsx). Escribir un registro parcial
+    // en este paso disparaba prematuramente el trigger que marca el
+    // diagnóstico como completado.
+    const handleAceptar = () => {
+        if (!aceptado) return;
+        navigate("/diagnostico", { replace: true });
     };
 
     return (
@@ -98,20 +84,16 @@ export default function TerminosCondiciones() {
                         </span>
                     </label>
 
-                    {error && (
-                        <p className="text-brand-red text-sm text-center">{error}</p>
-                    )}
-
                     <button
                         onClick={handleAceptar}
-                        disabled={!aceptado || guardando}
+                        disabled={!aceptado}
                         className={`w-full py-3 rounded-xl font-bold font-display text-sm tracking-wide transition-all
-              ${aceptado && !guardando
+              ${aceptado
                                 ? "bg-brand-green text-white hover:bg-brand-greenL cursor-pointer"
                                 : "bg-dark-700 text-text-muted cursor-not-allowed border border-dark-600"
                             }`}
                     >
-                        {guardando ? "Guardando..." : "Aceptar y continuar →"}
+                        Aceptar y continuar →
                     </button>
                 </div>
             </div>
